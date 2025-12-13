@@ -1,4 +1,4 @@
-# See http://help.github.com/ignore-files/ for more about ignoring files.
+# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
 # Compiled output
 /dist
@@ -8,13 +8,9 @@
 
 # Node
 /node_modules
+/.pnpm-store
 npm-debug.log
 yarn-error.log
-
-# pnpm
-pnpm-debug.log*
-pnpm-lock.yaml
-.pnpm-store/
 
 # IDEs and editors
 .idea/
@@ -41,20 +37,8 @@ pnpm-lock.yaml
 /libpeerconnection.log
 testem.log
 /typings
+__screenshots__/
 
 # System files
 .DS_Store
 Thumbs.db
-
-# Environment files
-.env
-.env.local
-.env.*.local
-
-# Log files
-*.log
-
-# Editor backup files
-*~
-*.swp
-*.swo
