@@ -1,9 +1,9 @@
 {
-	"recommendations": [
-		"angular.ng-template",
-		"dbaeumer.vscode-eslint",
-		"esbenp.prettier-vscode",
-		"editorconfig.editorconfig",
-		"stylelint.vscode-stylelint"
-	]
+  "recommendations": [
+    "angular.ng-template",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "editorconfig.editorconfig",
+    "stylelint.vscode-stylelint"
+  ]
 }

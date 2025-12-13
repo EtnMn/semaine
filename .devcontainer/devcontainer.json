@@ -1,27 +1,27 @@
 // See https://containers.dev/implementors/json_reference/ for configuration reference
 {
-	"name": "Semaine app development container",
-	"build": {
-		"dockerfile": "Dockerfile"
-	},
-	"remoteUser": "node",
-	"features": {
-		"ghcr.io/devcontainers-extra/features/angular-cli:2": {},
-		"ghcr.io/devcontainers-extra/features/pnpm:2": {},
-		"ghcr.io/devcontainers-extra/features/supabase-cli:1": {}
-	},
-	"customizations": {
-		"vscode": {
-			"extensions": [
-				"Angular.ng-template",
-				"dbaeumer.vscode-eslint",
-				"esbenp.prettier-vscode",
-				"editorconfig.editorconfig",
-				"stylelint.vscode-stylelint"
-			]
-		}
-	},
-	"mounts": [
-		"type=bind,source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/node/.ssh,readonly"
-	]
+  "name": "Semaine app development container",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "remoteUser": "node",
+  "features": {
+    "ghcr.io/devcontainers-extra/features/angular-cli:2": {},
+    "ghcr.io/devcontainers-extra/features/pnpm:2": {},
+    "ghcr.io/devcontainers-extra/features/supabase-cli:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "Angular.ng-template",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "editorconfig.editorconfig",
+        "stylelint.vscode-stylelint"
+      ]
+    }
+  },
+  "mounts": [
+    "type=bind,source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/node/.ssh,readonly"
+  ]
 }
