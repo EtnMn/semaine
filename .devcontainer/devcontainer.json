@@ -5,6 +5,7 @@
     "dockerfile": "Dockerfile"
   },
   "remoteUser": "node",
+  "forwardPorts": [4200],
   "features": {
     "ghcr.io/devcontainers-extra/features/angular-cli:2": {},
     "ghcr.io/devcontainers-extra/features/pnpm:2": {},
