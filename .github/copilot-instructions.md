@@ -50,6 +50,7 @@ pnpm format:check   # Check formatting without changes
 
 - Components follow pattern: `component-name.ts`, `component-name.html`, `component-name.css`
 - Tests are colocated: `component-name.spec.ts` in same directory
+- Use a Feature-Based directory structure
 - All source code in `src/app/`
 
 ### Code Style

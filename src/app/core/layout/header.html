@@ -1,0 +1,17 @@
+<header>
+  <p-menubar>
+    <ng-template #start>
+      <h1 class="text-3xl font-bold">{{ title() }}</h1>
+    </ng-template>
+    <ng-template #end>
+      <div class="flex items-center gap-2">
+        <p-button
+          [icon]="darkMode.icon()"
+          (onClick)="toggleDarkMode()"
+          severity="secondary"
+          outlined
+        />
+      </div>
+    </ng-template>
+  </p-menubar>
+</header>
