@@ -49,6 +49,24 @@ jobs:
           output_location: ""
           skip_app_build: true
 
+      - name: Add deployment URL to summary
+        if: github.event_name == 'push'
+        run: |
+          echo "## 🚀 Deployment Successful" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Your application has been deployed to Azure Static Web Apps!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🔗 **Live URL:** https://blue-river-0e71f3f03.4.azurestaticapps.net" >> $GITHUB_STEP_SUMMARY
+
+      - name: Add preview URL to summary
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "## 🔍 Preview Environment Ready" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "A preview environment has been created for this pull request." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "The preview URL will be posted as a comment on this PR." >> $GITHUB_STEP_SUMMARY
+
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
