@@ -1,0 +1,152 @@
+name: Terraform Plan
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "infra/**"
+      - ".github/workflows/terraform-plan.yml"
+
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: write
+
+env:
+  TF_WORKING_DIR: infra
+  ARM_USE_OIDC: true
+  ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+  ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+  ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+jobs:
+  plan:
+    name: Terraform Plan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.5"
+
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Terraform Init
+        id: init
+        run: |
+          cd ${{ env.TF_WORKING_DIR }}
+          terraform init
+
+      - name: Terraform Plan
+        id: plan
+        run: |
+          cd ${{ env.TF_WORKING_DIR }}
+          terraform plan -no-color -out=tfplan 2>&1 | tee plan_output.txt
+          echo "plan_exit_code=${PIPESTATUS[0]}" >> $GITHUB_OUTPUT
+        continue-on-error: true
+
+      - name: Generate Plan Summary
+        id: summary
+        run: |
+          cd ${{ env.TF_WORKING_DIR }}
+
+          # Extract resource changes from plan output
+          PLAN_OUTPUT=$(cat plan_output.txt)
+
+          # Count changes
+          ADD=$(echo "$PLAN_OUTPUT" | grep -oP '\d+(?= to add)' || echo "0")
+          CHANGE=$(echo "$PLAN_OUTPUT" | grep -oP '\d+(?= to change)' || echo "0")
+          DESTROY=$(echo "$PLAN_OUTPUT" | grep -oP '\d+(?= to destroy)' || echo "0")
+
+          # Set defaults if empty
+          ADD=${ADD:-0}
+          CHANGE=${CHANGE:-0}
+          DESTROY=${DESTROY:-0}
+
+          echo "add=$ADD" >> $GITHUB_OUTPUT
+          echo "change=$CHANGE" >> $GITHUB_OUTPUT
+          echo "destroy=$DESTROY" >> $GITHUB_OUTPUT
+
+      - name: Comment on PR
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const planExitCode = '${{ steps.plan.outputs.plan_exit_code }}';
+            const add = '${{ steps.summary.outputs.add }}' || '0';
+            const change = '${{ steps.summary.outputs.change }}' || '0';
+            const destroy = '${{ steps.summary.outputs.destroy }}' || '0';
+
+            const fs = require('fs');
+            const planOutput = fs.readFileSync('${{ env.TF_WORKING_DIR }}/plan_output.txt', 'utf8');
+
+            // Truncate if too long
+            const maxLength = 60000;
+            const truncatedPlan = planOutput.length > maxLength
+              ? planOutput.substring(0, maxLength) + '\n\n... (truncated)'
+              : planOutput;
+
+            const status = planExitCode === '0' ? '✅' : '❌';
+            const statusText = planExitCode === '0' ? 'Success' : 'Failed';
+
+            const body = `## Terraform Plan ${status}
+
+            ### Summary
+            | Action | Count |
+            |--------|-------|
+            | ➕ Add | ${add} |
+            | 🔄 Change | ${change} |
+            | ➖ Destroy | ${destroy} |
+
+            ### Plan Output
+            <details>
+            <summary>Click to expand</summary>
+
+            \`\`\`hcl
+            ${truncatedPlan}
+            \`\`\`
+
+            </details>
+
+            ---
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Workflow: \`${{ github.workflow }}\`*`;
+
+            // Find existing comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const botComment = comments.find(comment =>
+              comment.user.type === 'Bot' && comment.body.includes('## Terraform Plan')
+            );
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: body
+              });
+            }
+
+      - name: Fail if plan failed
+        if: steps.plan.outputs.plan_exit_code != '0'
+        run: exit 1
