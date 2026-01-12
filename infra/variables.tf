@@ -20,9 +20,9 @@ variable "tags" {
   description = "Tags to apply to all resources"
   type        = map(string)
   default = {
-    project     = "etn-semaine"
-    managed_by  = "terraform"
-    repository  = "EtnMn/semaine"
+    project    = "etn-semaine"
+    managed_by = "terraform"
+    repository = "EtnMn/semaine"
   }
 }
 
