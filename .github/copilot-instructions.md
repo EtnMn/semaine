@@ -87,9 +87,52 @@ Launch configurations in `.vscode/launch.json`:
 - **"ng serve"**: Opens Microsoft Edge (not Chrome) at `localhost:4200`
 - No test debugging config (Vitest runs in terminal)
 
+## Deployment
+
+This application is deployed to **Azure Static Web Apps** using automated CI/CD pipelines.
+
+### Deployment Platform
+
+- **Service**: Azure Static Web Apps
+- **Configuration**: `staticwebapp.config.json`
+
+### Automated Deployment (CI/CD)
+
+Deployment is fully automated via GitHub Actions (`.github/workflows/azure-static-web-apps.yml`):
+
+**Triggers:**
+
+- **Push to main**: Automatic production deployment
+- **Pull Requests**: Deploys preview environments for testing
+- **PR Closed**: Automatically cleans up preview environments
+
+**Build Process:**
+
+1. Uses pnpm 10.25.0 and Node.js 20
+2. Installs dependencies with `pnpm install --frozen-lockfile`
+3. Builds production bundle with `pnpm build`
+4. Deploys to Azure Static Web Apps from `dist/etn-semaine/browser`
+
+**Deployment Notes:**
+
+- Requires `AZURE_STATIC_WEB_APPS_API_TOKEN` secret in GitHub repository settings
+- Build happens in CI/CD pipeline (not on Azure)
+- Preview environments created automatically for PRs with unique URLs
+- GitHub deployment summary shows live URL after successful deployment
+
+### Static Web App Configuration
+
+Key features configured in `staticwebapp.config.json`:
+
+- **SPA Routing**: All routes fallback to `/index.html` (Angular client-side routing)
+- **Caching**: Static assets cached for 1 year, HTML not cached
+- **Security Headers**: CSP, X-Frame-Options, X-XSS-Protection, etc.
+- **MIME Types**: Proper font and asset type declarations
+
 ## Important Notes
 
 - **Do NOT use Karma** - this project uses Vitest
 - **Do NOT create NgModules** - all components are standalone
 - **Browser for debugging**: Microsoft Edge (configured in launch.json)
 - **Format before commit**: Run `pnpm format` to ensure consistent code style
+- **Deployment**: Always happens automatically via GitHub Actions on push to main
