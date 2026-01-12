@@ -11,7 +11,7 @@ import { DarkModeService } from "@core/services";
 })
 export class Header {
   protected readonly darkMode = inject(DarkModeService);
-  protected readonly title = signal("etn-semaine");
+  protected readonly title = signal("etn semaine");
 
   protected toggleDarkMode(): void {
     this.darkMode.toggle();
