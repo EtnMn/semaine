@@ -1,5 +1,9 @@
 locals {
-  resource_suffix = "${var.project_name}-${var.environment}"
+  resource_suffix = "${var.app_name}-${var.environment}"
+  tags = {
+    "environment" = var.environment,
+    "application" = var.app_name
+  }
 }
 
 # Resource Group for the application
@@ -8,7 +12,7 @@ module "resource_group" {
 
   name     = "rg-${local.resource_suffix}"
   location = var.location
-  tags     = var.tags
+  tags     = local.tags
 }
 
 # Azure Static Web App
@@ -19,5 +23,5 @@ module "static_web_app" {
   location            = module.resource_group.location
   resource_group_name = module.resource_group.name
   sku_tier            = var.static_web_app_sku_tier
-  tags                = var.tags
+  tags                = local.tags
 }

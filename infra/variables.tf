@@ -10,20 +10,10 @@ variable "environment" {
   default     = "prod"
 }
 
-variable "project_name" {
-  description = "Project name used for resource naming"
+variable "app_name" {
+  description = "Application name used for resource naming"
   type        = string
   default     = "etn-semaine"
-}
-
-variable "tags" {
-  description = "Tags to apply to all resources"
-  type        = map(string)
-  default = {
-    project    = "etn-semaine"
-    managed_by = "terraform"
-    repository = "EtnMn/semaine"
-  }
 }
 
 variable "static_web_app_sku_tier" {

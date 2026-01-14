@@ -3,7 +3,7 @@ terraform {
     resource_group_name  = "rg-etn-semaine-tfstate"
     storage_account_name = "stetnsemainetfstate"
     container_name       = "tfstate"
-    key                  = "terraform.tfstate"
+    key                  = "semaine.tfstate"
     use_oidc             = true
   }
 }
