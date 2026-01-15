@@ -11,7 +11,8 @@
     "ghcr.io/devcontainers-extra/features/pnpm:2": {},
     "ghcr.io/devcontainers-extra/features/supabase-cli:1": {},
     "ghcr.io/devcontainers-extra/features/starship:1": {},
-    "ghcr.io/devcontainers/features/azure-cli:1": {}
+    "ghcr.io/devcontainers/features/azure-cli:1": {},
+    "ghcr.io/devcontainers/features/terraform:1": {}
   },
   "postCreateCommand": "grep -q 'starship init bash' ~/.bashrc || echo 'eval \"$(starship init bash)\"' >> ~/.bashrc",
   "customizations": {
@@ -21,7 +22,8 @@
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
         "editorconfig.editorconfig",
-        "stylelint.vscode-stylelint"
+        "stylelint.vscode-stylelint",
+        "HashiCorp.terraform"
       ]
     }
   },

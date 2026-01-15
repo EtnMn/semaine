@@ -129,6 +129,101 @@ Key features configured in `staticwebapp.config.json`:
 - **Security Headers**: CSP, X-Frame-Options, X-XSS-Protection, etc.
 - **MIME Types**: Proper font and asset type declarations
 
+## Infrastructure as Code (Terraform)
+
+Azure infrastructure is managed with **Terraform** using a modular architecture. The IaC is located in the `infra/` directory.
+
+### Terraform Structure
+
+```
+infra/
+├── main.tf              # Module calls
+├── variables.tf         # Global variables
+├── outputs.tf           # Global outputs
+├── providers.tf         # azurerm provider with OIDC
+├── backend.tf           # Azure Storage backend
+└── modules/
+    ├── resource-group/  # azurerm_resource_group
+    ├── storage-account/ # azurerm_storage_account
+    └── static-web-app/  # azurerm_static_web_app
+```
+
+### Terraform Commands
+
+```bash
+cd infra
+
+# Initialize (download providers, configure backend)
+terraform init
+
+# Format all files
+terraform fmt -recursive
+
+# Validate configuration
+terraform validate
+
+# Preview changes
+terraform plan
+
+# Apply changes (production only via CI/CD)
+terraform apply
+```
+
+### Terraform CI/CD Workflows
+
+Three GitHub Actions workflows manage the Terraform lifecycle:
+
+| Workflow                 | Trigger           | Actions                                           |
+| ------------------------ | ----------------- | ------------------------------------------------- |
+| `terraform-validate.yml` | Push (any branch) | Format auto-commit, validate, tfsec security scan |
+| `terraform-plan.yml`     | PR to main        | Generate plan, comment summary on PR              |
+| `terraform-apply.yml`    | Merge to main     | Apply changes to Azure                            |
+
+**Workflow Details:**
+
+1. **Validation** (`terraform-validate.yml`):
+   - Auto-formats Terraform files and commits changes
+   - Runs `terraform validate` for syntax checking
+   - Executes `tfsec` for security analysis
+
+2. **Plan on PR** (`terraform-plan.yml`):
+   - Generates `terraform plan` output
+   - Posts a summary comment on the PR with add/change/destroy counts
+   - Updates existing comment on subsequent pushes
+
+3. **Apply on Merge** (`terraform-apply.yml`):
+   - Runs `terraform apply -auto-approve`
+   - Uses `production` environment for protection rules
+   - Outputs deployment summary
+
+### Azure Authentication (OIDC)
+
+Uses **Workload Identity Federation** (no secrets stored in GitHub):
+
+- **Method**: OpenID Connect (OIDC) via Azure AD App Registration
+- **Provider Config**: `use_oidc = true` in `providers.tf` and `backend.tf`
+
+**Required GitHub Variables** (not secrets):
+
+- `AZURE_CLIENT_ID` — App Registration client ID
+- `AZURE_TENANT_ID` — Azure AD tenant ID
+- `AZURE_SUBSCRIPTION_ID` — Subscription ID
+
+**Azure Prerequisites:**
+
+1. Create an App Registration in Azure AD
+2. Configure Federated Credential for `repo:EtnMn/semaine:*`
+3. Assign Contributor role on the resource group
+
+### Terraform Backend
+
+State is stored remotely in Azure Storage:
+
+- **Resource Group**: `rg-etn-semaine-tfstate`
+- **Storage Account**: `stetnsemainetfstate`
+- **Container**: `tfstate`
+- **State File**: `terraform.tfstate`
+
 ## Important Notes
 
 - **Do NOT use Karma** - this project uses Vitest
