@@ -88,7 +88,7 @@ Add these variables (not secrets) to your repository settings:
 
 **Workflows:**
 
-- `terraform-validate.yml` — Format, validate, and security scan (runs on all pushes)
+- `terraform-format-security.yml` — Format and security scan (runs on all pushes)
 - `terraform-plan.yml` — Generate plan and comment on PRs
 - `terraform-apply.yml` — Apply changes to Azure (runs on merge to main)
 

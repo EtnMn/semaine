@@ -1,3 +1,4 @@
+# Local values for resource naming and tagging
 locals {
   resource_suffix = "${var.app_name}-${var.environment}"
   tags = {
