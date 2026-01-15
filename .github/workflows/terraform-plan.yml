@@ -1,10 +1,12 @@
 name: Terraform Plan
 
 on:
-  workflow_run:
-    workflows: ["Terraform Format & Security"]
-    types:
-      - completed
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "infra/**"
+      - ".github/workflows/terraform-plan.yml"
 
 permissions:
   contents: read
@@ -22,9 +24,6 @@ jobs:
   plan:
     name: Terraform Plan
     runs-on: ubuntu-latest
-    if: |
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.event == 'pull_request'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
