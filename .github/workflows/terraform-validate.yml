@@ -35,12 +35,12 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: "1.5"
+          terraform_version: "1.14.3"
 
       - name: Terraform Format
         id: fmt
+        working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
-          cd ${{ env.TF_WORKING_DIR }}
           terraform fmt -recursive -diff
           if [[ -n $(git status --porcelain) ]]; then
             echo "changed=true" >> $GITHUB_OUTPUT
@@ -71,7 +71,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: "1.5"
+          terraform_version: "1.14.3"
 
       - name: Azure Login (OIDC)
         uses: azure/login@v2
@@ -81,13 +81,13 @@ jobs:
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
       - name: Terraform Init
+        working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
-          cd ${{ env.TF_WORKING_DIR }}
           terraform init -backend=false
 
       - name: Terraform Validate
+        working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
-          cd ${{ env.TF_WORKING_DIR }}
           terraform validate
 
   security:

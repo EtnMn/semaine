@@ -31,7 +31,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: "1.5"
+          terraform_version: "1.14.3"
 
       - name: Azure Login (OIDC)
         uses: azure/login@v2
@@ -42,23 +42,22 @@ jobs:
 
       - name: Terraform Init
         id: init
+        working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
-          cd ${{ env.TF_WORKING_DIR }}
           terraform init
 
       - name: Terraform Plan
         id: plan
+        working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
-          cd ${{ env.TF_WORKING_DIR }}
           terraform plan -no-color -out=tfplan 2>&1 | tee plan_output.txt
           echo "plan_exit_code=${PIPESTATUS[0]}" >> $GITHUB_OUTPUT
         continue-on-error: true
 
       - name: Generate Plan Summary
         id: summary
+        working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
-          cd ${{ env.TF_WORKING_DIR }}
-
           # Extract resource changes from plan output
           PLAN_OUTPUT=$(cat plan_output.txt)
 

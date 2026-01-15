@@ -21,3 +21,9 @@ variable "static_web_app_sku_tier" {
   type        = string
   default     = "Free"
 }
+
+variable "subscription_id" {
+  description = "Azure subscription ID (set in terraform.tfvars for local dev)"
+  type        = string
+  default     = null
+}

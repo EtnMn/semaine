@@ -31,7 +31,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: "1.5"
+          terraform_version: "1.14.3"
 
       - name: Azure Login (OIDC)
         uses: azure/login@v2
@@ -41,18 +41,18 @@ jobs:
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
       - name: Terraform Init
+        working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
-          cd ${{ env.TF_WORKING_DIR }}
           terraform init
 
       - name: Terraform Apply
+        working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
-          cd ${{ env.TF_WORKING_DIR }}
           terraform apply -auto-approve
 
       - name: Add deployment summary
+        working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
-          cd ${{ env.TF_WORKING_DIR }}
           echo "## 🏗️ Infrastructure Deployment Successful" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Terraform has successfully applied the infrastructure changes." >> $GITHUB_STEP_SUMMARY

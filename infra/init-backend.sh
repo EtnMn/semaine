@@ -1,13 +1,17 @@
-ENV=Prod
+ENV=prod
 APP_NAME="etn-semaine"
 LOCATION=westeurope
 RESOURCE_GROUP_NAME="rg-etn-semaine-tfstate"
-TF_STORAGE_ACCOUNT=stetnsemaine${ENV,,}$RANDOM
-CONTAINER_NAME=tfstate
+TF_STORAGE_ACCOUNT=stetnsemaine$RANDOM
+CONTAINER_NAME=tfstate$ENV
 LOCK_NAME=delete-lock
 
-# Create resource group.
-az group create --name $RESOURCE_GROUP_NAME --location $LOCATION
+# Create resource group if it doesn't exist.
+if ! az group exists --name $RESOURCE_GROUP_NAME | grep -q "true"; then
+  az group create --name $RESOURCE_GROUP_NAME --location $LOCATION
+else
+  echo "Resource group $RESOURCE_GROUP_NAME already exists, skipping creation."
+fi
 
 # Create storage account.
 az storage account create \

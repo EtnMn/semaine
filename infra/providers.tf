@@ -12,6 +12,5 @@ terraform {
 provider "azurerm" {
   features {}
 
-  # Use OIDC authentication (Workload Identity Federation)
-  use_oidc = true
+  subscription_id = var.subscription_id
 }
