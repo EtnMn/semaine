@@ -75,7 +75,7 @@ GitHub Actions workflows use **OIDC (OpenID Connect)** for secure authentication
 
 1. Create an **App Registration** in Azure AD
 2. Add two **Federated Credentials** for the GitHub repository, one for main branch and second one for PR
-3. Grant **Storage Blob Data Contributor** role on the tfstate resource group
+3. Grant **Contributor** role on the tfstate resource group
 4. Grant **Contributor** role on the web app resource group
 
 **GitHub Configuration:**
