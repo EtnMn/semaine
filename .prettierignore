@@ -3,3 +3,6 @@ node_modules
 .angular
 coverage
 pnpm-lock.yaml
+.terraform
+*.tfstate
+*.tfstate.backup
