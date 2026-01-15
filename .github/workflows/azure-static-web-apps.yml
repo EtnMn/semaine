@@ -4,10 +4,16 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - "infra/**"
+      - ".github/workflows/terraform-*.yml"
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
       - main
+    paths-ignore:
+      - "infra/**"
+      - ".github/workflows/terraform-*.yml"
 
 jobs:
   build_and_deploy_job:
@@ -59,7 +65,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Your application has been deployed to Azure Static Web Apps!" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "🔗 **Live URL:** https://blue-river-0e71f3f03.4.azurestaticapps.net" >> $GITHUB_STEP_SUMMARY
+          echo "🔗 **Live URL:** ${{ steps.builddeploy.outputs.static_web_app_url }}" >> $GITHUB_STEP_SUMMARY
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
