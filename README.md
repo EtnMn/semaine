@@ -54,6 +54,44 @@ ng e2e
 
 Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
 
+## Infrastructure as Code (Terraform)
+
+This project uses Terraform to manage Azure infrastructure. The Terraform configuration is located in the `infra/` directory.
+
+### Local Development
+
+**Prerequisites:**
+
+- Azure CLI installed and authenticated (`az login`)
+- Terraform CLI installed
+
+**Note:** The subscription ID is configured in `infra/terraform.tfvars` (not committed to Git).
+
+### CI/CD with OIDC
+
+GitHub Actions workflows use **OIDC (OpenID Connect)** for secure authentication to Azure without storing secrets.
+
+**Azure Configuration:**
+
+1. Create an **App Registration** in Azure AD
+2. Add two **Federated Credentials** for the GitHub repository, one for main branch and second one for PR
+3. Grant **Storage Blob Data Contributor** role on the tfstate resource group
+4. Grant **Contributor** role on the web app resource group
+
+**GitHub Configuration:**
+
+Add these variables (not secrets) to your repository settings:
+
+- `AZURE_CLIENT_ID` — App Registration client ID
+- `AZURE_TENANT_ID` — Azure AD tenant ID
+- `AZURE_SUBSCRIPTION_ID` — Azure subscription ID
+
+**Workflows:**
+
+- `terraform-validate.yml` — Format, validate, and security scan (runs on all pushes)
+- `terraform-plan.yml` — Generate plan and comment on PRs
+- `terraform-apply.yml` — Apply changes to Azure (runs on merge to main)
+
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
