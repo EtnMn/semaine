@@ -6,7 +6,7 @@ locals {
   }
 }
 
-# Resource group for the application
+# Resource Group for the application
 module "resource_group" {
   source = "./modules/resource-group"
 
