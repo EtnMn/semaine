@@ -1,18 +1,12 @@
-name: Terraform Check
+name: Terraform Plan
 
 on:
-  push:
-    branches-ignore:
-      - main
-    paths:
-      - "infra/**"
-      - ".github/workflows/terraform-check.yml"
   pull_request:
     branches:
       - main
     paths:
       - "infra/**"
-      - ".github/workflows/terraform-check.yml"
+      - ".github/workflows/terraform-plan.yml"
 
 permissions:
   contents: read
