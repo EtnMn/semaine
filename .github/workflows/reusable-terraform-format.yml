@@ -22,9 +22,6 @@ on:
         type: string
         required: false
         default: ""
-    secrets:
-      GITHUB_TOKEN:
-        required: false
     outputs:
       format_changed:
         description: "Whether formatting changes were made"
