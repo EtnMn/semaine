@@ -1,0 +1,69 @@
+name: Reusable Terraform Format
+
+on:
+  workflow_call:
+    inputs:
+      working_directory:
+        description: "Directory containing Terraform files"
+        type: string
+        required: false
+        default: "infra"
+      terraform_version:
+        description: "Terraform version to use"
+        type: string
+        required: false
+        default: "1.14.3"
+      enable_auto_commit:
+        description: "Enable auto-commit of formatted files"
+        type: boolean
+        required: true
+      ref:
+        description: "Git ref to checkout (defaults to PR head or current branch)"
+        type: string
+        required: false
+        default: ""
+    outputs:
+      format_changed:
+        description: "Whether formatting changes were made"
+        value: ${{ jobs.format.outputs.fmt_changed }}
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    name: Terraform Format
+    runs-on: ubuntu-latest
+    outputs:
+      fmt_changed: ${{ steps.fmt.outputs.changed }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.head_ref || github.ref_name }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ inputs.terraform_version }}
+
+      - name: Terraform Format
+        id: fmt
+        working-directory: ${{ inputs.working_directory }}
+        run: |
+          terraform fmt -recursive -diff
+          if [[ -n $(git status --porcelain) ]]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit formatted files
+        if: inputs.enable_auto_commit && steps.fmt.outputs.changed == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add -A
+          git commit -m "style(terraform): auto-format terraform files"
+          git push
