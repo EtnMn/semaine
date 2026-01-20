@@ -42,11 +42,21 @@ jobs:
       tfsec_soft_fail: false
     secrets: inherit
 
+  lint:
+    name: Lint (tflint)
+    uses: ./.github/workflows/reusable-terraform-lint.yml
+    permissions:
+      contents: read
+    with:
+      working_directory: "infra"
+      tflint_version: "latest"
+    secrets: inherit
+
   plan:
     name: Terraform Plan
     runs-on: ubuntu-latest
-    needs: [format, security]
-    if: needs.security.result == 'success' && github.event_name == 'pull_request'
+    needs: [format, security, lint]
+    if: needs.security.result == 'success' && needs.lint.result == 'success' && github.event_name == 'pull_request'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

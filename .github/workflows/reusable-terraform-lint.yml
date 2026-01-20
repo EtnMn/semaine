@@ -1,0 +1,53 @@
+name: Reusable Terraform Lint
+
+on:
+  workflow_call:
+    inputs:
+      working_directory:
+        description: "Directory containing Terraform files"
+        type: string
+        required: false
+        default: "infra"
+      tflint_version:
+        description: "TFLint version to use"
+        type: string
+        required: false
+        default: "latest"
+      ref:
+        description: "Git ref to checkout (defaults to PR head or current branch)"
+        type: string
+        required: false
+        default: ""
+    outputs:
+      lint_passed:
+        description: "Whether linting passed"
+        value: ${{ jobs.lint.outputs.passed }}
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Terraform Lint (tflint)
+    runs-on: ubuntu-latest
+    outputs:
+      passed: ${{ steps.tflint.outcome == 'success' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.head_ref || github.ref_name }}
+
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: ${{ inputs.tflint_version }}
+
+      - name: Initialize TFLint
+        working-directory: ${{ inputs.working_directory }}
+        run: tflint --init
+
+      - name: Run TFLint
+        id: tflint
+        working-directory: ${{ inputs.working_directory }}
+        run: tflint --recursive --format compact
