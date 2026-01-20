@@ -14,7 +14,7 @@
     "ghcr.io/devcontainers/features/azure-cli:1": {},
     "ghcr.io/devcontainers/features/terraform:1": {}
   },
-  "postCreateCommand": "grep -q 'starship init bash' ~/.bashrc || echo 'eval \"$(starship init bash)\"' >> ~/.bashrc",
+  "postCreateCommand": "grep -q 'starship init bash' ~/.bashrc || echo 'eval \"$(starship init bash)\"' >> ~/.bashrc && if [ -f /usr/share/bash-completion/completions/git ]; then grep -q 'bash-completion/completions/git' ~/.bashrc || echo 'source /usr/share/bash-completion/completions/git' >> ~/.bashrc; fi",
   "customizations": {
     "vscode": {
       "extensions": [
