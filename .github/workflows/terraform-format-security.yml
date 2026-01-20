@@ -23,7 +23,6 @@ jobs:
   security:
     name: Security Analysis (tfsec)
     needs: format
-    if: always() && needs.format.result == 'success'
     uses: ./.github/workflows/reusable-terraform-security.yml
     permissions:
       contents: read
