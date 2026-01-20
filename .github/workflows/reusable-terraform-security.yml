@@ -44,4 +44,5 @@ jobs:
         with:
           working_directory: ${{ inputs.working_directory }}
           soft_fail: ${{ inputs.tfsec_soft_fail }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
         continue-on-error: ${{ inputs.tfsec_soft_fail }}
