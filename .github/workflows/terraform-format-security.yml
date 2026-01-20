@@ -1,9 +1,9 @@
 name: Terraform Format & Security
 
 on:
-  pull_request:
-    branches:
-      - "**"
+  push:
+    branches-ignore:
+      - main
     paths:
       - "infra/**"
       - ".github/workflows/terraform-format-security.yml"
