@@ -9,9 +9,6 @@ on:
   push:
     branches:
       - main
-    paths-ignore:
-      - "infra/**"
-      - ".github/workflows/terraform-*.yml"
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
@@ -19,7 +16,7 @@ on:
 
 jobs:
   build_job:
-    if: github.event_name == 'workflow_run' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+    if: github.event_name == 'workflow_run' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
     name: Build Job
     permissions:
@@ -27,6 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
           submodules: true
           lfs: false
 
