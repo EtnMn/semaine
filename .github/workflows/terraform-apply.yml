@@ -7,7 +7,7 @@ on:
     paths:
       - "infra/**"
       - ".github/workflows/terraform-apply.yml"
-      - ".github/workflows/reusable-terraform-*.yml"
+      - ".github/workflows/reusables/terraform-*.yml"
 
 permissions:
   contents: read
@@ -23,7 +23,7 @@ env:
 jobs:
   format:
     name: Terraform Format Check
-    uses: ./.github/workflows/reusable-terraform-format.yml
+    uses: ./.github/workflows/reusables/terraform-format.yml
     permissions:
       contents: write
     with:
@@ -34,7 +34,7 @@ jobs:
 
   security:
     name: Security Analysis (tfsec)
-    uses: ./.github/workflows/reusable-terraform-security.yml
+    uses: ./.github/workflows/reusables/terraform-security.yml
     permissions:
       contents: read
     with:
