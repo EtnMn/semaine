@@ -7,6 +7,7 @@ on:
     paths-ignore:
       - "infra/**"
       - ".github/workflows/terraform-*.yml"
+      - ".github/workflows/_terraform-*.yml"
   pull_request:
     types: [opened, synchronize, reopened]
     branches:
@@ -14,12 +15,12 @@ on:
 
 jobs:
   build_job:
-    uses: ./.github/workflows/reusables/swa-build.yml
+    uses: ./.github/workflows/_swa-build.yml
 
   deploy_job:
     if: github.event_name == 'pull_request'
     needs: build_job
-    uses: ./.github/workflows/reusables/swa-deploy.yml
+    uses: ./.github/workflows/_swa-deploy.yml
     with:
       trigger_event: ${{ github.event_name }}
     secrets:

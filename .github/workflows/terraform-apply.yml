@@ -7,7 +7,7 @@ on:
     paths:
       - "infra/**"
       - ".github/workflows/terraform-apply.yml"
-      - ".github/workflows/reusables/terraform-*.yml"
+      - ".github/workflows/_terraform-*.yml"
 
 permissions:
   contents: read
@@ -23,7 +23,7 @@ env:
 jobs:
   format:
     name: Terraform Format Check
-    uses: ./.github/workflows/reusables/terraform-format.yml
+    uses: ./.github/workflows/_terraform-format.yml
     permissions:
       contents: write
     with:
@@ -34,7 +34,7 @@ jobs:
 
   security:
     name: Security Analysis (tfsec)
-    uses: ./.github/workflows/reusables/terraform-security.yml
+    uses: ./.github/workflows/_terraform-security.yml
     permissions:
       contents: read
     with:
@@ -42,10 +42,20 @@ jobs:
       tfsec_soft_fail: false
     secrets: inherit
 
+  lint:
+    name: Lint (tflint)
+    uses: ./.github/workflows/_terraform-lint.yml
+    permissions:
+      contents: read
+    with:
+      working_directory: "infra"
+      tflint_version: "latest"
+    secrets: inherit
+
   apply:
     name: Terraform Apply
     runs-on: ubuntu-latest
-    needs: [format, security]
+    needs: [format, security, lint]
     if: needs.format.result == 'success' && needs.security.result == 'success'
     steps:
       - name: Checkout code
