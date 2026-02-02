@@ -14,12 +14,14 @@ on:
       - main
 
 jobs:
-  build_job:
+  build:
+    name: Build SWA
     uses: ./.github/workflows/_swa-build.yml
 
-  deploy_job:
+  deploy:
     if: github.event_name == 'pull_request'
-    needs: build_job
+    needs: build
+    name: Deploy SWA
     permissions:
       contents: read
       pull-requests: write
