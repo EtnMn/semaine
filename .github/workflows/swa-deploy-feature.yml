@@ -20,6 +20,9 @@ jobs:
   deploy_job:
     if: github.event_name == 'pull_request'
     needs: build_job
+    permissions:
+      contents: read
+      pull-requests: write
     uses: ./.github/workflows/_swa-deploy.yml
     with:
       trigger_event: ${{ github.event_name }}
