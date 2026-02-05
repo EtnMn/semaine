@@ -7,7 +7,7 @@ on:
     paths:
       - "infra/**"
       - ".github/workflows/terraform-plan.yml"
-      - ".github/workflows/reusable-terraform-*.yml"
+      - ".github/workflows/_terraform-*.yml"
 
 permissions:
   contents: read
@@ -24,7 +24,7 @@ env:
 jobs:
   format:
     name: Terraform Format Check
-    uses: ./.github/workflows/reusable-terraform-format.yml
+    uses: ./.github/workflows/_terraform-format.yml
     permissions:
       contents: write
     with:
@@ -35,7 +35,7 @@ jobs:
 
   security:
     name: Security Analysis (tfsec)
-    uses: ./.github/workflows/reusable-terraform-security.yml
+    uses: ./.github/workflows/_terraform-security.yml
     permissions:
       contents: read
     with:
@@ -45,7 +45,7 @@ jobs:
 
   lint:
     name: Lint (tflint)
-    uses: ./.github/workflows/reusable-terraform-lint.yml
+    uses: ./.github/workflows/_terraform-lint.yml
     permissions:
       contents: read
     with:
@@ -92,7 +92,7 @@ jobs:
         id: plan
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
-          terraform plan -no-color -out=tfplan 2>&1 | tee plan_output.txt
+          terraform plan -no-color 2>&1 | tee plan_output.txt
           echo "plan_exit_code=${PIPESTATUS[0]}" >> $GITHUB_OUTPUT
         continue-on-error: true
 
