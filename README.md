@@ -12,6 +12,46 @@ ng serve
 
 Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
 
+### Supabase Configuration
+
+This project uses **Supabase** for authentication and database. To configure your local environment:
+
+**1. Get your Supabase credentials:**
+
+- Go to [Supabase Dashboard](https://supabase.com/dashboard)
+- Select your project
+- Go to Settings → API
+- Copy your `URL` and `anon/public` key
+
+**2. Create your local environment file:**
+
+```bash
+# Copy the template
+cp src/env/environment.development.ts src/env/environment.local.ts
+```
+
+**3. Edit `src/env/environment.local.ts` with your real credentials:**
+
+```typescript
+export const environment = {
+  production: false,
+  supabase: {
+    url: "https://your-project.supabase.co",
+    key: "your-real-key-here",
+  },
+};
+```
+
+**4. Start the dev server with local configuration:**
+
+```bash
+ng serve --configuration=local
+```
+
+**Important:** `environment.local.ts` is ignored by Git and will never be committed. Keep your credentials safe!
+
+**For CI/CD:** Production credentials are stored in GitHub Secrets (`SUPABASE_URL`, `SUPABASE_ANON_KEY`) and injected during build via Azure Static Web Apps configuration.
+
 ## Code scaffolding
 
 Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
