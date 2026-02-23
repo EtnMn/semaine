@@ -8,26 +8,9 @@ Intégration complète de Supabase dans l'application Angular 21 pour l'authenti
    - Exécuter `pnpm install @supabase/supabase-js`
    - `ng generate environments`
    - Créer `src/env/environment.local.ts` avec VOS VRAIES credentials Supabase (IGNORÉ par Git)
-
-2. **Créer le service Supabase core**
    - Créer `src/app/core/services/supabase.service.ts`
-   - Pattern: `@Injectable({ providedIn: "root" })`
-   - Initialiser le client Supabase avec `createClient()` depuis les variables d'environnement
-   - Exposer le client via getter public
-   - Ajouter l'export dans [src/app/core/services/index.ts](src/app/core/services/index.ts)
 
-3. **Créer le service d'authentification avec signals**
-   - Créer `src/app/core/services/auth.service.ts`
-   - Pattern signal comme [dark-mode.service.ts](src/app/core/services/dark-mode.service.ts):
-     - `private readonly user = signal<User | null>(null)`
-     - `public readonly currentUser = this.user.asReadonly()`
-     - `public readonly isAuthenticated = computed(() => this.user() !== null)`
-   - Injecter `SupabaseService` via `inject()`
-   - Méthodes: `signUp()`, `signIn()`, `signInWithOAuth()`, `signOut()`, `resetPassword()`
-   - Écouter `onAuthStateChange()` dans le constructor pour synchroniser l'état
-   - Ajouter l'export dans [src/app/core/services/index.ts](src/app/core/services/index.ts)
-
-4. **Créer le service de données type-safe**
+2. **Créer le service de données type-safe**
    - Créer `src/app/core/services/database.service.ts`
    - Définir les types TypeScript pour les tables (interface)
    - Injecter `SupabaseService` via `inject()`
@@ -35,14 +18,14 @@ Intégration complète de Supabase dans l'application Angular 21 pour l'authenti
    - Utiliser les méthodes Supabase avec typage fort
    - Ajouter l'export dans [src/app/core/services/index.ts](src/app/core/services/index.ts)
 
-5. **Créer le guard d'authentification**
+3. **Créer le guard d'authentification**
    - Créer `src/app/core/guards/auth.guard.ts`
    - Implémenter `CanActivateFn` (functional guard)
    - Injecter `AuthService` et `Router` via `inject()`
    - Vérifier `isAuthenticated()`, rediriger vers `/login` si non authentifié
    - Créer barrel export [src/app/core/guards/index.ts](src/app/core/guards/index.ts)
 
-6. **Créer les composants d'authentification**
+4. **Créer les composants d'authentification**
    - Créer `src/app/features/auth/login/` avec `login.ts`, `login.html`, `login.css`
      - Standalone component avec PrimeNG forms (InputText, Password, Button)
      - Formulaire réactif pour email/password
@@ -55,32 +38,32 @@ Intégration complète de Supabase dans l'application Angular 21 pour l'authenti
    - Créer composant `src/app/features/auth/profile/` pour afficher/éditer le profil utilisateur
    - Ajouter barrel export [src/app/features/auth/index.ts](src/app/features/auth/index.ts)
 
-7. **Configurer les routes avec protection**
+5. **Configurer les routes avec protection**
    - Modifier [app.routes.ts](src/app/app.routes.ts)
    - Ajouter routes publiques: `/login`, `/signup`
    - Ajouter routes protégées avec `canActivate: [authGuard]`: `/profile`, `/dashboard`, etc.
    - Configurer route par défaut et wildcard
 
-8. **Ajouter l'état d'authentification dans le header**
+6. **Ajouter l'état d'authentification dans le header**
    - Modifier [header.ts](src/app/core/layout/header.ts) et [header.html](src/app/core/layout/header.html)
    - Injecter `AuthService` via `inject()`
    - Afficher user info si `isAuthenticated()` est true
    - Ajouter bouton de déconnexion avec PrimeNG Button
    - Liens conditionnels (Login/Signup si non connecté, Profile si connecté)
 
-9. **Créer un service d'exemple avec RLS**
+7. **Créer un service d'exemple avec RLS**
    - Créer `src/app/features/[nom-feature]/services/[entity].service.ts` comme exemple
    - Pattern: injecter `DatabaseService` et `AuthService`
    - Méthodes CRUD qui respectent RLS (les requêtes utilisent automatiquement la session)
    - Utiliser signals pour l'état local: `private readonly items = signal<Entity[]>([])`
 
-10. **Configurer les secrets pour la production**
-    - Ajouter les secrets dans GitHub Repository Settings:
-      - `SUPABASE_URL` - URL de votre projet Supabase
-      - `SUPABASE_ANON_KEY` - Clé anonyme publique de Supabase
-    - Configurer Azure Static Web Apps pour utiliser ces variables via GitHub Actions
-    - Modifier le workflow `.github/workflows/azure-static-web-apps.yml` pour injecter les variables au build
-    - Documenter dans README le processus de configuration des credentials (dev local + production)
+8. **Configurer les secrets pour la production**
+   - Ajouter les secrets dans GitHub Repository Settings:
+     - `SUPABASE_URL` - URL de votre projet Supabase
+     - `SUPABASE_ANON_KEY` - Clé anonyme publique de Supabase
+   - Configurer Azure Static Web Apps pour utiliser ces variables via GitHub Actions
+   - Modifier le workflow `.github/workflows/azure-static-web-apps.yml` pour injecter les variables au build
+   - Documenter dans README le processus de configuration des credentials (dev local + production)
 
 **Verification**
 

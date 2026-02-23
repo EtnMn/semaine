@@ -1,2 +1,2 @@
 export { DarkModeService } from "./dark-mode.service";
-export { SupabaseService } from "./supabase.service";
+export { AuthService } from "./auth.service";

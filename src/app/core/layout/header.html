@@ -5,6 +5,9 @@
     </ng-template>
     <ng-template #end>
       <div class="flex items-center gap-2">
+        @if (userName()) {
+          <span class="text-sm font-medium">{{ userName() }}</span>
+        }
         <p-button
           [icon]="darkMode.icon()"
           (onClick)="toggleDarkMode()"
