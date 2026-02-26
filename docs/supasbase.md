@@ -18,46 +18,24 @@ Intégration complète de Supabase dans l'application Angular 21 pour l'authenti
    - Utiliser les méthodes Supabase avec typage fort
    - Ajouter l'export dans [src/app/core/services/index.ts](src/app/core/services/index.ts)
 
-3. **Créer le guard d'authentification**
-   - Créer `src/app/core/guards/auth.guard.ts`
-   - Implémenter `CanActivateFn` (functional guard)
-   - Injecter `AuthService` et `Router` via `inject()`
-   - Vérifier `isAuthenticated()`, rediriger vers `/login` si non authentifié
-   - Créer barrel export [src/app/core/guards/index.ts](src/app/core/guards/index.ts)
-
-4. **Créer les composants d'authentification**
-   - Créer `src/app/features/auth/login/` avec `login.ts`, `login.html`, `login.css`
-     - Standalone component avec PrimeNG forms (InputText, Password, Button)
-     - Formulaire réactif pour email/password
-     - Boutons OAuth pour providers (Google, GitHub, etc.)
-     - Injecter `AuthService` via `inject()`
-     - Utiliser `Router` pour redirection après connexion
-   - Créer `src/app/features/auth/signup/` avec `signup.ts`, `signup.html`, `signup.css`
-     - Même pattern que login
-     - Validation de mot de passe (confirmation)
+3. **Créer les composants d'authentification**
    - Créer composant `src/app/features/auth/profile/` pour afficher/éditer le profil utilisateur
    - Ajouter barrel export [src/app/features/auth/index.ts](src/app/features/auth/index.ts)
 
-5. **Configurer les routes avec protection**
-   - Modifier [app.routes.ts](src/app/app.routes.ts)
-   - Ajouter routes publiques: `/login`, `/signup`
-   - Ajouter routes protégées avec `canActivate: [authGuard]`: `/profile`, `/dashboard`, etc.
-   - Configurer route par défaut et wildcard
-
-6. **Ajouter l'état d'authentification dans le header**
+4. **Ajouter l'état d'authentification dans le header**
    - Modifier [header.ts](src/app/core/layout/header.ts) et [header.html](src/app/core/layout/header.html)
    - Injecter `AuthService` via `inject()`
    - Afficher user info si `isAuthenticated()` est true
    - Ajouter bouton de déconnexion avec PrimeNG Button
    - Liens conditionnels (Login/Signup si non connecté, Profile si connecté)
 
-7. **Créer un service d'exemple avec RLS**
+5. **Créer un service d'exemple avec RLS**
    - Créer `src/app/features/[nom-feature]/services/[entity].service.ts` comme exemple
    - Pattern: injecter `DatabaseService` et `AuthService`
    - Méthodes CRUD qui respectent RLS (les requêtes utilisent automatiquement la session)
    - Utiliser signals pour l'état local: `private readonly items = signal<Entity[]>([])`
 
-8. **Configurer les secrets pour la production**
+6. **Configurer les secrets pour la production**
    - Ajouter les secrets dans GitHub Repository Settings:
      - `SUPABASE_URL` - URL de votre projet Supabase
      - `SUPABASE_ANON_KEY` - Clé anonyme publique de Supabase

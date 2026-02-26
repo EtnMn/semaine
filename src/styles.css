@@ -5,3 +5,6 @@
 /* PrimeIcons */
 @import "primeicons/primeicons.css";
 @import "tailwindcss-primeui";
+
+/* Dark mode: use PrimeNG's app-dark class */
+@custom-variant dark (&:where(.app-dark, .app-dark *));

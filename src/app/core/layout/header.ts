@@ -13,7 +13,7 @@ export class Header {
   protected readonly darkMode = inject(DarkModeService);
   private readonly authService = inject(AuthService);
 
-  protected readonly title = signal("etn semaine");
+  protected readonly title = signal("semaine");
 
   protected readonly userName = computed(() => {
     const user = this.authService.currentUser();

@@ -1,15 +1,27 @@
-<div class="flex min-h-screen items-center justify-center">
-  <div class="w-full max-w-md rounded-2xl p-8 shadow-lg">
-    <h2 class="text-center text-2xl font-bold">Welcome Back</h2>
-    <p class="mt-2 text-center">Login to your account</p>
-    <div class="mt-6">
-      <button
-        type="button"
-        class="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 py-2 transition hover:bg-gray-100"
-      >
-        <i class="pi pi-github"></i>
-        <span class="font-medium">Login with GitHub</span>
-      </button>
-    </div>
+<div class="w-full max-w-md rounded-sm border-gray-300 p-8 md:border md:p-16 dark:border-gray-600">
+  <h2 class="text-3xl font-bold">Sign in</h2>
+  <p class="mt-2 text-gray-600 dark:text-gray-400">Login to your account</p>
+  <div class="mt-6 flex flex-col gap-4">
+    <button
+      type="button"
+      class="hover:bg-primary-300 dark:hover:bg-primary-900 flex items-center justify-center gap-2 rounded-sm border border-gray-300 py-2 transition disabled:opacity-50 dark:border-gray-600"
+      [disabled]="loading()"
+      (click)="onSignIn('google')"
+    >
+      <i class="pi pi-google"></i>
+      <span class="font-medium">Continue with Google</span>
+    </button>
+    <button
+      type="button"
+      class="hover:bg-primary-300 dark:hover:bg-primary-900 flex items-center justify-center gap-2 rounded-sm border border-gray-300 py-2 transition disabled:opacity-50 dark:border-gray-600"
+      [disabled]="loading()"
+      (click)="onSignIn('github')"
+    >
+      <i class="pi pi-github"></i>
+      <span class="font-medium">Continue with GitHub</span>
+    </button>
+    @if (errorMessage()) {
+      <p-message severity="error" icon="pi pi-times-circle">{{ errorMessage() }}</p-message>
+    }
   </div>
 </div>

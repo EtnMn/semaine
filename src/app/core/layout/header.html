@@ -1,7 +1,10 @@
 <header>
   <p-menubar>
     <ng-template #start>
-      <h1 class="text-3xl font-bold">{{ title() }}</h1>
+      <div class="flex items-center gap-2">
+        <img src="logo.svg" alt="Logo" class="h-10 w-10" />
+        <h1 class="text-3xl font-bold">{{ title() }}</h1>
+      </div>
     </ng-template>
     <ng-template #end>
       <div class="flex items-center gap-2">
