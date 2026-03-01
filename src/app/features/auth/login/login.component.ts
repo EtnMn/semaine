@@ -6,11 +6,13 @@ import { MessageModule } from "primeng/message";
 
 import { AuthService } from "@core/services";
 
+import { SocialLoginButtonComponent } from "./social-login-button.component";
+
 @Component({
   selector: "app-login",
   templateUrl: "./login.component.html",
-  host: { class: "flex flex-col flex-1 md:justify-center items-center" },
-  imports: [FormsModule, ButtonModule, InputTextModule, MessageModule],
+  host: { class: "flex flex-col flex-1 items-center" },
+  imports: [FormsModule, ButtonModule, InputTextModule, MessageModule, SocialLoginButtonComponent],
 })
 export class LoginComponent {
   protected readonly authService = inject(AuthService);
@@ -25,6 +27,7 @@ export class LoginComponent {
     try {
       await this.authService.signIn(provider);
     } catch (error: unknown) {
+      console.error("Login error:", error);
       const message =
         error instanceof Error ? error.message : "An error occurred. Please try again.";
       this.errorMessage.set(message);

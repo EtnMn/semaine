@@ -1,0 +1,42 @@
+<header>
+  <p-menubar>
+    <ng-template #start>
+      <a routerLink="/" class="flex items-center gap-2 no-underline">
+        <img src="logo.svg" alt="Logo" class="h-10 w-10" />
+        <h1 class="text-3xl font-bold">{{ title() }}</h1>
+      </a>
+    </ng-template>
+    <ng-template #end>
+      <div class="flex items-center gap-2">
+        @if (authService.isAuthenticated()) {
+          @if (avatarUrl()) {
+            <p-button class="flex" styleClass="!p-1" (onClick)="menu.toggle($event)" text>
+              <p-avatar [image]="avatarUrl()" />
+            </p-button>
+          } @else {
+            <p-button
+              icon="pi pi-user"
+              severity="secondary"
+              outlined
+              (onClick)="menu.toggle($event)"
+            />
+          }
+          <p-menu #menu [model]="items" [popup]="true">
+            <ng-template class="flex w-full" #start>
+              <div class="flex w-full flex-col items-start p-2 pl-4">
+                <span class="font-bold">{{ userName() }}</span>
+                <span class="text-sm">{{ userEmail() }}</span>
+              </div>
+            </ng-template>
+          </p-menu>
+        }
+        <p-button
+          [icon]="darkMode.icon()"
+          (onClick)="toggleDarkMode()"
+          severity="secondary"
+          outlined
+        />
+      </div>
+    </ng-template>
+  </p-menubar>
+</header>

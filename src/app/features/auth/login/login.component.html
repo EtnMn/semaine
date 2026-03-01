@@ -1,25 +1,19 @@
-<div class="w-full max-w-md rounded-sm border-gray-300 p-8 md:border md:p-16 dark:border-gray-600">
-  <h2 class="text-3xl font-bold">Sign in</h2>
+<div class="mt-8 w-full max-w-md md:mt-16">
+  <h2 class="text-2xl font-bold">Sign in</h2>
   <p class="mt-2 text-gray-600 dark:text-gray-400">Login to your account</p>
   <div class="mt-6 flex flex-col gap-4">
-    <button
-      type="button"
-      class="hover:bg-primary-300 dark:hover:bg-primary-900 flex items-center justify-center gap-2 rounded-sm border border-gray-300 py-2 transition disabled:opacity-50 dark:border-gray-600"
+    <app-social-login-button
+      icon="google"
+      label="Google"
       [disabled]="loading()"
-      (click)="onSignIn('google')"
-    >
-      <i class="pi pi-google"></i>
-      <span class="font-medium">Continue with Google</span>
-    </button>
-    <button
-      type="button"
-      class="hover:bg-primary-300 dark:hover:bg-primary-900 flex items-center justify-center gap-2 rounded-sm border border-gray-300 py-2 transition disabled:opacity-50 dark:border-gray-600"
+      (clicked)="onSignIn('google')"
+    />
+    <app-social-login-button
+      icon="github"
+      label="GitHub"
       [disabled]="loading()"
-      (click)="onSignIn('github')"
-    >
-      <i class="pi pi-github"></i>
-      <span class="font-medium">Continue with GitHub</span>
-    </button>
+      (clicked)="onSignIn('github')"
+    />
     @if (errorMessage()) {
       <p-message severity="error" icon="pi pi-times-circle">{{ errorMessage() }}</p-message>
     }
