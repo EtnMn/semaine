@@ -27,7 +27,7 @@ This project uses **Supabase** for authentication and database. To configure you
 
 ```bash
 # Copy the template
-cp src/env/environment.development.ts src/env/environment.local.ts
+cp src/env/environment.ts src/env/environment.local.ts
 ```
 
 **3. Edit `src/env/environment.local.ts` with your real credentials:**
@@ -50,7 +50,12 @@ ng serve --configuration=local
 
 **Important:** `environment.local.ts` is ignored by Git and will never be committed. Keep your credentials safe!
 
-**For CI/CD:** Production credentials are stored in GitHub Secrets (`SUPABASE_URL`, `SUPABASE_ANON_KEY`) and injected during build via Azure Static Web Apps configuration.
+**For CI/CD:** Production credentials are injected at build time using `envsubst`. Configure the following in your GitHub repository settings:
+
+- **Variable** (`Settings > Variables > Actions`): `SUPABASE_URL` — your Supabase project URL
+- **Secret** (`Settings > Secrets > Actions`): `SUPABASE_KEY` — your Supabase anon/public key
+
+The build workflow replaces `${SUPABASE_URL}` and `${SUPABASE_KEY}` placeholders in `src/env/environment.ts` before building the production bundle.
 
 ## Code scaffolding
 
@@ -120,11 +125,19 @@ GitHub Actions workflows use **OIDC (OpenID Connect)** for secure authentication
 
 **GitHub Configuration:**
 
-Add these variables (not secrets) to your repository settings:
+Add these to your repository settings:
+
+Variables (`Settings > Variables > Actions`):
 
 - `AZURE_CLIENT_ID` — App Registration client ID
 - `AZURE_TENANT_ID` — Azure AD tenant ID
 - `AZURE_SUBSCRIPTION_ID` — Azure subscription ID
+- `SUPABASE_URL` — Supabase project URL
+
+Secrets (`Settings > Secrets > Actions`):
+
+- `AZURE_STATIC_WEB_APPS_API_TOKEN` — Azure Static Web Apps deployment token
+- `SUPABASE_KEY` — Supabase anon/public key
 
 **Workflows:**
 

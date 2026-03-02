@@ -1,7 +1,5 @@
 ## Plan: Intégration Supabase avec Auth OAuth et RLS
 
-Intégration complète de Supabase dans l'application Angular 21 pour l'authentification (email/password + OAuth) et la gestion de données avec Row Level Security. Le plan suit les patterns établis du projet (signals, standalone components, services avec `inject()`). L'architecture créera un service Supabase centralisé, un service Auth avec état réactif via signals, un service de données type-safe, des guards pour protéger les routes, et des composants d'authentification réutilisables. La configuration utilisera un système d'environnement pour gérer les credentials Supabase de manière sécurisée.
-
 **Steps**
 
 1. **Installer les dépendances Supabase**
@@ -27,14 +25,6 @@ Intégration complète de Supabase dans l'application Angular 21 pour l'authenti
    - Pattern: injecter `DatabaseService` et `AuthService`
    - Méthodes CRUD qui respectent RLS (les requêtes utilisent automatiquement la session)
    - Utiliser signals pour l'état local: `private readonly items = signal<Entity[]>([])`
-
-5. **Configurer les secrets pour la production**
-   - Ajouter les secrets dans GitHub Repository Settings:
-     - `SUPABASE_URL` - URL de votre projet Supabase
-     - `SUPABASE_ANON_KEY` - Clé anonyme publique de Supabase
-   - Configurer Azure Static Web Apps pour utiliser ces variables via GitHub Actions
-   - Modifier le workflow `.github/workflows/azure-static-web-apps.yml` pour injecter les variables au build
-   - Documenter dans README le processus de configuration des credentials (dev local + production)
 
 **Decisions**
 

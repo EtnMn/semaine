@@ -55,6 +55,10 @@ jobs:
   build:
     name: Build SWA
     uses: ./.github/workflows/_swa-build.yml
+    with:
+      SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+    secrets:
+      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
 
   apply:
     name: Terraform Apply

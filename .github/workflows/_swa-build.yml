@@ -1,6 +1,14 @@
 name: Build Job (Reusable)
 
-on: workflow_call
+on:
+  workflow_call:
+    inputs:
+      SUPABASE_URL:
+        required: true
+        type: string
+    secrets:
+      SUPABASE_KEY:
+        required: true
 
 jobs:
   build:
@@ -33,6 +41,12 @@ jobs:
 
       - name: Lint code
         run: pnpm lint
+
+      - name: Inject environment variables
+        run: envsubst < src/env/environment.ts > src/env/environment.tmp && mv src/env/environment.tmp src/env/environment.ts
+        env:
+          SUPABASE_URL: ${{ inputs.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
 
       - name: Build application
         run: pnpm build
