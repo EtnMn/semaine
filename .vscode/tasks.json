@@ -3,6 +3,7 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "serve:local",
       "type": "npm",
       "script": "start",
       "isBackground": true,

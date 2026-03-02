@@ -12,6 +12,62 @@ ng serve
 
 Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
 
+### Supabase Configuration
+
+This project uses **Supabase** for authentication and database. To configure your local environment:
+
+**1. Get your Supabase credentials:**
+
+- Go to [Supabase Dashboard](https://supabase.com/dashboard)
+- Select your project
+- Go to Settings → API
+- Copy your `URL` and `anon/public` key
+
+**2. Create your local environment file:**
+
+```bash
+# Copy the template
+cp src/env/environment.ts src/env/environment.local.ts
+```
+
+**3. Edit `src/env/environment.local.ts` with your real credentials:**
+
+```typescript
+export const environment = {
+  production: false,
+  supabase: {
+    url: "https://your-project.supabase.co",
+    key: "your-real-key-here",
+  },
+};
+```
+
+**4. Start the dev server with local configuration:**
+
+```bash
+ng serve --configuration=local
+```
+
+**Important:** `environment.local.ts` is ignored by Git and will never be committed. Keep your credentials safe!
+
+**For CI/CD:** Production credentials are injected at build time using `envsubst`. Configure the following in your GitHub repository settings:
+
+- **Variable** (`Settings > Variables > Actions`): `SUPABASE_URL` — your Supabase project URL
+- **Secret** (`Settings > Secrets > Actions`): `SUPABASE_KEY` — your Supabase anon/public key
+
+The build workflow replaces `${SUPABASE_URL}` and `${SUPABASE_KEY}` placeholders in `src/env/environment.ts` before building the production bundle.
+
+**Supabase Dashboard Configuration:**
+
+In **Authentication** → **URL Configuration**:
+
+1. Set **Site URL** to your production URL (e.g. `https://white-island-0b8280303.azurestaticapps.net`)
+2. Add the following **Redirect URLs**:
+   - `http://localhost:4200` — for local development
+   - `https://*.westeurope.6.azurestaticapps.net` — PR preview environments
+
+This ensures OAuth redirects work correctly across all environments. The app dynamically sets `redirectTo` to `window.location.origin` so users are always redirected back to the environment they started from.
+
 ## Code scaffolding
 
 Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
@@ -80,11 +136,19 @@ GitHub Actions workflows use **OIDC (OpenID Connect)** for secure authentication
 
 **GitHub Configuration:**
 
-Add these variables (not secrets) to your repository settings:
+Add these to your repository settings:
+
+Variables (`Settings > Variables > Actions`):
 
 - `AZURE_CLIENT_ID` — App Registration client ID
 - `AZURE_TENANT_ID` — Azure AD tenant ID
 - `AZURE_SUBSCRIPTION_ID` — Azure subscription ID
+- `SUPABASE_URL` — Supabase project URL
+
+Secrets (`Settings > Secrets > Actions`):
+
+- `AZURE_STATIC_WEB_APPS_API_TOKEN` — Azure Static Web Apps deployment token
+- `SUPABASE_KEY` — Supabase anon/public key
 
 **Workflows:**
 

@@ -23,6 +23,10 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "staticwebapp.config.json",
+                "input": "."
               }
             ],
             "styles": ["src/styles.css"]
@@ -32,7 +36,7 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "600kB",
+                  "maximumWarning": "800kB",
                   "maximumError": "1MB"
                 },
                 {
@@ -43,10 +47,16 @@
               ],
               "outputHashing": "all"
             },
-            "development": {
+            "local": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/env/environment.ts",
+                  "with": "src/env/environment.local.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -63,6 +73,9 @@
             },
             "development": {
               "buildTarget": "etn-semaine:build:development"
+            },
+            "local": {
+              "buildTarget": "etn-semaine:build:local"
             }
           },
           "defaultConfiguration": "development"
