@@ -57,6 +57,17 @@ ng serve --configuration=local
 
 The build workflow replaces `${SUPABASE_URL}` and `${SUPABASE_KEY}` placeholders in `src/env/environment.ts` before building the production bundle.
 
+**Supabase Dashboard Configuration:**
+
+In **Authentication** → **URL Configuration**:
+
+1. Set **Site URL** to your production URL (e.g. `https://white-island-0b8280303.azurestaticapps.net`)
+2. Add the following **Redirect URLs**:
+   - `http://localhost:4200` — for local development
+   - `https://*.westeurope.6.azurestaticapps.net` — PR preview environments
+
+This ensures OAuth redirects work correctly across all environments. The app dynamically sets `redirectTo` to `window.location.origin` so users are always redirected back to the environment they started from.
+
 ## Code scaffolding
 
 Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
