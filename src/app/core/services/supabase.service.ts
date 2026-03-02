@@ -43,7 +43,12 @@ export class SupabaseService {
   }
 
   public async signIn(provider: "github" | "google"): Promise<void> {
-    const { error } = await this.supabase.auth.signInWithOAuth({ provider });
+    const { error } = await this.supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: window.location.origin,
+      },
+    });
     if (error) {
       throw error;
     }
