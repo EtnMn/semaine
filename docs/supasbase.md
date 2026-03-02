@@ -22,45 +22,19 @@ Intégration complète de Supabase dans l'application Angular 21 pour l'authenti
    - Créer composant `src/app/features/auth/profile/` pour afficher/éditer le profil utilisateur
    - Ajouter barrel export [src/app/features/auth/index.ts](src/app/features/auth/index.ts)
 
-4. **Ajouter l'état d'authentification dans le header**
-   - Modifier [header.ts](src/app/core/layout/header.ts) et [header.html](src/app/core/layout/header.html)
-   - Injecter `AuthService` via `inject()`
-   - Afficher user info si `isAuthenticated()` est true
-   - Ajouter bouton de déconnexion avec PrimeNG Button
-   - Liens conditionnels (Login/Signup si non connecté, Profile si connecté)
-
-5. **Créer un service d'exemple avec RLS**
+4. **Créer un service d'exemple avec RLS**
    - Créer `src/app/features/[nom-feature]/services/[entity].service.ts` comme exemple
    - Pattern: injecter `DatabaseService` et `AuthService`
    - Méthodes CRUD qui respectent RLS (les requêtes utilisent automatiquement la session)
    - Utiliser signals pour l'état local: `private readonly items = signal<Entity[]>([])`
 
-6. **Configurer les secrets pour la production**
+5. **Configurer les secrets pour la production**
    - Ajouter les secrets dans GitHub Repository Settings:
      - `SUPABASE_URL` - URL de votre projet Supabase
      - `SUPABASE_ANON_KEY` - Clé anonyme publique de Supabase
    - Configurer Azure Static Web Apps pour utiliser ces variables via GitHub Actions
    - Modifier le workflow `.github/workflows/azure-static-web-apps.yml` pour injecter les variables au build
    - Documenter dans README le processus de configuration des credentials (dev local + production)
-
-**Verification**
-
-- Exécuter `pnpm lint` pour vérifier la conformité ESLint
-- Exécuter `pnpm format:check` pour valider le formatage
-- Exécuter `pnpm build` pour vérifier que la compilation fonctionne
-- Lancer `pnpm start` et tester:
-  - Accéder à une route protégée → redirection vers `/login`
-  - S'inscrire avec email/password
-  - Se connecter avec email/password
-  - Se connecter avec OAuth provider
-  - Vérifier que le signal `currentUser` se met à jour
-  - Vérifier l'affichage conditionnel dans le header
-  - Se déconnecter et vérifier le retour à l'état non authentifié
-  - Tester les opérations CRUD avec RLS
-- Créer tests unitaires dans les fichiers `.spec.ts` pour:
-  - `auth.service.spec.ts` - tester les méthodes d'authentification (mock Supabase)
-  - `auth.guard.spec.ts` - tester la protection des routes
-  - `database.service.spec.ts` - tester les opérations CRUD
 
 **Decisions**
 
