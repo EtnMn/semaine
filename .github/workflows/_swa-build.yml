@@ -3,11 +3,11 @@ name: Build Job (Reusable)
 on:
   workflow_call:
     inputs:
-      SUPABASE_URL:
+      supabase_url:
         required: true
         type: string
     secrets:
-      SUPABASE_KEY:
+      supabase_key:
         required: true
 
 jobs:
@@ -45,8 +45,8 @@ jobs:
       - name: Inject environment variables
         run: envsubst < src/env/environment.ts > src/env/environment.tmp && mv src/env/environment.tmp src/env/environment.ts
         env:
-          SUPABASE_URL: ${{ inputs.SUPABASE_URL }}
-          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          SUPABASE_URL: ${{ inputs.supabase_url }}
+          SUPABASE_KEY: ${{ secrets.supabase_key }}
 
       - name: Build application
         run: pnpm build

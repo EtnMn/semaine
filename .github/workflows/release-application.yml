@@ -1,4 +1,4 @@
-name: Terraform Apply
+name: Release application
 
 on:
   push:
@@ -52,13 +52,33 @@ jobs:
       tflint_version: "latest"
     secrets: inherit
 
+  migrate:
+    name: Migrate Supabase
+    uses: ./.github/workflows/_supabase-migrate.yml
+    with:
+      project_id: ${{ vars.SUPABASE_PROJECT_ID }}
+    secrets:
+      access_token: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
+  migrate-summary:
+    name: Migration Summary
+    runs-on: ubuntu-latest
+    needs: [migrate]
+    steps:
+      - name: Write migration status to summary
+        run: |
+          echo "## Supabase Migration Status" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo "${{ needs.migrate.outputs.status }}" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
   build:
     name: Build SWA
     uses: ./.github/workflows/_swa-build.yml
     with:
-      SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+      supabase_url: ${{ vars.SUPABASE_URL }}
     secrets:
-      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+      supabase_key: ${{ secrets.SUPABASE_KEY }}
 
   apply:
     name: Terraform Apply
@@ -114,7 +134,7 @@ jobs:
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
 
   deploy:
-    needs: [build, apply]
+    needs: [migrate, apply, build]
     name: Deploy SWA
     permissions:
       contents: read
