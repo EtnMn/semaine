@@ -7,7 +7,9 @@ on:
         required: true
         type: string
     outputs:
-      status: ${{ steps.migration_status.outputs.status }}
+      status:
+        description: "Migration status output"
+        value: ${{ jobs.migrate.outputs.status }}
     secrets:
       access_token:
         required: true
@@ -18,6 +20,8 @@ env:
 jobs:
   migrate:
     runs-on: ubuntu-latest
+    outputs:
+      status: ${{ steps.migration_status.outputs.status }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -35,4 +39,9 @@ jobs:
 
       - id: migration_status
         name: Migration status
-        run: echo "status=$(supabase migration list)" >> "$GITHUB_OUTPUT"
+        run: |
+          {
+            echo 'status<<EOF'
+            supabase migration list
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
