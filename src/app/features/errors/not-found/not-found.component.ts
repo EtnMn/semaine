@@ -6,6 +6,5 @@ import { ButtonModule } from "primeng/button";
   selector: "app-not-found",
   imports: [RouterLink, ButtonModule],
   templateUrl: "./not-found.component.html",
-  host: { class: "flex flex-col flex-1 items-center" },
 })
 export class NotFoundComponent {}

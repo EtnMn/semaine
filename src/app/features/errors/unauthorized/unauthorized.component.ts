@@ -6,6 +6,6 @@ import { ButtonModule } from "primeng/button";
   selector: "app-unauthorized",
   imports: [RouterLink, ButtonModule],
   templateUrl: "./unauthorized.component.html",
-  host: { class: "flex flex-col flex-1 items-center" },
+  host: { class: "justify-center" },
 })
 export class UnauthorizedComponent {}

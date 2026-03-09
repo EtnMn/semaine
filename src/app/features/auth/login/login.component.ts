@@ -12,7 +12,6 @@ import { SocialLoginButtonComponent } from "./social-login-button.component";
 @Component({
   selector: "app-login",
   templateUrl: "./login.component.html",
-  host: { class: "flex flex-col flex-1 items-center" },
   imports: [FormsModule, ButtonModule, InputTextModule, MessageModule, SocialLoginButtonComponent],
 })
 export class LoginComponent {

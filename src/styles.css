@@ -8,3 +8,7 @@
 
 /* Dark mode: use PrimeNG's app-dark class */
 @custom-variant dark (&:where(.app-dark, .app-dark *));
+
+main > *:not(router-outlet) {
+  flex: 1;
+}

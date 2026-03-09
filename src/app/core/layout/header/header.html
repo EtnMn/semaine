@@ -8,6 +8,12 @@
     </ng-template>
     <ng-template #end>
       <div class="flex items-center gap-2">
+        <p-button
+          [icon]="darkMode.icon()"
+          (onClick)="toggleDarkMode()"
+          severity="secondary"
+          outlined
+        />
         @if (authService.isAuthenticated()) {
           @if (avatarUrl()) {
             <p-button class="flex" styleClass="!p-1" (onClick)="menu.toggle($event)" text>
@@ -30,12 +36,6 @@
             </ng-template>
           </p-menu>
         }
-        <p-button
-          [icon]="darkMode.icon()"
-          (onClick)="toggleDarkMode()"
-          severity="secondary"
-          outlined
-        />
       </div>
     </ng-template>
   </p-menubar>

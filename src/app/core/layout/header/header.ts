@@ -28,6 +28,7 @@ export class Header {
       icon: "pi pi-users",
       routerLink: "/admin/users",
       visible: this.authService.isAdministrator(),
+      linkClass: "text-sm",
     },
     {
       separator: true,
@@ -36,6 +37,7 @@ export class Header {
     {
       label: "Sign out",
       icon: "pi pi-sign-out",
+      linkClass: "text-sm",
       command: () => {
         this.authService.signOut();
       },
