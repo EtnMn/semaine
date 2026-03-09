@@ -12,18 +12,19 @@ describe("AuthService", () => {
   let mockSupabaseService: {
     authChanges: ReturnType<typeof vi.fn>;
     getUser: ReturnType<typeof vi.fn>;
+    getProfile: ReturnType<typeof vi.fn>;
     signIn: ReturnType<typeof vi.fn>;
     signOut: ReturnType<typeof vi.fn>;
   };
 
-  const mockUser: User = {
+  const mockUser = {
     id: "user-123",
     email: "test@example.com",
     app_metadata: {},
     user_metadata: { name: "Test User" },
     aud: "authenticated",
     created_at: "2025-01-01T00:00:00Z",
-  } as User;
+  } as unknown as User;
 
   beforeEach(() => {
     mockRouter = { navigate: vi.fn().mockResolvedValue(true) };
@@ -32,6 +33,7 @@ describe("AuthService", () => {
         authChangeCallback = cb;
       }),
       getUser: vi.fn().mockResolvedValue(null),
+      getProfile: vi.fn().mockResolvedValue({ data: null, error: null }),
       signIn: vi.fn().mockResolvedValue(undefined),
       signOut: vi.fn().mockResolvedValue(undefined),
     };

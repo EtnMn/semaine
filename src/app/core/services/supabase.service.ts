@@ -10,8 +10,8 @@ import {
 import { environment } from "@env/environment";
 
 export interface Profile {
-  id?: string;
-  name: string;
+  id: string;
+  role: "user" | "admin";
 }
 
 @Injectable({ providedIn: "root" })
@@ -33,8 +33,8 @@ export class SupabaseService {
 
   // Get application profile details for a user by their unique id.
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  public profile(user: User) {
-    return this.supabase.from("profiles").select(`name`).eq("id", user.id).single<Profile>();
+  public getProfile(user: User) {
+    return this.supabase.from("profiles").select(`role`).eq("id", user.id).single<Profile>();
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -57,14 +57,5 @@ export class SupabaseService {
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   public signOut() {
     return this.supabase.auth.signOut();
-  }
-
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  public updateProfile(profile: Profile) {
-    const update = {
-      ...profile,
-      updated_at: new Date(),
-    };
-    return this.supabase.from("profiles").upsert(update);
   }
 }

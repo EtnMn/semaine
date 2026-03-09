@@ -1,5 +1,6 @@
 import { Component, inject, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
+import { ActivatedRoute } from "@angular/router";
 import { ButtonModule } from "primeng/button";
 import { InputTextModule } from "primeng/inputtext";
 import { MessageModule } from "primeng/message";
@@ -16,6 +17,7 @@ import { SocialLoginButtonComponent } from "./social-login-button.component";
 })
 export class LoginComponent {
   protected readonly authService = inject(AuthService);
+  private readonly route = inject(ActivatedRoute);
 
   protected readonly loading = signal(false);
   protected readonly errorMessage = signal("");
@@ -23,6 +25,11 @@ export class LoginComponent {
   protected async onSignIn(provider: "google" | "github"): Promise<void> {
     this.errorMessage.set("");
     this.loading.set(true);
+
+    const returnUrl = this.route.snapshot.queryParamMap.get("returnUrl");
+    if (returnUrl) {
+      sessionStorage.setItem("returnUrl", returnUrl);
+    }
 
     try {
       await this.authService.signIn(provider);
