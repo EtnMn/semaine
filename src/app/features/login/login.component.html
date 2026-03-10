@@ -1,0 +1,23 @@
+<div class="flex flex-col items-center justify-center">
+  <div class="w-full max-w-md">
+    <h2 class="text-2xl font-bold">Sign in</h2>
+    <p class="mt-2 text-gray-600 dark:text-gray-400">Login to your account</p>
+    <div class="mt-6 flex flex-col gap-4">
+      <app-social-login-button
+        icon="google"
+        label="Google"
+        [disabled]="loading()"
+        (clicked)="onSignIn('google')"
+      />
+      <app-social-login-button
+        icon="github"
+        label="GitHub"
+        [disabled]="loading()"
+        (clicked)="onSignIn('github')"
+      />
+      @if (errorMessage()) {
+        <p-message severity="error" icon="pi pi-times-circle">{{ errorMessage() }}</p-message>
+      }
+    </div>
+  </div>
+</div>

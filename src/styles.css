@@ -8,3 +8,8 @@
 
 /* Dark mode: use PrimeNG's app-dark class */
 @custom-variant dark (&:where(.app-dark, .app-dark *));
+
+#page > *:not(router-outlet) {
+  display: block;
+  padding: 16px 12px;
+}

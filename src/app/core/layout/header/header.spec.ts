@@ -63,6 +63,7 @@ describe("Header", () => {
           useFactory: () => ({
             currentUser: mockUser.asReadonly(),
             isAuthenticated: mockIsAuthenticated,
+            isAdministrator: computed(() => false),
             signOut: mockSignOut,
             initialized: Promise.resolve(),
           }),

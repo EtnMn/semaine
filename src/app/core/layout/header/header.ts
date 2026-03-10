@@ -17,23 +17,32 @@ export class Header {
   protected readonly darkMode = inject(DarkModeService);
   protected readonly authService = inject(AuthService);
 
-  protected items: MenuItem[] | undefined;
   protected readonly title = signal("semaine");
 
-  private ngOnInit(): void {
-    this.items = [
-      {
-        separator: true,
+  protected readonly items = computed<MenuItem[]>(() => [
+    {
+      separator: true,
+    },
+    {
+      label: "Manage users",
+      icon: "pi pi-users",
+      routerLink: "/admin/users",
+      visible: this.authService.isAdministrator(),
+      linkClass: "text-sm",
+    },
+    {
+      separator: true,
+      visible: this.authService.isAdministrator(),
+    },
+    {
+      label: "Sign out",
+      icon: "pi pi-sign-out",
+      linkClass: "text-sm",
+      command: () => {
+        this.authService.signOut();
       },
-      {
-        label: "Sign out",
-        icon: "pi pi-sign-out",
-        command: () => {
-          this.authService.signOut();
-        },
-      },
-    ];
-  }
+    },
+  ]);
 
   protected readonly userName = computed(() => {
     const user = this.authService.currentUser();

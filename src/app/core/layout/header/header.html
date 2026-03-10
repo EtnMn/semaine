@@ -8,10 +8,16 @@
     </ng-template>
     <ng-template #end>
       <div class="flex items-center gap-2">
+        <p-button
+          [icon]="darkMode.icon()"
+          (onClick)="toggleDarkMode()"
+          severity="secondary"
+          outlined
+        />
         @if (authService.isAuthenticated()) {
           @if (avatarUrl()) {
             <p-button class="flex" styleClass="!p-1" (onClick)="menu.toggle($event)" text>
-              <p-avatar [image]="avatarUrl()" />
+              <p-avatar [image]="avatarUrl()" shape="circle" />
             </p-button>
           } @else {
             <p-button
@@ -21,7 +27,7 @@
               (onClick)="menu.toggle($event)"
             />
           }
-          <p-menu #menu [model]="items" [popup]="true">
+          <p-menu #menu [model]="items()" [popup]="true">
             <ng-template class="flex w-full" #start>
               <div class="flex w-full flex-col items-start p-2 pl-4">
                 <span class="font-bold">{{ userName() }}</span>
@@ -30,12 +36,6 @@
             </ng-template>
           </p-menu>
         }
-        <p-button
-          [icon]="darkMode.icon()"
-          (onClick)="toggleDarkMode()"
-          severity="secondary"
-          outlined
-        />
       </div>
     </ng-template>
   </p-menubar>
