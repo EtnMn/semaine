@@ -17,7 +17,7 @@
         @if (authService.isAuthenticated()) {
           @if (avatarUrl()) {
             <p-button class="flex" styleClass="!p-1" (onClick)="menu.toggle($event)" text>
-              <p-avatar [image]="avatarUrl()" />
+              <p-avatar [image]="avatarUrl()" shape="circle" />
             </p-button>
           } @else {
             <p-button

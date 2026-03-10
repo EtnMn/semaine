@@ -7,8 +7,7 @@ export const routes: Routes = [
   {
     path: "login",
     canActivate: [guestGuard],
-    loadComponent: () =>
-      import("@features/auth/login/login.component").then((m) => m.LoginComponent),
+    loadComponent: () => import("@features/login/login.component").then((m) => m.LoginComponent),
   },
   {
     path: "admin",
@@ -25,9 +24,7 @@ export const routes: Routes = [
     path: "unauthorized",
     canActivate: [authGuard],
     loadComponent: () =>
-      import("@features/errors/unauthorized/unauthorized.component").then(
-        (m) => m.UnauthorizedComponent,
-      ),
+      import("@features/errors/unauthorized-error.component").then((m) => m.UnauthorizedComponent),
   },
   {
     path: "",
@@ -37,6 +34,6 @@ export const routes: Routes = [
   {
     path: "**",
     loadComponent: () =>
-      import("@features/errors/not-found/not-found.component").then((m) => m.NotFoundComponent),
+      import("@features/errors/not-found-error.component").then((m) => m.NotFoundComponent),
   },
 ];
