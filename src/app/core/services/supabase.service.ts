@@ -22,6 +22,10 @@ export class SupabaseService {
     this.supabase = createClient(environment.supabase.url, environment.supabase.key);
   }
 
+  public get client(): SupabaseClient {
+    return this.supabase;
+  }
+
   // Get the current user details if there is an existing session.
   public async getUser(): Promise<User | null> {
     const { data, error } = await this.supabase.auth.getUser();
