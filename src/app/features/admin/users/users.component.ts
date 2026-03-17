@@ -1,14 +1,17 @@
 import { Component, inject, OnInit, signal } from "@angular/core";
 import { AvatarModule } from "primeng/avatar";
 import { DataViewModule } from "primeng/dataview";
+import { DividerModule } from "primeng/divider";
 
 import { User } from "./user.model";
 import { UsersService } from "./users.service";
+import { UserInfoComponent } from "@shared/components/user-info.component";
 
 @Component({
   selector: "app-admin-users",
   templateUrl: "./users.component.html",
-  imports: [DataViewModule, AvatarModule],
+  imports: [DataViewModule, AvatarModule, UserInfoComponent, DividerModule],
+  host: { class: "max-w-4xl mx-auto" },
 })
 export class UsersComponent implements OnInit {
   private readonly usersService = inject(UsersService);

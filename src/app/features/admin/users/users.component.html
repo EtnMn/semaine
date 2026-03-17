@@ -1,23 +1,28 @@
 <h1 class="mb-6 text-xl font-bold">Manage users</h1>
 
-<p-dataview #dv [value]="users()" [rows]="5" [paginator]="true">
+<p-dataview class="" #dv [value]="users()" [rows]="20" [paginator]="true">
   <ng-template #list let-users>
-    <div class="grid grid-cols-12 gap-4">
-      @for (user of users; track user.id) {
-        <div class="col-span-12">
-          @if (user.avatar_url && !failedAvatars().has(user.id)) {
-            <img
-              [src]="user.avatar_url"
-              loading="lazy"
-              class="h-8 w-8 rounded-full object-cover"
-              (error)="onAvatarError(user.id)"
-            />
-          } @else {
-            <p-avatar [label]="(user.name || user.email)[0].toUpperCase()" shape="circle" />
-          }
-          <div class="font-bold">{{ user.name }}</div>
-          <div>{{ user.email }}</div>
+    <div class="flex flex-col gap-4">
+      @for (user of users; track user.id; let last = $last) {
+        <div class="flex" [class.mb-8]="last">
+          <div class="flex flex-1">
+            @if (user.avatar_url && !failedAvatars().has(user.id)) {
+              <img
+                [src]="user.avatar_url"
+                loading="lazy"
+                class="h-8 w-8 rounded-full object-cover"
+                (error)="onAvatarError(user.id)"
+              />
+            } @else {
+              <p-avatar [label]="(user.name || user.email)[0].toUpperCase()" shape="circle" />
+            }
+            <app-user-info [name]="user.name" [email]="user.email" />
+          </div>
+          <div>toto</div>
         </div>
+        @if (!last) {
+          <p-divider />
+        }
       }
     </div>
   </ng-template>

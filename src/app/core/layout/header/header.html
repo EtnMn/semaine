@@ -29,10 +29,7 @@
           }
           <p-menu #menu [model]="items()" [popup]="true">
             <ng-template class="flex w-full" #start>
-              <div class="flex w-full flex-col items-start p-2 pl-4">
-                <span class="font-bold">{{ userName() }}</span>
-                <span class="text-sm">{{ userEmail() }}</span>
-              </div>
+              <app-user-info class="p-2 pl-4" [name]="userName()" [email]="userEmail()" />
             </ng-template>
           </p-menu>
         }

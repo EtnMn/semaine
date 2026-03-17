@@ -7,10 +7,11 @@ import { MenuModule } from "primeng/menu";
 import { MenuItem } from "primeng/api";
 
 import { AuthService, DarkModeService } from "@core/services";
+import { UserInfoComponent } from "@shared/components/user-info.component";
 
 @Component({
   selector: "app-header",
-  imports: [RouterLink, ButtonModule, MenubarModule, AvatarModule, MenuModule],
+  imports: [RouterLink, ButtonModule, MenubarModule, AvatarModule, MenuModule, UserInfoComponent],
   templateUrl: "./header.html",
 })
 export class Header {
