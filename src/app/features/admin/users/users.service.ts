@@ -37,4 +37,16 @@ export class UsersService {
       throw new Error(error.message);
     }
   }
+
+  public async inviteUser(email: string): Promise<void> {
+    const { error } = await this.supabaseService.client.functions.invoke("invite-user", {
+      body: { email },
+    });
+    if (error instanceof Error && "context" in error) {
+      const body = await (error as { context: Response }).context.json();
+      throw new Error(body?.error ?? error.message);
+    } else if (error) {
+      throw new Error(error.message);
+    }
+  }
 }
