@@ -1,71 +1,62 @@
 <h1 class="mb-6 text-xl font-bold">Manage users</h1>
 
-<p-dataview class="" #dv [value]="users()" [rows]="20" [paginator]="true">
+<p-toast />
+<p-confirmdialog />
+<p-dataview
+  #dv
+  [value]="users()"
+  [rows]="pageSize"
+  [paginator]="true"
+  [totalRecords]="totalCount()"
+  [lazy]="true"
+  [alwaysShowPaginator]="false"
+  (onPage)="loadPage($event.first)"
+>
+  <ng-template #header>
+    <div class="flex justify-end">
+      <p-button size="small">Invite user</p-button>
+    </div>
+  </ng-template>
+
+  <ng-template #emptymessage> </ng-template>
+
   <ng-template #list let-users>
-    <div class="flex flex-col gap-4">
-      @for (user of users; track user.id; let last = $last) {
-        <div class="flex" [class.mb-8]="last">
-          <div class="flex flex-1">
-            @if (user.avatar_url && !failedAvatars().has(user.id)) {
-              <img
-                [src]="user.avatar_url"
-                loading="lazy"
-                class="h-8 w-8 rounded-full object-cover"
-                (error)="onAvatarError(user.id)"
-              />
-            } @else {
-              <p-avatar [label]="(user.name || user.email)[0].toUpperCase()" shape="circle" />
-            }
-            <app-user-info [name]="user.name" [email]="user.email" />
+    <div class="flex flex-col gap-4 py-8">
+      @if (loading()) {
+        @for (_ of [1, 2, 3]; track $index; let last = $last) {
+          <div class="flex px-4">
+            <app-user-info [loading]="loading()" />
           </div>
-          <div>toto</div>
-        </div>
-        @if (!last) {
-          <p-divider />
+          @if (!last) {
+            <p-divider />
+          }
+        }
+      } @else {
+        @for (user of users; track user.id; let last = $last) {
+          <div class="flex gap-2 px-4">
+            <div class="flex min-w-0 flex-1">
+              <app-user-info
+                [name]="user.name"
+                [email]="user.email"
+                [avatarUrl]="user.avatar_url"
+              />
+            </div>
+            <div class="flex items-center">
+              <p-button
+                label="Delete"
+                size="small"
+                variant="outlined"
+                severity="danger"
+                [disabled]="user.id === me()?.id"
+                (click)="onDeleteUser(user)"
+              />
+            </div>
+          </div>
+          @if (!last) {
+            <p-divider />
+          }
         }
       }
     </div>
   </ng-template>
 </p-dataview>
-<!-- <p-table
-  [value]="users()"
-  [lazy]="true"
-  [paginator]="true"
-  [rows]="pageSize"
-  [totalRecords]="totalCount()"
-  [loading]="loading()"
-  [rowsPerPageOptions]="[20, 50, 100]"
-  (onLazyLoad)="onLazyLoad($event)"
->
-  <ng-template #header>
-    <tr>
-      <th>Avatar</th>
-      <th pSortableColumn="name">Nom <p-sortIcon field="name" /></th>
-      <th pSortableColumn="email">Email <p-sortIcon field="email" /></th>
-      <th>Rôle</th>
-    </tr>
-  </ng-template>
-
-  <ng-template #body let-user>
-    <tr>
-      <td>
-        @if (user.avatar_url) {
-          <p-avatar [image]="user.avatar_url" shape="circle" />
-        } @else {
-          <p-avatar [label]="(user.name || user.email)[0].toUpperCase()" shape="circle" />
-        }
-      </td>
-      <td>{{ user.name }}</td>
-      <td>{{ user.email }}</td>
-      <td>
-        <p-tag [value]="user.role" [severity]="user.role === 'admin' ? 'danger' : 'secondary'" />
-      </td>
-    </tr>
-  </ng-template>
-
-  <ng-template #empty>
-    <tr>
-      <td colspan="4" class="text-center">Aucun utilisateur trouvé.</td>
-    </tr>
-  </ng-template>
-</p-table> -->

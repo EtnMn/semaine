@@ -18,16 +18,23 @@ export class UsersService {
     ]);
 
     if (pageResult.error) {
-      throw pageResult.error;
+      throw new Error(pageResult.error.message);
     }
 
     if (countResult.error) {
-      throw countResult.error;
+      throw new Error(countResult.error.message);
     }
 
     return {
       users: (pageResult.data ?? []) as User[],
       total: countResult.count ?? 0,
     };
+  }
+
+  public async deleteUser(id: string): Promise<void> {
+    const { error } = await this.supabaseService.client.rpc("delete_user", { p_user_id: id });
+    if (error) {
+      throw new Error(error.message);
+    }
   }
 }
