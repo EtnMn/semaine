@@ -38,6 +38,16 @@ export class UsersService {
     }
   }
 
+  public async updateUserRole(id: string, role: "user" | "admin"): Promise<void> {
+    const { error } = await this.supabaseService.client
+      .from("profiles")
+      .update({ role })
+      .eq("id", id);
+    if (error) {
+      throw new Error(error.message);
+    }
+  }
+
   public async inviteUser(email: string): Promise<void> {
     const { error } = await this.supabaseService.client.functions.invoke("invite-user", {
       body: { email },

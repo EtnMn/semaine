@@ -14,7 +14,7 @@ import { SkeletonModule } from "primeng/skeleton";
       } @else if (avatarUrl()) {
         <p-avatar [image]="avatarUrl()!" shape="circle" class="shrink-0" />
       } @else {
-        <p-avatar icon="pi pi-user" severity="secondary" outlined class="shrink-0" />
+        <p-avatar icon="pi pi-user" severity="secondary" shape="circle" class="shrink-0" />
       }
       <div class="flex min-w-0 flex-col" [class.gap-y-2]="loading()">
         @if (loading()) {
