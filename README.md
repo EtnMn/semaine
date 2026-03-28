@@ -89,7 +89,7 @@ supabase secrets set SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key>
 **Manual deployment:**
 
 ```bash
-supabase functions deploy --all
+supabase functions deploy
 ```
 
 ## Code scaffolding
