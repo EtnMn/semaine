@@ -27,7 +27,7 @@
               (onClick)="menu.toggle($event)"
             />
           }
-          <p-menu #menu [model]="items()" [popup]="true" styleClass="max-w-lg">
+          <p-menu #menu [model]="items()" [popup]="true" appendTo="body" styleClass="max-w-lg">
             <ng-template class="flex w-full" #start>
               <app-user-info
                 class="p-2 pl-4"
