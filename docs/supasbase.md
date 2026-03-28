@@ -16,11 +16,7 @@
    - Utiliser les méthodes Supabase avec typage fort
    - Ajouter l'export dans [src/app/core/services/index.ts](src/app/core/services/index.ts)
 
-3. **Créer les composants d'authentification**
-   - Créer composant `src/app/features/auth/profile/` pour afficher/éditer le profil utilisateur
-   - Ajouter barrel export [src/app/features/auth/index.ts](src/app/features/auth/index.ts)
-
-4. **Créer un service d'exemple avec RLS**
+3. **Créer un service d'exemple avec RLS**
    - Créer `src/app/features/[nom-feature]/services/[entity].service.ts` comme exemple
    - Pattern: injecter `DatabaseService` et `AuthService`
    - Méthodes CRUD qui respectent RLS (les requêtes utilisent automatiquement la session)

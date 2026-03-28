@@ -68,6 +68,30 @@ In **Authentication** → **URL Configuration**:
 
 This ensures OAuth redirects work correctly across all environments. The app dynamically sets `redirectTo` to `window.location.origin` so users are always redirected back to the environment they started from.
 
+### Edge Functions
+
+Edge Functions are located in `supabase/functions/` and deployed automatically by the CI/CD pipeline alongside database migrations.
+
+| Function      | Description                                                    | Auth                                        |
+| ------------- | -------------------------------------------------------------- | ------------------------------------------- |
+| `invite-user` | Sends an invitation email to a new user. Restricted to admins. | JWT verified manually (admin role required) |
+
+**Setup:**
+
+The `invite-user` function requires the Supabase service role key to call the admin API. Set it as a project secret:
+
+```bash
+supabase secrets set SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key>
+```
+
+> The service role key is available in **Supabase Dashboard → Settings → API → Service role secret**. It is never exposed to the browser.
+
+**Manual deployment:**
+
+```bash
+supabase functions deploy --all
+```
+
 ## Code scaffolding
 
 Angular CLI includes powerful code scaffolding tools. To generate a new component, run:

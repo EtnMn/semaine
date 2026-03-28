@@ -27,12 +27,14 @@
               (onClick)="menu.toggle($event)"
             />
           }
-          <p-menu #menu [model]="items()" [popup]="true">
+          <p-menu #menu [model]="items()" [popup]="true" appendTo="body" styleClass="max-w-lg">
             <ng-template class="flex w-full" #start>
-              <div class="flex w-full flex-col items-start p-2 pl-4">
-                <span class="font-bold">{{ userName() }}</span>
-                <span class="text-sm">{{ userEmail() }}</span>
-              </div>
+              <app-user-info
+                class="p-2 pl-4"
+                [name]="userName()"
+                [email]="userEmail()"
+                [avatarUrl]="avatarUrl()"
+              />
             </ng-template>
           </p-menu>
         }

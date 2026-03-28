@@ -11,5 +11,4 @@
 
 #page > *:not(router-outlet) {
   display: block;
-  padding: 16px 12px;
 }
