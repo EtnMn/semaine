@@ -8,7 +8,10 @@ import { User } from "./user.model";
 export class UsersService {
   private readonly supabaseService = inject(SupabaseService);
 
-  public async getPage(page: number, pageSize = 20): Promise<{ users: User[]; total: number }> {
+  public async getUsersPage(
+    page: number,
+    pageSize = 20,
+  ): Promise<{ users: User[]; total: number }> {
     const [pageResult, countResult] = await Promise.all([
       this.supabaseService.client.rpc("get_users_page", {
         p_limit: pageSize,

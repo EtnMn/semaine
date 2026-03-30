@@ -15,7 +15,7 @@ const mockUsers: User[] = [
 
 describe("UsersComponent", () => {
   let mockUsersService: {
-    getPage: ReturnType<typeof vi.fn>;
+    getUsersPage: ReturnType<typeof vi.fn>;
     deleteUser: ReturnType<typeof vi.fn>;
     updateUserRole: ReturnType<typeof vi.fn>;
     inviteUser: ReturnType<typeof vi.fn>;
@@ -26,7 +26,7 @@ describe("UsersComponent", () => {
     mockCurrentUser = signal<{ id: string } | null>(null);
 
     mockUsersService = {
-      getPage: vi.fn().mockResolvedValue({ users: mockUsers, total: 2 }),
+      getUsersPage: vi.fn().mockResolvedValue({ users: mockUsers, total: 2 }),
       deleteUser: vi.fn().mockResolvedValue(undefined),
       updateUserRole: vi.fn().mockResolvedValue(undefined),
       inviteUser: vi.fn().mockResolvedValue(undefined),
@@ -62,7 +62,7 @@ describe("UsersComponent", () => {
     fixture.detectChanges();
     await fixture.whenStable();
 
-    expect(mockUsersService.getPage).toHaveBeenCalledWith(0, 20);
+    expect(mockUsersService.getUsersPage).toHaveBeenCalledWith(0, 20);
   });
 
   it("should display users after loading", async () => {
@@ -178,7 +178,7 @@ describe("UsersComponent", () => {
     fixture.detectChanges();
     await fixture.whenStable();
 
-    mockUsersService.getPage.mockClear();
+    mockUsersService.getUsersPage.mockClear();
 
     const component = fixture.componentInstance as unknown as {
       onConfirmInvite: (form: {
@@ -196,6 +196,6 @@ describe("UsersComponent", () => {
 
     await fixture.whenStable();
 
-    expect(mockUsersService.getPage).toHaveBeenCalledWith(0, 20);
+    expect(mockUsersService.getUsersPage).toHaveBeenCalledWith(0, 20);
   });
 });
