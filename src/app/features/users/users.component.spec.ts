@@ -62,7 +62,7 @@ describe("UsersComponent", () => {
     fixture.detectChanges();
     await fixture.whenStable();
 
-    expect(mockUsersService.getUsersPage).toHaveBeenCalledWith(0, 20);
+    expect(mockUsersService.getUsersPage).toHaveBeenCalledWith(0);
   });
 
   it("should display users after loading", async () => {
@@ -196,6 +196,6 @@ describe("UsersComponent", () => {
 
     await fixture.whenStable();
 
-    expect(mockUsersService.getUsersPage).toHaveBeenCalledWith(0, 20);
+    expect(mockUsersService.getUsersPage).toHaveBeenCalledWith(0);
   });
 });
