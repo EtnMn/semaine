@@ -13,9 +13,12 @@ on:
     secrets:
       access_token:
         required: true
+      db_password:
+        required: true
 
 env:
   SUPABASE_ACCESS_TOKEN: ${{ secrets.access_token }}
+  SUPABASE_DB_PASSWORD: ${{ secrets.db_password }}
 
 jobs:
   migrate:

@@ -55,6 +55,7 @@ jobs:
       project_id: ${{ vars.SUPABASE_PROJECT_ID }}
     secrets:
       access_token: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      db_password: ${{ secrets.SUPABASE_DB_PASSWORD }}
 
   migrate-summary:
     name: Migration Summary
