@@ -67,9 +67,9 @@
 <p-dataview
   #dv
   [value]="users()"
-  [rows]="pageSize"
+  [rows]="20"
   [paginator]="true"
-  [totalRecords]="totalCount()"
+  [totalRecords]="total()"
   [lazy]="true"
   [alwaysShowPaginator]="false"
   (onPage)="loadPage($event.first)"

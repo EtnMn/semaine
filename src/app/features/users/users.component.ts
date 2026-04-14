@@ -46,11 +46,10 @@ export class UsersComponent implements OnInit {
   private readonly confirmationService = inject(ConfirmationService);
   private readonly messageService = inject(MessageService);
 
-  protected readonly users = signal<User[]>([]);
   protected readonly me = this.authService.currentUser;
-  protected readonly totalCount = signal(0);
+  protected readonly users = signal<User[]>([]);
+  protected readonly total = signal(0);
   protected readonly loading = signal(false);
-  protected readonly pageSize = 20;
 
   protected readonly inviteDialogVisible = signal(false);
   protected readonly inviteLoading = signal(false);
@@ -133,6 +132,18 @@ export class UsersComponent implements OnInit {
     });
   }
 
+  protected async loadPage(page: number): Promise<void> {
+    const timer = setTimeout(() => this.loading.set(true), 300);
+    try {
+      const { users, total } = await this.usersService.getUsersPage(page);
+      this.users.set(users);
+      this.total.set(total);
+    } finally {
+      clearTimeout(timer);
+      this.loading.set(false);
+    }
+  }
+
   private async toggleRole(user: User): Promise<void> {
     const newRole = user.role === "admin" ? "user" : "admin";
     try {
@@ -155,7 +166,7 @@ export class UsersComponent implements OnInit {
     try {
       await this.usersService.deleteUser(user.id);
       this.users.update((list) => list.filter((u) => u.id !== user.id));
-      this.totalCount.update((count) => count - 1);
+      this.total.update((count) => count - 1);
       this.messageService.add({
         severity: "success",
         summary: "Deleted",
@@ -171,18 +182,6 @@ export class UsersComponent implements OnInit {
         summary: "Error",
         detail: `${message}`,
       });
-    }
-  }
-
-  protected async loadPage(page: number): Promise<void> {
-    const timer = setTimeout(() => this.loading.set(true), 300);
-    try {
-      const { users, total } = await this.usersService.getPage(page, this.pageSize);
-      this.users.set(users);
-      this.totalCount.set(total);
-    } finally {
-      clearTimeout(timer);
-      this.loading.set(false);
     }
   }
 }

@@ -51,14 +51,14 @@ describe("UsersService", () => {
     service = TestBed.inject(UsersService);
   });
 
-  describe("getPage", () => {
+  describe("getUsersPage", () => {
     it("should return users and total count", async () => {
       mock.rpc.mockResolvedValue({ data: mockUsers, error: null });
       mock.from.mockReturnValue({
         select: vi.fn().mockResolvedValue({ count: 2, error: null }),
       });
 
-      const result = await service.getPage(0, 20);
+      const result = await service.getUsersPage(0, 20);
 
       expect(result.users).toEqual(mockUsers);
       expect(result.total).toBe(2);
@@ -70,7 +70,7 @@ describe("UsersService", () => {
         select: vi.fn().mockResolvedValue({ count: 0, error: null }),
       });
 
-      await expect(service.getPage(0, 20)).rejects.toThrow("rpc error");
+      await expect(service.getUsersPage(0, 20)).rejects.toThrow("rpc error");
     });
 
     it("should throw on count error", async () => {
@@ -79,7 +79,7 @@ describe("UsersService", () => {
         select: vi.fn().mockResolvedValue({ count: null, error: { message: "count error" } }),
       });
 
-      await expect(service.getPage(0, 20)).rejects.toThrow("count error");
+      await expect(service.getUsersPage(0, 20)).rejects.toThrow("count error");
     });
 
     it("should pass correct pagination params", async () => {
@@ -88,7 +88,7 @@ describe("UsersService", () => {
         select: vi.fn().mockResolvedValue({ count: 0, error: null }),
       });
 
-      await service.getPage(2, 10);
+      await service.getUsersPage(2, 10);
 
       expect(mock.rpc).toHaveBeenCalledWith("get_users_page", { p_limit: 10, p_offset: 20 });
     });
