@@ -6,6 +6,7 @@ export type TaskPeriodicity = (typeof TASK_PERIODICITIES)[number];
 
 export interface Task {
   id: number;
+  description: string;
   difficulty: TaskDifficulty;
   duration: number;
   name: string;

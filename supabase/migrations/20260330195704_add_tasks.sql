@@ -15,6 +15,7 @@ CREATE TYPE public.task_difficulty AS ENUM ('easy', 'medium', 'hard');
 CREATE TABLE public.tasks (
   id          uuid    PRIMARY KEY DEFAULT gen_random_uuid(),
   name        text    NOT NULL,
+  description text    NOT NULL DEFAULT '',
   periodicity public.task_periodicity NOT NULL DEFAULT 'unique',
   difficulty  public.task_difficulty NOT NULL DEFAULT 'medium',
   started     boolean NOT NULL DEFAULT true,

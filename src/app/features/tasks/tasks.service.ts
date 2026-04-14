@@ -11,7 +11,7 @@ export class TasksService {
   public async getTask(id: string): Promise<Task> {
     const { data, error } = await this.supabaseService.client
       .from("tasks")
-      .select("id, name, periodicity, difficulty, started, duration, tags")
+      .select("id, name, description, periodicity, difficulty, started, duration, tags")
       .eq("id", id)
       .single();
 
@@ -32,7 +32,9 @@ export class TasksService {
   ): Promise<{ tasks: Task[]; total: number }> {
     const { data, error, count } = await this.supabaseService.client
       .from("tasks")
-      .select("id, name, periodicity, difficulty, started, duration, tags", { count: "exact" })
+      .select("id, name, description, periodicity, difficulty, started, duration, tags", {
+        count: "exact",
+      })
       .range(page * pageSize, (page + 1) * pageSize - 1);
 
     if (error) {
