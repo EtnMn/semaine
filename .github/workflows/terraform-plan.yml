@@ -60,7 +60,7 @@ jobs:
     if: needs.security.result == 'success' && needs.lint.result == 'success' && github.event_name == 'pull_request'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
 

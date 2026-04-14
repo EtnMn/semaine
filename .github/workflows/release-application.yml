@@ -84,7 +84,7 @@ jobs:
     if: needs.format.result == 'success' && needs.security.result == 'success'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3

@@ -34,7 +34,7 @@ jobs:
       passed: ${{ steps.tfsec.outcome == 'success' }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ inputs.ref || github.head_ref || github.ref_name }}
 
