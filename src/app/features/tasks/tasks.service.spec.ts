@@ -24,6 +24,7 @@ describe("TasksService", () => {
   const mockTask: Task = {
     id: 1,
     name: "Test task",
+    description: "",
     periodicity: "weekly",
     difficulty: "medium",
     started: true,
@@ -132,6 +133,7 @@ describe("TasksService", () => {
   describe("createTask", () => {
     it("should call insert with the task data", async () => {
       const { id: _id, ...taskWithoutId } = mockTask;
+      void _id;
       queryBuilder.insert.mockResolvedValue({ error: null });
 
       await service.createTask(taskWithoutId);
@@ -142,6 +144,7 @@ describe("TasksService", () => {
 
     it("should throw when supabase returns an error", async () => {
       const { id: _id, ...taskWithoutId } = mockTask;
+      void _id;
       queryBuilder.insert.mockResolvedValue({ error: { message: "Insert error" } });
 
       await expect(service.createTask(taskWithoutId)).rejects.toThrow("Insert error");
