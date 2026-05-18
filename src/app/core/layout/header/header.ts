@@ -32,6 +32,13 @@ export class Header {
       linkClass: "text-sm",
     },
     {
+      label: "Manage tasks",
+      icon: "pi pi-list",
+      routerLink: "/admin/tasks",
+      visible: this.authService.isAdministrator(),
+      linkClass: "text-sm",
+    },
+    {
       separator: true,
       visible: this.authService.isAdministrator(),
     },

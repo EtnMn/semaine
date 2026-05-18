@@ -1,14 +1,13 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import "tailwindcss";
-
-/* PrimeIcons */
 @import "primeicons/primeicons.css";
 @import "tailwindcss-primeui";
 
-/* Dark mode: use PrimeNG's app-dark class */
+/* Tailwind: Dark mode: use PrimeNG's app-dark class */
 @custom-variant dark (&:where(.app-dark, .app-dark *));
 
+/* Reset */
 #page > *:not(router-outlet) {
   display: block;
 }
