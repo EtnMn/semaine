@@ -7,6 +7,14 @@ import Aura from "@primeuix/themes/aura";
 import { routes } from "./app.routes";
 
 const MyPreset = definePreset(Aura, {
+  components: {
+    paginator: {
+      navButton: {
+        selectedBackground: "{primary.400}",
+        selectedColor: "{surface.600}",
+      },
+    },
+  },
   semantic: {
     primary: {
       50: "{lime.50}",

@@ -6,11 +6,11 @@
         <span>({{ total() }})</span>
       }
     </h1>
-    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-      Organise and track your household chores
-    </p>
+    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Organise and track your tasks</p>
   </div>
-  <p-button (onClick)="onCreateTask()">Create Task</p-button>
+  @if (total() > 0) {
+    <p-button (onClick)="onCreateTask()">Create Task</p-button>
+  }
 </div>
 
 <p-toast />
@@ -19,94 +19,28 @@
 <p-dataview
   #dv
   [value]="tasks()"
-  [rows]="20"
+  [rows]="pageSize"
   [paginator]="true"
   [totalRecords]="total()"
   [lazy]="true"
+  [loading]="loading()"
   [alwaysShowPaginator]="false"
   [dt]="{ contentBackground: 'transparent' }"
+  [style]="{ '--p-paginator-background': 'transparent' }"
   (onPage)="loadPage($event.first)"
 >
-  <ng-template #emptymessage>
-    <div class="flex flex-col items-center justify-center gap-4 py-20 text-center">
-      <img src="empty-box.svg" alt="" aria-hidden="true" class="w-52 select-none" />
-
-      <div>
-        <p class="text-lg font-semibold text-gray-700 dark:text-gray-200">No tasks yet</p>
-        <p class="mt-1 text-sm text-gray-400 dark:text-gray-500">
-          Create your first task to start organising your household chores.
-        </p>
-      </div>
-
-      <p-button (onClick)="onCreateTask()" severity="secondary" outlined="true">
-        <i class="pi pi-plus mr-2"></i>Create a task
-      </p-button>
-    </div>
-  </ng-template>
+  @if (!loading()) {
+    <ng-template #emptymessage>
+      <app-empty-message title="No tasks yet" caption="Create your first task to get started.">
+        <p-button footer (onClick)="onCreateTask()">Create Task</p-button>
+      </app-empty-message>
+    </ng-template>
+  }
 
   <ng-template #list let-tasks>
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       @for (task of tasks; track task.id) {
-        <div
-          class="flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-gray-50 shadow-sm transition-all hover:shadow-md dark:border-gray-700 dark:bg-gray-800"
-          [class.opacity-70]="!task.started"
-          [class.grayscale]="!task.started"
-          [class.pointer-events-none]="!task.started"
-        >
-          <div
-            class="flex items-center gap-3 border-b border-gray-200 px-4 py-3 dark:border-gray-700"
-          >
-            <div
-              class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
-              [ngClass]="difficultyBgClass(task.difficulty)"
-            >
-              <i class="text-sm text-white" [ngClass]="difficultyIcon(task.difficulty)"></i>
-            </div>
-            <h3 class="min-w-0 flex-1 truncate font-semibold text-gray-900 dark:text-white">
-              {{ task.name }}
-            </h3>
-            <button
-              class="cursor-pointer rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-              (click)="onEditTask(task)"
-            >
-              <i class="pi pi-ellipsis-h text-sm"></i>
-            </button>
-          </div>
-
-          <div class="flex flex-1 flex-col px-4 py-3">
-            <p class="grow text-sm leading-relaxed text-gray-600 dark:text-gray-400">
-              {{ task.description }}
-            </p>
-
-            @if (task.tags.length) {
-              <div class="mt-3 flex flex-wrap gap-1.5">
-                @for (tag of task.tags; track tag) {
-                  <span
-                    class="rounded-full bg-white px-2.5 py-0.5 text-xs text-gray-600 ring-1 ring-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:ring-gray-600"
-                    >{{ tag }}</span
-                  >
-                }
-              </div>
-            }
-          </div>
-
-          <div
-            class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-2 dark:border-gray-700 dark:bg-gray-900"
-          >
-            <div class="flex items-center gap-3 text-xs text-gray-400 dark:text-gray-500">
-              <span class="flex items-center gap-1">
-                <i class="pi pi-refresh"></i>
-                {{ task.periodicity }}
-              </span>
-              @if (task.duration) {
-                <span class="flex items-center gap-1">
-                  <i class="pi pi-clock"></i>
-                  {{ task.duration }} min
-                </span>
-              }
-            </div>
-          </div>
-        </div>
+        <app-task-card [task]="task" (taskEdited)="onEditTask($event)" />
       }
     </div>
   </ng-template>
