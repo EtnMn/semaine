@@ -92,6 +92,38 @@ supabase secrets set SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key>
 supabase functions deploy
 ```
 
+### Database Migrations
+
+Database migrations are stored in `supabase/migrations/` and deployed automatically by the CI/CD pipeline.
+
+**Creating a new migration locally:**
+
+```bash
+supabase migration new <migration_name>
+```
+
+This creates a new migration file with a timestamp prefix in `supabase/migrations/`.
+
+**Applying migrations locally:**
+
+```bash
+supabase db push
+```
+
+**Applying migrations to production (remote):**
+
+```bash
+supabase db push --db-url 'postgresql://postgres.<project-ref>:YOUR_PASSWORD@aws-<region>.pooler.supabase.com:6543/postgres'
+```
+
+Replace the placeholders:
+
+- `<project-ref>` — your Supabase project reference (e.g., `xzohmittisigvgxjwczw`)
+- `YOUR_PASSWORD` — your Supabase database password
+- `<region>` — your region (e.g., `1-eu-west-3`)
+
+> **Security:** The database URL contains credentials. Never commit this to Git. Use environment variables or retrieve it from your Supabase dashboard.
+
 ## Code scaffolding
 
 Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
