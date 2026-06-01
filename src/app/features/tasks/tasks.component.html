@@ -25,7 +25,7 @@
   [lazy]="true"
   [loading]="loading()"
   [alwaysShowPaginator]="false"
-  [dt]="{ contentBackground: 'transparent' }"
+  [dt]="{ contentBackground: 'transparent', headerBackground: 'transparent' }"
   [style]="{ '--p-paginator-background': 'transparent' }"
   (onPage)="loadPage($event.first)"
 >
@@ -36,6 +36,28 @@
       </app-empty-message>
     </ng-template>
   }
+
+  <ng-template #header>
+    <div class="-mx-4 flex items-center gap-4">
+      <p-iconfield>
+        <p-inputicon class="pi pi-search" />
+        <input
+          pSize="small"
+          type="text"
+          pInputText
+          placeholder="Search"
+          (input)="onSearch($event.target.value)"
+        />
+      </p-iconfield>
+      <div class="ml-auto flex items-center gap-2">
+        <span class="text-sm text-gray-600 dark:text-gray-400">Started</span>
+        <p-toggleSwitch
+          [(ngModel)]="showStartedOnly"
+          (onChange)="this.loadPage(0)"
+        ></p-toggleSwitch>
+      </div>
+    </div>
+  </ng-template>
 
   <ng-template #list let-tasks>
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

@@ -1,5 +1,5 @@
 import { Component, input, output } from "@angular/core";
-import { TitleCasePipe } from "@angular/common";
+import { TitleCasePipe, NgClass } from "@angular/common";
 import { Task, TaskDifficulty } from "./task.model";
 import { CardModule } from "primeng/card";
 import { ButtonModule } from "primeng/button";
@@ -7,8 +7,8 @@ import { ButtonModule } from "primeng/button";
 @Component({
   selector: "app-task-card",
   templateUrl: "./task-card.component.html",
-  host: { class: "block h-full" },
-  imports: [CardModule, ButtonModule, TitleCasePipe],
+  host: { class: "block h-full group" },
+  imports: [CardModule, ButtonModule, TitleCasePipe, NgClass],
 })
 export class TaskCardComponent {
   public readonly task = input.required<Task>();

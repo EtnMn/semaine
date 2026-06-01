@@ -4,6 +4,8 @@
     body: { style: { flex: '1', display: 'flex' } },
     content: { style: { flex: '1' } },
   }"
+  [class.opacity-75]="!task().started"
+  [class.grayscale]="!task().started"
 >
   <ng-template #header>
     <div class="flex items-center gap-3 border-b border-gray-200 px-4 py-3 dark:border-gray-700">
@@ -13,7 +15,10 @@
       >
         <i class="text-sm text-white" [class]="difficultyIcon(task().difficulty)"></i>
       </div>
-      <h3 class="min-w-0 flex-1 truncate font-semibold text-gray-900 dark:text-white">
+      <h3
+        class="min-w-0 flex-1 truncate font-semibold text-gray-900 transition dark:text-white"
+        [class]="{ 'line-through': !task().started, 'group-hover:no-underline': !task().started }"
+      >
         {{ task().name }}
       </h3>
       <p-button variant="outlined" severity="secondary" (click)="onEditTask()">
@@ -21,7 +26,10 @@
       </p-button>
     </div>
   </ng-template>
-  <p class="grow text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+  <p
+    class="grow text-sm leading-relaxed text-gray-600 dark:text-gray-300"
+    [class]="{ 'line-through': !task().started, 'group-hover:no-underline': !task().started }"
+  >
     {{ task().description }}
   </p>
   @if (task().tags.length) {
