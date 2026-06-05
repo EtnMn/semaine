@@ -11,6 +11,7 @@ import { InputTextModule } from "primeng/inputtext";
 import { ToggleSwitchModule } from "primeng/toggleswitch";
 
 import { Task } from "./task.model";
+import { TaskFormDialogComponent } from "./task-form-dialog.component";
 import { TasksService } from "./tasks.service";
 import { TaskCardComponent } from "./task-card.component";
 import { EmptyMessageComponent } from "@shared/components/empty-message/empty-message.components";
@@ -25,6 +26,7 @@ import { EmptyMessageComponent } from "@shared/components/empty-message/empty-me
     DataViewModule,
     ButtonModule,
     TaskCardComponent,
+    TaskFormDialogComponent,
     EmptyMessageComponent,
     IconFieldModule,
     InputIconModule,
@@ -35,11 +37,15 @@ import { EmptyMessageComponent } from "@shared/components/empty-message/empty-me
 })
 export class TasksComponent implements OnInit {
   private readonly tasksService = inject(TasksService);
+  private readonly messageService = inject(MessageService);
+
+  protected readonly editingTask = signal<Task | null>(null);
   protected readonly loading = signal(false);
+  protected readonly taskFormDisplayed = signal(false);
+  protected readonly showOnlyStarted = signal(true);
   protected readonly tasks = signal<Task[]>([]);
   protected readonly total = signal(0);
   protected readonly searchTerm = signal("");
-  protected readonly showStartedOnly = signal(true);
   protected readonly pageSize = 9;
 
   private searchDebounce: ReturnType<typeof setTimeout> | undefined;
@@ -55,7 +61,7 @@ export class TasksComponent implements OnInit {
         page / this.pageSize,
         this.pageSize,
         this.searchTerm(),
-        this.showStartedOnly(),
+        this.showOnlyStarted(),
       );
       this.tasks.set(tasks);
       this.total.set(total);
@@ -76,11 +82,60 @@ export class TasksComponent implements OnInit {
     }, 300);
   }
 
-  protected async onCreateTask(): Promise<void> {
-    // to be implemented.
+  protected onCreateTask(): void {
+    this.editingTask.set(null);
+    this.taskFormDisplayed.set(true);
   }
 
   protected async onEditTask(taskId: string): Promise<void> {
-    console.log("Edit task", taskId);
+    try {
+      const task = await this.tasksService.getTask(taskId);
+      this.editingTask.set(task);
+      this.taskFormDisplayed.set(true);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to load task";
+      this.messageService.add({ severity: "error", summary: "Error", detail: message });
+    }
+  }
+
+  protected async onSaveTask(data: Omit<Task, "id">): Promise<void> {
+    const editingId = this.editingTask()?.id;
+    try {
+      if (editingId) {
+        await this.tasksService.updateTask(editingId, data);
+        this.messageService.add({
+          severity: "success",
+          summary: "Task updated",
+          detail: `"${data.name}" has been updated.`,
+        });
+      } else {
+        await this.tasksService.createTask(data);
+        this.messageService.add({
+          severity: "success",
+          summary: "Task created",
+          detail: `"${data.name}" has been created.`,
+        });
+      }
+      this.taskFormDisplayed.set(false);
+      this.loadPage(0);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "An error occurred";
+      this.messageService.add({ severity: "error", summary: "Error", detail: message });
+    }
+  }
+
+  protected async onDeleteTask(taskId: string): Promise<void> {
+    try {
+      await this.tasksService.deleteTask(taskId);
+      this.messageService.add({
+        severity: "success",
+        summary: "Task deleted",
+        detail: "The task has been deleted.",
+      });
+      this.loadPage(0);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "An error occurred";
+      this.messageService.add({ severity: "error", summary: "Error", detail: message });
+    }
   }
 }

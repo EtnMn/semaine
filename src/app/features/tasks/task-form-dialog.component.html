@@ -1,0 +1,106 @@
+<p-dialog
+  [header]="dialogTitle()"
+  [modal]="true"
+  [(visible)]="displayed"
+  [draggable]="false"
+  [closable]="!loading()"
+  [dismissableMask]="true"
+  (onHide)="onHide()"
+>
+  <div [formGroup]="form" class="flex flex-col gap-4 py-2">
+    <div class="flex flex-col gap-1">
+      <div class="flex flex-col gap-1">
+        <label for="task-name" class="font-medium">Name <span class="text-red-500">*</span></label>
+        <input
+          id="task-name"
+          pInputText
+          formControlName="name"
+          placeholder="Task name"
+          class="w-full"
+          [invalid]="form.controls.name.invalid && form.controls.name.touched"
+        />
+        @if (form.controls.name.invalid && form.controls.name.touched) {
+          <p-message severity="error" size="small" variant="simple"> Name is required. </p-message>
+        }
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label for="task-description" class="font-medium">Description</label>
+      <textarea
+        id="task-description"
+        pTextarea
+        formControlName="description"
+        placeholder="Task description"
+        rows="3"
+        class="w-full resize-none"
+      ></textarea>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div class="flex flex-col gap-1">
+        <label class="font-medium">Periodicity</label>
+        <p-select
+          formControlName="periodicity"
+          [options]="periodicityOptions"
+          optionLabel="label"
+          optionValue="value"
+          appendTo="body"
+        />
+      </div>
+      <div class="flex flex-col gap-1">
+        <label class="font-medium">Difficulty</label>
+        <p-select
+          formControlName="difficulty"
+          [options]="difficultyOptions"
+          optionLabel="label"
+          optionValue="value"
+          appendTo="body"
+        />
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div class="flex flex-col gap-1">
+        <label class="font-medium">Duration <span class="text-red-500">*</span></label>
+        <p-inputnumber formControlName="duration" [min]="0" placeholder="Minutes" suffix=" min" />
+        @if (form.controls.duration.invalid && form.controls.duration.touched) {
+          <p-message severity="error" size="small" variant="simple">
+            Duration is required.
+          </p-message>
+        }
+      </div>
+      <div class="flex flex-col gap-1">
+        <label class="font-medium">Started</label>
+        <div class="flex items-center gap-2 pt-1">
+          <p-toggleSwitch formControlName="started" />
+          <span class="text-sm text-gray-500 dark:text-gray-400">
+            {{ form.controls.started.value ? "Active" : "Inactive" }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label class="font-medium">Tags</label>
+      <p-autocomplete
+        formControlName="tags"
+        [multiple]="true"
+        [typeahead]="false"
+        [forceSelection]="false"
+        placeholder="Type and press Enter..."
+      />
+    </div>
+  </div>
+
+  <ng-template #footer>
+    <p-button
+      label="Cancel"
+      severity="secondary"
+      variant="outlined"
+      [disabled]="loading()"
+      (onClick)="displayed.set(false)"
+    />
+    <p-button label="Save" [loading]="loading()" [disabled]="loading()" (onClick)="onSubmit()" />
+  </ng-template>
+</p-dialog>

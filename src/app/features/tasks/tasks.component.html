@@ -14,6 +14,13 @@
 </div>
 
 <p-toast />
+
+<app-task-form-dialog
+  [task]="editingTask()"
+  [(displayed)]="taskFormDisplayed"
+  (taskSaved)="onSaveTask($event)"
+/>
+
 <p-confirmdialog />
 
 <p-dataview
@@ -52,7 +59,7 @@
       <div class="ml-auto flex items-center gap-2">
         <span class="text-sm text-gray-600 dark:text-gray-400">Started</span>
         <p-toggleSwitch
-          [(ngModel)]="showStartedOnly"
+          [(ngModel)]="showOnlyStarted"
           (onChange)="this.loadPage(0)"
         ></p-toggleSwitch>
       </div>
@@ -62,7 +69,11 @@
   <ng-template #list let-tasks>
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       @for (task of tasks; track task.id) {
-        <app-task-card [task]="task" (taskEdited)="onEditTask($event)" />
+        <app-task-card
+          [task]="task"
+          (taskEdited)="onEditTask($event)"
+          (taskDeleted)="onDeleteTask($event)"
+        />
       }
     </div>
   </ng-template>

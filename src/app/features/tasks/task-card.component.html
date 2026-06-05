@@ -1,4 +1,5 @@
 <p-card
+  class="cursor-pointer"
   [style]="{ height: '100%', display: 'flex' }"
   [pt]="{
     body: { style: { flex: '1', display: 'flex' } },
@@ -6,6 +7,7 @@
   }"
   [class.opacity-75]="!task().started"
   [class.grayscale]="!task().started"
+  (click)="onEditTask()"
 >
   <ng-template #header>
     <div class="flex items-center gap-3 border-b border-gray-200 px-4 py-3 dark:border-gray-700">
@@ -21,11 +23,17 @@
       >
         {{ task().name }}
       </h3>
-      <p-button variant="outlined" severity="secondary" (click)="onEditTask()">
-        <i class="pi pi-ellipsis-h text-sm"></i>
-      </p-button>
+      <p-menu #menu [model]="items" [popup]="true" appendTo="body" />
+      <p-button
+        variant="outlined"
+        severity="secondary"
+        (click)="menu.toggle($event); $event.stopPropagation()"
+        icon="pi pi-ellipsis-h"
+        class="p-button-rounded p-button-sm"
+      />
     </div>
   </ng-template>
+  <p-confirmdialog />
   <p
     class="grow text-sm leading-relaxed text-gray-600 dark:text-gray-300"
     [class]="{ 'line-through': !task().started, 'group-hover:no-underline': !task().started }"

@@ -36,7 +36,8 @@ export class TasksService {
       .from("tasks")
       .select("id, name, description, periodicity, difficulty, started, duration, tags", {
         count: "exact",
-      });
+      })
+      .order("name", { ascending: true });
 
     // Filter by search term (name or description contains)
     if (search.trim()) {
