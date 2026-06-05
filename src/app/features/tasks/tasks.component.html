@@ -1,1 +1,80 @@
-<h1 class="mb-6 text-xl font-bold">Manage tasks</h1>
+<div class="mb-8 flex items-center justify-between">
+  <div>
+    <h1 class="text-2xl font-bold">
+      Manage tasks
+      @if (total() > 0) {
+        <span>({{ total() }})</span>
+      }
+    </h1>
+    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Organise and track your tasks</p>
+  </div>
+  @if (total() > 0) {
+    <p-button (onClick)="onCreateTask()">Create Task</p-button>
+  }
+</div>
+
+<p-toast />
+
+<app-task-form-dialog
+  [task]="editingTask()"
+  [(displayed)]="taskFormDisplayed"
+  (taskSaved)="onSaveTask($event)"
+/>
+
+<p-confirmdialog />
+
+<p-dataview
+  #dv
+  [value]="tasks()"
+  [rows]="pageSize"
+  [paginator]="true"
+  [totalRecords]="total()"
+  [lazy]="true"
+  [loading]="loading()"
+  [alwaysShowPaginator]="false"
+  [dt]="{ contentBackground: 'transparent', headerBackground: 'transparent' }"
+  [style]="{ '--p-paginator-background': 'transparent' }"
+  (onPage)="loadPage($event.first)"
+>
+  @if (!loading()) {
+    <ng-template #emptymessage>
+      <app-empty-message title="No tasks yet" caption="Create your first task to get started.">
+        <p-button footer (onClick)="onCreateTask()">Create Task</p-button>
+      </app-empty-message>
+    </ng-template>
+  }
+
+  <ng-template #header>
+    <div class="-mx-4 flex items-center gap-4">
+      <p-iconfield>
+        <p-inputicon class="pi pi-search" />
+        <input
+          pSize="small"
+          type="text"
+          pInputText
+          placeholder="Search"
+          (input)="onSearch($event.target.value)"
+        />
+      </p-iconfield>
+      <div class="ml-auto flex items-center gap-2">
+        <span class="text-sm text-gray-600 dark:text-gray-400">Started</span>
+        <p-toggleSwitch
+          [(ngModel)]="showOnlyStarted"
+          (onChange)="this.loadPage(0)"
+        ></p-toggleSwitch>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #list let-tasks>
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      @for (task of tasks; track task.id) {
+        <app-task-card
+          [task]="task"
+          (taskEdited)="onEditTask($event)"
+          (taskDeleted)="onDeleteTask($event)"
+        />
+      }
+    </div>
+  </ng-template>
+</p-dataview>

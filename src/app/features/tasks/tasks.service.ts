@@ -29,13 +29,27 @@ export class TasksService {
   public async getTasksPage(
     page: number,
     pageSize = 20,
+    search = "",
+    started = true,
   ): Promise<{ tasks: Task[]; total: number }> {
-    const { data, error, count } = await this.supabaseService.client
+    let query = this.supabaseService.client
       .from("tasks")
       .select("id, name, description, periodicity, difficulty, started, duration, tags", {
         count: "exact",
       })
-      .range(page * pageSize, (page + 1) * pageSize - 1);
+      .order("name", { ascending: true });
+
+    // Filter by search term (name or description contains)
+    if (search.trim()) {
+      query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%`);
+    }
+
+    // Filter by started status
+    if (started) {
+      query = query.eq("started", true);
+    }
+
+    const { data, error, count } = await query.range(page * pageSize, (page + 1) * pageSize - 1);
 
     if (error) {
       throw new Error(error.message);

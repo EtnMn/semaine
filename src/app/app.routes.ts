@@ -18,6 +18,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import("@features/users/users.component").then((m) => m.UsersComponent),
       },
+      {
+        path: "tasks",
+        loadComponent: () =>
+          import("@features/tasks/tasks.component").then((m) => m.TasksComponent),
+      },
     ],
   },
   {

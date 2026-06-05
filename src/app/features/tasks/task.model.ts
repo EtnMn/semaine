@@ -5,7 +5,7 @@ export const TASK_PERIODICITIES = ["unique", "daily", "weekly", "monthly", "year
 export type TaskPeriodicity = (typeof TASK_PERIODICITIES)[number];
 
 export interface Task {
-  id: number;
+  id: string;
   description: string;
   difficulty: TaskDifficulty;
   duration: number;

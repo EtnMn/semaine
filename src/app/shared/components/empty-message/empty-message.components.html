@@ -1,0 +1,14 @@
+<div class="flex flex-col items-center justify-center gap-4 py-20 text-center">
+  <img src="empty-box.svg" alt="" aria-hidden="true" class="w-52 select-none" />
+
+  <div>
+    <p class="text-lg font-semibold text-gray-700 dark:text-gray-200">{{ title() }}</p>
+    @if (caption()) {
+      <p class="mt-1 text-sm text-gray-400 dark:text-gray-500">
+        {{ caption() }}
+      </p>
+    }
+  </div>
+
+  <ng-content select="[footer]" />
+</div>
