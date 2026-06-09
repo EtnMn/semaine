@@ -39,7 +39,7 @@ jobs:
           ref: ${{ inputs.ref || github.head_ref || github.ref_name }}
 
       - name: Setup TFLint
-        uses: terraform-linters/setup-tflint@v4
+        uses: terraform-linters/setup-tflint@v6
         with:
           tflint_version: ${{ inputs.tflint_version }}
 
