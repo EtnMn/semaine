@@ -23,7 +23,7 @@ jobs:
           lfs: false
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: 10.25.0
 
@@ -52,7 +52,7 @@ jobs:
         run: pnpm build
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: web-app-artifacts
           path: dist/etn-semaine/browser
