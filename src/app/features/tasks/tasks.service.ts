@@ -1,5 +1,4 @@
 import { inject, Injectable } from "@angular/core";
-
 import { SupabaseService } from "@core/services/supabase.service";
 
 import { Task } from "./task.model";
