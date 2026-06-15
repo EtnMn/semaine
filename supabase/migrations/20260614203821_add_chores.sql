@@ -10,7 +10,7 @@
 CREATE TABLE public.chores (
   id          uuid    PRIMARY KEY DEFAULT gen_random_uuid(),
   date        date    NOT NULL,
-  task_id     uuid    UNIQUE REFERENCES public.tasks(id) ON DELETE CASCADE
+  task_id     uuid    NOT NULL UNIQUE REFERENCES public.tasks(id) ON DELETE CASCADE
 );
 
 -- 2. Enable Row Level Security
