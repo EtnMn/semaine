@@ -26,4 +26,14 @@ export class ChoresService {
 
     return chores ?? [];
   }
+
+  public async closeChore(choreId: string): Promise<void> {
+    const { error } = await this.supabaseService.client.functions.invoke("close-chore", {
+      body: { chore_id: choreId },
+    });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+  }
 }
