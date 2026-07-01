@@ -1,0 +1,98 @@
+<p-toast />
+
+<p-dataview
+  [value]="chores()"
+  [loading]="loading()"
+  [dt]="{ contentBackground: 'transparent', headerBackground: 'transparent' }"
+  [style]="{ '--p-paginator-background': 'transparent' }"
+>
+  <ng-template #emptymessage>
+    <div class="flex flex-col items-center justify-center py-12">
+      <i class="pi pi-inbox mb-4 text-4xl text-gray-400 dark:text-gray-500"></i>
+      <p class="text-gray-600 dark:text-gray-400">No chores scheduled.</p>
+    </div>
+  </ng-template>
+
+  <ng-template #list let-chores>
+    <div class="chore-grid">
+      @for (chore of chores; track chore.id) {
+        <div class="chore-slot" [class.chore-slot--closing]="closingChoreIds().includes(chore.id)">
+          <div
+            class="chore-block relative block aspect-square cursor-pointer overflow-hidden rounded-xl bg-gray-50 text-left text-[13px] font-normal normal-case no-underline shadow-md dark:bg-gray-900"
+            [class]="getChoreColorClass(chore.task.difficulty)"
+            [class.chore-closing]="closingChoreIds().includes(chore.id)"
+            tabindex="0"
+            role="article"
+            [attr.aria-label]="chore.task.name"
+          >
+            <!-- Genre / tag bar -->
+            <div
+              class="chore-genre items-ce absolute -top-8 z-[4] flex h-8 w-full gap-1.5 overflow-hidden px-4 pt-4 text-xs font-semibold text-white/90"
+            >
+              <i class="pi" [class]="getPeriodicityIcon(chore.task.periodicity)"></i>
+              {{ chore.task.tags?.[0] ?? chore.task.periodicity }}
+            </div>
+
+            <!-- Main card face -->
+            <div
+              class="chore-main-inform absolute top-0 -bottom-[0.875em] z-[3] w-full overflow-hidden bg-white dark:bg-gray-800"
+            >
+              <div class="chore-main-inform-inner absolute bottom-[0.875em] z-10 w-full px-3">
+                <div
+                  class="mb-2 inline-flex items-center gap-1 rounded-full py-0.5 text-[0.85em] font-semibold"
+                  [class]="getDifficultyBadgeClass(chore.task.difficulty)"
+                >
+                  <span class="flex items-center gap-1 px-1">
+                    <i class="pi pi-clock text-[0.9em]"></i>
+                    {{ chore.task.duration }} min
+                  </span>
+                </div>
+                <div class="mb-1 text-2xl leading-tight font-black text-gray-900 dark:text-gray-50">
+                  {{ chore.task.name }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Description (revealed on hover) -->
+            <div
+              class="chore-description relative top-8 z-[5] flex h-[calc(100%-4.625em)] w-full flex-col justify-between overflow-hidden px-3 pt-2 pb-3"
+            >
+              <p class="text-base leading-relaxed text-gray-600 dark:text-gray-300">
+                {{ chore.task.description }}
+              </p>
+              <p-button
+                [disabled]="closingChoreIds().includes(chore.id)"
+                (onClick)="onCloseChore(chore.id)"
+                icon="pi pi-check"
+                severity="success"
+                label="Done"
+                text
+              />
+            </div>
+
+            <!-- Bottom extra bar -->
+            <div
+              class="chore-extra-inform absolute bottom-0 z-[4] h-[4.625em] w-full overflow-hidden text-white"
+            >
+              <div
+                class="chore-extra-inform-inner absolute bottom-0 h-[3.526em] w-full px-3 text-[1.2em] leading-none"
+              >
+                <div class="truncate font-semibold">{{ chore.task.name }}</div>
+                <div class="mt-2 flex items-center gap-3 text-[0.85em] text-white/80">
+                  <span class="flex items-center gap-1">
+                    <i class="pi pi-clock"></i>
+                    {{ chore.task.duration }} min
+                  </span>
+                  <span class="flex items-center gap-1">
+                    <i class="pi pi-tag"></i>
+                    {{ chore.task.difficulty }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </ng-template>
+</p-dataview>

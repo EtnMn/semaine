@@ -65,6 +65,12 @@ export class TasksComponent implements OnInit {
       );
       this.tasks.set(tasks);
       this.total.set(total);
+    } catch (error) {
+      this.messageService.add({
+        severity: "error",
+        summary: "Failed to load tasks.",
+        detail: error instanceof Error ? error.message : String(error),
+      });
     } finally {
       this.loading.set(false);
     }
