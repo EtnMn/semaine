@@ -13,6 +13,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: feature-workflows
+  cancel-in-progress: false
+
 jobs:
   build:
     name: Build SWA
