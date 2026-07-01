@@ -29,7 +29,10 @@ export class ChoresComponent implements OnInit {
   private async loadChores(): Promise<void> {
     this.loading.set(true);
     try {
-      this.chores.set(await this.choresService.getNextChores());
+      let newChores = await this.choresService.getNextChores();
+      newChores = newChores.filter((c) => !this.chores().some((existing) => existing.id === c.id));
+      newChores = newChores.slice(0, 12 - this.chores().length);
+      this.chores.set(this.chores().concat(newChores));
     } catch (error) {
       this.messageService.add({
         severity: "error",
@@ -48,6 +51,7 @@ export class ChoresComponent implements OnInit {
       setTimeout(() => {
         this.chores.update((list) => list.filter((c) => c.id !== choreId));
         this.closingChoreIds.update((ids) => ids.filter((id) => id !== choreId));
+        this.loadChores();
       }, 750);
     } catch (error) {
       this.closingChoreIds.update((ids) => ids.filter((id) => id !== choreId));
