@@ -13,7 +13,7 @@ export class ChoresService {
       .from("chores")
       .select("id, date, task:tasks(name, description, periodicity, difficulty, duration, tags)")
       .order("date", { ascending: true })
-      .range(0, 19);
+      .range(0, 11);
 
     const { data: chores, error } = (await query) as {
       data: Chore[] | null;
