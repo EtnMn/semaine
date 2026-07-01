@@ -69,10 +69,10 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
-    // Fetch the chore to get task_id
+    // Fetch the chore to get task_id and date
     const { data: chore, error: choreError } = await supabaseAdmin
       .from("chores")
-      .select("id, task_id")
+      .select("id, task_id, date")
       .eq("id", choreId)
       .single();
 
@@ -116,8 +116,10 @@ Deno.serve(async (req) => {
           });
         }
       } else {
-        // Insert the next occurrence based on today's date
-        const nextDate = computeNextDate(new Date(), task.periodicity);
+        // Insert the next occurrence based on the max of chore date and today's date
+        const choreDate = new Date(chore.date);
+        const baseDate = choreDate > new Date() ? choreDate : new Date();
+        const nextDate = computeNextDate(baseDate, task.periodicity);
         const { error: insertError } = await supabaseAdmin
           .from("chores")
           .insert({ task_id: task.id, date: nextDate });
