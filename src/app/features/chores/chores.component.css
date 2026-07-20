@@ -2,14 +2,8 @@
 .chore-block {
   transition:
     box-shadow 0.3s ease,
-    transform 0.3s ease;
-}
-
-/* Card grid — flex-based so individual slot widths can be animated */
-.chore-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
+    transform 0.3s ease,
+    filter 0.3s ease;
 }
 
 .chore-slot {
@@ -36,10 +30,28 @@
   padding-right: 0 !important;
 }
 
-.chore-slot:hover .chore-block,
 .chore-block:focus {
   transform: translateY(-4px);
   box-shadow: 0 8px 20px rgb(0 0 0 / 0.14);
+}
+
+/* Difficulty theme variables */
+.chore-block--easy {
+  --chore-color: #84cc16;
+  --chore-color-dark: #65a30d;
+  --chore-color-hover: #a8e035;
+}
+
+.chore-block--medium {
+  --chore-color: #f59e0b;
+  --chore-color-dark: #d97706;
+  --chore-color-hover: #fbb040;
+}
+
+.chore-block--hard {
+  --chore-color: #e11d48;
+  --chore-color-dark: #be123c;
+  --chore-color-hover: #f43f5e;
 }
 
 /* Accent top stripe */
@@ -52,66 +64,75 @@
   height: 3px;
   z-index: 4;
   border-radius: 0.75rem 0.75rem 0 0;
+  background: var(--chore-color);
 }
 
-.chore-block--easy::before {
-  background: #84cc16;
-}
-
-.chore-block--medium::before {
-  background: #f59e0b;
-}
-
-.chore-block--hard::before {
-  background: #e11d48;
+/* Hover effect */
+.chore-block:hover {
+  filter: drop-shadow(0 12px 24px rgb(0 0 0 / 0.25));
 }
 
 /* Transitions */
 .chore-description {
   position: relative;
-  overflow: visible;
   transform: translateY(1.5em);
   opacity: 0;
+  pointer-events: none;
   transition:
     transform 0.4s cubic-bezier(0.17, 0.84, 0.44, 1),
     opacity 0.4s ease-out;
 }
 
-.chore-slot:hover .chore-description,
 .chore-block:focus .chore-description,
 .chore-block:focus-within .chore-description {
   transform: translateY(0);
   opacity: 1;
   transition-delay: 0.15s;
+  animation: chore-description-interactive 0s 0.6s forwards;
 }
 
-/* Position done button on top of bottom bar */
-.chore-description p-button {
+@keyframes chore-description-interactive {
+  to {
+    pointer-events: auto;
+  }
+}
+
+/* Done button — sits just above the extra-inform bar */
+.chore-done-btn {
   position: absolute;
-  bottom: 2rem; /* compensates for top-8 offset on the description container */
-  left: 0;
-  right: 0;
-  width: 100% !important;
-  z-index: 5;
+  bottom: 2.5rem; /* compensates for the top-8 offset so the button bottom lands at the extra-inform top */
+  left: 0.75rem; /* matches description px-3 */
+  right: 0.75rem;
 }
 
-.chore-description p-button ::ng-deep .p-button {
-  width: 100% !important;
-  border-radius: 0;
-  margin: 0;
+.chore-done-btn ::ng-deep .p-button {
+  width: 100%;
+  background: var(--chore-color-dark) !important;
+  border-color: var(--chore-color-dark) !important;
+  color: white !important;
+}
+
+.chore-done-btn:hover ::ng-deep .p-button {
+  background: var(--chore-color-hover) !important;
 }
 
 .chore-genre {
+  background: var(--chore-color-dark);
   transition:
     top 0.25s cubic-bezier(0.22, 0.61, 0.36, 1),
     padding 0.25s cubic-bezier(0.22, 0.61, 0.36, 1) 0.25s;
 }
 
 .chore-main-inform {
-  border-bottom: 2.125em solid var(--p-surface-800); /* overridden by theme */
+  border-bottom: 2.125em solid var(--chore-color);
   transition:
     bottom 0.417s cubic-bezier(0.17, 0.84, 0.44, 1) 0.083s,
-    border-bottom 0.333s cubic-bezier(0.39, 0.58, 0.57, 1) 0.167s;
+    border-bottom 0.333s cubic-bezier(0.39, 0.58, 0.57, 1) 0.167s,
+    filter 0.3s ease;
+}
+
+.chore-block:hover .chore-main-inform {
+  border-bottom-color: var(--chore-color-hover);
 }
 
 .chore-main-inform-inner {
@@ -119,13 +140,14 @@
 }
 
 .chore-extra-inform {
-  background-color: var(--p-surface-800); /* overridden by theme */
+  background-color: var(--chore-color-dark);
   transform: translateY(100%); /* fully hidden at rest, clipped by card overflow */
-  transition: transform 0.5s cubic-bezier(0.17, 0.84, 0.44, 1);
+  transition:
+    transform 0.5s cubic-bezier(0.17, 0.84, 0.44, 1),
+    filter 0.3s ease;
 }
 
 /* Hover state */
-.chore-slot:hover .chore-genre,
 .chore-block:focus .chore-genre,
 .chore-block:focus-within .chore-genre {
   top: 0;
@@ -133,61 +155,20 @@
   transition-delay: 0.5s, 0.588s;
 }
 
-.chore-slot:hover .chore-main-inform,
 .chore-block:focus .chore-main-inform,
 .chore-block:focus-within .chore-main-inform {
   bottom: 100%;
   border-bottom-width: 0;
 }
 
-.chore-slot:hover .chore-main-inform-inner,
 .chore-block:focus .chore-main-inform-inner,
 .chore-block:focus-within .chore-main-inform-inner {
   bottom: -30em;
 }
 
-.chore-slot:hover .chore-extra-inform,
 .chore-block:focus .chore-extra-inform,
 .chore-block:focus-within .chore-extra-inform {
   transform: translateY(0);
-}
-
-/* Genre bar colors */
-.chore-block--easy .chore-genre {
-  background: #65a30d;
-}
-
-.chore-block--medium .chore-genre {
-  background: #d97706;
-}
-
-.chore-block--hard .chore-genre {
-  background: #be123c;
-}
-
-/* Difficulty colors */
-.chore-block--easy .chore-main-inform {
-  border-bottom-color: #84cc16;
-}
-
-.chore-block--easy .chore-extra-inform {
-  background: #65a30d;
-}
-
-.chore-block--medium .chore-main-inform {
-  border-bottom-color: #f59e0b;
-}
-
-.chore-block--medium .chore-extra-inform {
-  background: #d97706;
-}
-
-.chore-block--hard .chore-main-inform {
-  border-bottom-color: #e11d48;
-}
-
-.chore-block--hard .chore-extra-inform {
-  background: #be123c;
 }
 
 /* Completion animation */
@@ -234,5 +215,11 @@
   .chore-slot--closing {
     width: 0 !important;
     padding: 0 !important;
+  }
+
+  /* Restore pointer-events since the animation is disabled */
+  .chore-block:focus .chore-description,
+  .chore-block:focus-within .chore-description {
+    pointer-events: auto;
   }
 }

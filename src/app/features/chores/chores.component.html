@@ -14,9 +14,12 @@
   </ng-template>
 
   <ng-template #list let-chores>
-    <div class="chore-grid">
+    <div class="chore-grid flex flex-wrap justify-center gap-6 sm:justify-start">
       @for (chore of chores; track chore.id) {
-        <div class="chore-slot" [class.chore-slot--closing]="closingChoreIds().includes(chore.id)">
+        <div
+          class="chore-slot max-w-sm"
+          [class.chore-slot--closing]="closingChoreIds().includes(chore.id)"
+        >
           <div
             class="chore-block relative block aspect-square cursor-pointer overflow-hidden rounded-xl bg-gray-50 text-left text-[13px] font-normal normal-case no-underline shadow-md dark:bg-gray-900"
             [class]="getChoreColorClass(chore.task.difficulty)"
@@ -53,20 +56,22 @@
               </div>
             </div>
 
-            <!-- Description (revealed on hover) -->
+            <!-- Description (revealed on focus) -->
             <div
               class="chore-description relative top-8 z-[5] flex h-[calc(100%-4.625em)] w-full flex-col justify-between overflow-hidden px-3 pt-2 pb-3"
             >
-              <p class="text-base leading-relaxed text-gray-600 dark:text-gray-300">
+              <p
+                class="max-h-2/3 scrollbar-thin overflow-x-auto text-base leading-relaxed text-gray-600 dark:text-gray-300"
+              >
                 {{ chore.task.description }}
               </p>
               <p-button
+                class="chore-done-btn"
                 [disabled]="closingChoreIds().includes(chore.id)"
                 (onClick)="onCloseChore(chore.id)"
                 icon="pi pi-check"
-                severity="success"
+                size="small"
                 label="Done"
-                text
               />
             </div>
 
