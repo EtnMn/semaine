@@ -5,13 +5,12 @@ import { ToastModule } from "primeng/toast";
 import { DataViewModule } from "primeng/dataview";
 import { Chore } from "./chore.model";
 import { ButtonModule } from "primeng/button";
-import { TaskDifficulty } from "@features/tasks/task.model";
+import { ChoreCardComponent } from "./chore-card.component";
 
 @Component({
   selector: "app-chores",
   templateUrl: "./chores.component.html",
-  styleUrl: "./chores.component.css",
-  imports: [ToastModule, DataViewModule, ButtonModule],
+  imports: [ToastModule, DataViewModule, ButtonModule, ChoreCardComponent],
   providers: [MessageService],
 })
 export class ChoresComponent implements OnInit {
@@ -61,40 +60,5 @@ export class ChoresComponent implements OnInit {
         detail: error instanceof Error ? error.message : String(error),
       });
     }
-  }
-
-  protected getChoreColorClass(difficulty: TaskDifficulty): string {
-    switch (difficulty) {
-      case "easy":
-        return "chore-block--easy";
-      case "medium":
-        return "chore-block--medium";
-      case "hard":
-        return "chore-block--hard";
-      default: {
-        const exhaustiveCheck: never = difficulty;
-        return exhaustiveCheck;
-      }
-    }
-  }
-
-  protected getDifficultyBadgeClass(difficulty: string): string {
-    const classes: Record<string, string> = {
-      easy: "bg-lime-100 text-lime-700 dark:bg-lime-500/15 dark:text-lime-400",
-      medium: "bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400",
-      hard: "bg-rose-100 text-rose-700 dark:bg-rose-500/15 dark:text-rose-400",
-    };
-    return classes[difficulty.toLowerCase()] ?? classes["medium"];
-  }
-
-  protected getPeriodicityIcon(periodicity: string): string {
-    const icons: Record<string, string> = {
-      unique: "pi-star",
-      daily: "pi-sun",
-      weekly: "pi-calendar",
-      monthly: "pi-calendar-plus",
-      yearly: "pi-history",
-    };
-    return icons[periodicity.toLowerCase()] ?? "pi-calendar";
   }
 }
