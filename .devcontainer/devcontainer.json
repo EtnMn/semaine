@@ -9,7 +9,12 @@
   "features": {
     "ghcr.io/devcontainers-extra/features/angular-cli:2": {},
     "ghcr.io/devcontainers-extra/features/pnpm:2": {},
-    "ghcr.io/devcontainers-extra/features/supabase-cli:1": {},
+    "ghcr.io/devcontainers-extra/features/gh-release:1": {
+      "repo": "supabase/cli",
+      "binaryNames": "supabase",
+      "version": "2.109.1",
+      "assetRegex": "^supabase_\\d+\\.\\d+\\.\\d+_linux_amd64\\.tar\\.gz$"
+    },
     "ghcr.io/devcontainers-extra/features/starship:1": {},
     "ghcr.io/devcontainers/features/azure-cli:1": {},
     "ghcr.io/devcontainers/features/terraform:1": {}
