@@ -1,0 +1,32 @@
+/* Difficulty color tokens — mirrors the palette used by app-chore-card so both
+   card styles read as the same design language. */
+.task-card--easy {
+  --task-color: #84cc16;
+  --task-color-dark: #65a30d;
+}
+
+.task-card--medium {
+  --task-color: #f59e0b;
+  --task-color-dark: #d97706;
+}
+
+.task-card--hard {
+  --task-color: #e11d48;
+  --task-color-dark: #be123c;
+}
+
+/* Accent top stripe, echoing the chore card's top accent */
+.task-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: 0.75rem 0.75rem 0 0;
+  background: var(--task-color);
+}
+
+.task-icon-badge {
+  background: var(--task-color-dark);
+}

@@ -1,72 +1,70 @@
-<p-card
-  class="cursor-pointer"
-  [style]="{ height: '100%', display: 'flex' }"
-  [pt]="{
-    body: { style: { flex: '1', display: 'flex' } },
-    content: { style: { flex: '1' } },
-  }"
+<div
+  class="task-card relative flex h-full flex-col overflow-hidden rounded-xl bg-white text-left shadow-md transition duration-300 hover:-translate-y-0.5 hover:shadow-lg dark:bg-gray-800"
+  [class]="getDifficultyColorClass(task().difficulty)"
   [class.opacity-75]="!task().started"
   [class.grayscale]="!task().started"
-  (click)="onEditTask()"
 >
-  <ng-template #header>
-    <div class="flex items-center gap-3 border-b border-gray-200 px-4 py-3 dark:border-gray-700">
-      <div
-        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
-        [class]="difficultyBgClass(task().difficulty)"
-      >
-        <i class="text-sm text-white" [class]="difficultyIcon(task().difficulty)"></i>
-      </div>
-      <h3
-        class="min-w-0 flex-1 truncate font-semibold text-gray-900 transition dark:text-white"
-        [class]="{ 'line-through': !task().started, 'group-hover:no-underline': !task().started }"
-      >
-        {{ task().name }}
-      </h3>
-      <p-menu #menu [model]="items" [popup]="true" appendTo="body" />
-      <p-button
-        variant="outlined"
-        severity="secondary"
-        (click)="menu.toggle($event); $event.stopPropagation()"
-        icon="pi pi-ellipsis-h"
-        class="p-button-rounded p-button-sm"
-      />
-    </div>
-  </ng-template>
-  <p-confirmdialog />
-  <p
-    class="grow text-sm leading-relaxed text-gray-600 dark:text-gray-300"
-    [class]="{ 'line-through': !task().started, 'group-hover:no-underline': !task().started }"
+  <div
+    class="flex cursor-pointer items-center gap-3 border-b border-gray-200 px-4 py-3 dark:border-gray-700"
+    (click)="onEditTask()"
   >
-    {{ task().description }}
-  </p>
-  @if (task().tags.length) {
-    <div class="mt-3 flex flex-wrap gap-1.5">
-      @for (tag of task().tags; track tag) {
-        <span
-          class="rounded-full bg-white px-2.5 py-0.5 text-xs text-gray-600 ring-1 ring-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:ring-gray-600"
-        >
-          {{ tag }}
-        </span>
-      }
+    <div class="task-icon-badge flex h-9 w-9 shrink-0 items-center justify-center rounded-lg">
+      <i class="text-sm text-white" [class]="difficultyIcon(task().difficulty)"></i>
     </div>
-  }
-  <ng-template #footer>
-    <div
-      class="-mx-5 mt-1 -mb-5 border-t border-gray-200 bg-gray-100 px-5 py-2.5 dark:border-gray-700 dark:bg-gray-900"
+    <h3
+      class="min-w-0 flex-1 truncate font-semibold text-gray-900 dark:text-white"
+      [class.line-through]="!task().started"
     >
-      <div class="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
-        <span class="flex items-center gap-1">
-          <i class="pi pi-refresh"></i>
-          {{ task().periodicity | titlecase }}
-        </span>
-        @if (task().duration) {
-          <span class="flex items-center gap-1">
-            <i class="pi pi-clock"></i>
-            {{ task().duration }} min
+      {{ task().name }}
+    </h3>
+    <p-menu #menu [model]="items" [popup]="true" appendTo="body" />
+    <p-button
+      variant="outlined"
+      severity="secondary"
+      (click)="menu.toggle($event); $event.stopPropagation()"
+      icon="pi pi-ellipsis-h"
+      class="p-button-rounded p-button-sm"
+    />
+  </div>
+  <p-confirmdialog />
+
+  <div class="flex flex-1 cursor-pointer flex-col px-4 py-3" (click)="onEditTask()">
+    <p
+      class="grow text-sm leading-relaxed text-gray-600 dark:text-gray-300"
+      [class.line-through]="!task().started"
+    >
+      {{ task().description }}
+    </p>
+    @if (task().tags.length) {
+      <div class="mt-3 flex flex-wrap gap-1.5">
+        @for (tag of task().tags; track tag) {
+          <span
+            class="rounded-full bg-white px-2.5 py-0.5 text-xs text-gray-600 ring-1 ring-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:ring-gray-600"
+          >
+            {{ tag }}
           </span>
         }
       </div>
-    </div>
-  </ng-template>
-</p-card>
+    }
+  </div>
+
+  <div
+    class="mt-auto flex flex-wrap items-center gap-2 border-t border-gray-200 bg-gray-50 px-4 py-2.5 dark:border-gray-700 dark:bg-gray-900/40"
+  >
+    <span
+      class="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold"
+      [class]="getDifficultyBadgeClass(task().difficulty)"
+    >
+      <i class="pi" [class]="getPeriodicityIcon(task().periodicity)"></i>
+      {{ task().periodicity | titlecase }}
+    </span>
+    @if (task().duration) {
+      <span
+        class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-semibold text-gray-500 dark:bg-gray-700 dark:text-gray-400"
+      >
+        <i class="pi pi-clock"></i>
+        {{ task().duration }} min
+      </span>
+    }
+  </div>
+</div>

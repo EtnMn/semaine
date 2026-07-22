@@ -1,7 +1,6 @@
 import { Component, inject, input, output } from "@angular/core";
 import { TitleCasePipe } from "@angular/common";
 import { Task, TaskDifficulty } from "./task.model";
-import { CardModule } from "primeng/card";
 import { ButtonModule } from "primeng/button";
 import { MenuModule } from "primeng/menu";
 import { ConfirmDialogModule } from "primeng/confirmdialog";
@@ -10,8 +9,9 @@ import { ConfirmationService } from "primeng/api";
 @Component({
   selector: "app-task-card",
   templateUrl: "./task-card.component.html",
-  host: { class: "block h-full group" },
-  imports: [CardModule, ButtonModule, MenuModule, ConfirmDialogModule, TitleCasePipe],
+  styleUrl: "./task-card.component.css",
+  host: { class: "block h-full" },
+  imports: [ButtonModule, MenuModule, ConfirmDialogModule, TitleCasePipe],
   providers: [ConfirmationService],
 })
 export class TaskCardComponent {
@@ -41,12 +41,39 @@ export class TaskCardComponent {
     ];
   }
 
-  protected difficultyBgClass(difficulty: TaskDifficulty): string {
-    return {
-      easy: "bg-lime-500 dark:bg-lime-600",
-      medium: "bg-amber-500 dark:bg-amber-600",
-      hard: "bg-rose-600 dark:bg-rose-700",
-    }[difficulty];
+  protected getDifficultyColorClass(difficulty: TaskDifficulty): string {
+    switch (difficulty) {
+      case "easy":
+        return "task-card--easy";
+      case "medium":
+        return "task-card--medium";
+      case "hard":
+        return "task-card--hard";
+      default: {
+        const exhaustiveCheck: never = difficulty;
+        return exhaustiveCheck;
+      }
+    }
+  }
+
+  protected getDifficultyBadgeClass(difficulty: string): string {
+    const classes: Record<string, string> = {
+      easy: "bg-lime-100 text-lime-700 dark:bg-lime-500/15 dark:text-lime-400",
+      medium: "bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400",
+      hard: "bg-rose-100 text-rose-700 dark:bg-rose-500/15 dark:text-rose-400",
+    };
+    return classes[difficulty.toLowerCase()] ?? classes["medium"];
+  }
+
+  protected getPeriodicityIcon(periodicity: string): string {
+    const icons: Record<string, string> = {
+      unique: "pi-star",
+      daily: "pi-sun",
+      weekly: "pi-calendar",
+      monthly: "pi-calendar-plus",
+      yearly: "pi-history",
+    };
+    return icons[periodicity.toLowerCase()] ?? "pi-calendar";
   }
 
   protected async onEditTask(): Promise<void> {
