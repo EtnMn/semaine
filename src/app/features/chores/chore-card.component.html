@@ -47,7 +47,7 @@
       <p-button
         class="chore-done-btn"
         [disabled]="closing()"
-        (onClick)="closed.emit(chore().id)"
+        (onClick)="onCloseChore(chore().id)"
         icon="pi pi-check"
         size="small"
         label="Done"
@@ -75,4 +75,5 @@
       </div>
     </div>
   </div>
+  <p-confirmdialog />
 </div>

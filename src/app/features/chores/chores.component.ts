@@ -48,9 +48,15 @@ export class ChoresComponent implements OnInit {
     try {
       await this.choresService.closeChore(choreId);
       setTimeout(() => {
+        const choreName = this.chores().find((c) => c.id === choreId)?.task.name ?? "Chore";
         this.chores.update((list) => list.filter((c) => c.id !== choreId));
         this.closingChoreIds.update((ids) => ids.filter((id) => id !== choreId));
         this.loadChores();
+        this.messageService.add({
+          severity: "success",
+          summary: "Chore closed",
+          detail: `"${choreName}" is done!`,
+        });
       }, 750);
     } catch (error) {
       this.closingChoreIds.update((ids) => ids.filter((id) => id !== choreId));
