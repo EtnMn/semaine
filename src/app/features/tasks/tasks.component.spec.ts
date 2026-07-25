@@ -138,7 +138,6 @@ describe("TasksComponent", () => {
     mockTasksService.getTasksPage.mockRejectedValue(new Error("Load error"));
 
     const fixture = TestBed.createComponent(TasksComponent);
-    // Get the component's own MessageService instance
     const messageService = fixture.debugElement.injector.get(MessageService);
     const addSpy = vi.spyOn(messageService, "add");
 

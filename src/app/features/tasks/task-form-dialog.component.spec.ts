@@ -62,7 +62,7 @@ describe("TaskFormDialogComponent", () => {
     fixture.detectChanges();
 
     const component = fixture.componentInstance as unknown as {
-      form: { invalid: boolean; controls: { name: { value: string } } };
+      form: { invalid: boolean };
     };
 
     expect(component.form.invalid).toBe(true);
@@ -75,7 +75,7 @@ describe("TaskFormDialogComponent", () => {
     await fixture.whenStable();
 
     const component = fixture.componentInstance as unknown as {
-      form: { value: { name: string; periodicity: string; difficulty: string } };
+      form: { value: Task };
     };
 
     expect(component.form.value.name).toBe("Existing Task");
@@ -121,7 +121,7 @@ describe("TaskFormDialogComponent", () => {
     fixture.detectChanges();
 
     const component = fixture.componentInstance as unknown as {
-      form: { value: { name: string } };
+      form: { value: Task };
       onHide: () => void;
     };
 

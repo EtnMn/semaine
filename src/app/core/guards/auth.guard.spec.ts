@@ -1,14 +1,15 @@
 import { TestBed } from "@angular/core/testing";
 import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from "@angular/router";
 import { describe, it, expect, beforeEach } from "vitest";
-import { signal } from "@angular/core";
+import { signal, Injector, runInInjectionContext } from "@angular/core";
 import { AuthService } from "@core/services";
 import { authGuard } from "./auth.guard";
 
 describe("authGuard", () => {
   let mockIsAuthenticated: ReturnType<typeof signal<boolean>>;
-  const route = {} as ActivatedRouteSnapshot;
-  const state = {} as RouterStateSnapshot;
+  let injector: Injector;
+  const route = { queryParamMap: { get: () => null } } as unknown as ActivatedRouteSnapshot;
+  const state = { url: "/tasks" } as RouterStateSnapshot;
 
   beforeEach(() => {
     mockIsAuthenticated = signal(false);
@@ -20,17 +21,19 @@ describe("authGuard", () => {
           provide: AuthService,
           useValue: {
             initialized: Promise.resolve(),
-            isAuthenticated: mockIsAuthenticated.asReadonly(),
+            isAuthenticated: () => mockIsAuthenticated(),
           },
         },
       ],
     });
+
+    injector = TestBed.inject(Injector);
   });
 
   it("should allow access when user is authenticated", async () => {
     mockIsAuthenticated.set(true);
 
-    const result = await TestBed.runInInjectionContext(() => authGuard(route, state));
+    const result = await runInInjectionContext(injector, () => authGuard(route, state));
 
     expect(result).toBe(true);
   });
@@ -38,7 +41,7 @@ describe("authGuard", () => {
   it("should redirect to /login when user is not authenticated", async () => {
     mockIsAuthenticated.set(false);
 
-    const result = await TestBed.runInInjectionContext(() => authGuard(route, state));
+    const result = await runInInjectionContext(injector, () => authGuard(route, state));
 
     expect(result).toEqual(["/login"]);
   });
@@ -55,14 +58,15 @@ describe("authGuard", () => {
           provide: AuthService,
           useValue: {
             initialized: initPromise,
-            isAuthenticated: mockIsAuthenticated.asReadonly(),
+            isAuthenticated: () => mockIsAuthenticated(),
           },
         },
       ],
     });
 
+    injector = TestBed.inject(Injector);
     mockIsAuthenticated.set(true);
-    const guardPromise = TestBed.runInInjectionContext(() => authGuard(route, state));
+    const guardPromise = runInInjectionContext(injector, () => authGuard(route, state));
 
     resolveInit();
     const result = await guardPromise;
