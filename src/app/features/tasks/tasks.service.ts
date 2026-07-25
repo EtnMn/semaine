@@ -1,7 +1,7 @@
 import { inject, Injectable } from "@angular/core";
 import { SupabaseService } from "@core/services/supabase.service";
 
-import { Task } from "./task.model";
+import { Task, TaskDifficulty } from "./task.model";
 
 @Injectable({ providedIn: "root" })
 export class TasksService {
@@ -80,5 +80,20 @@ export class TasksService {
     if (error) {
       throw new Error(error.message);
     }
+  }
+
+  public getPeriodicityIcon(periodicity: string): string {
+    const icons: Record<string, string> = {
+      unique: "pi-bolt",
+      daily: "pi-sun",
+      weekly: "pi-calendar",
+      monthly: "pi-calendar-plus",
+      yearly: "pi-globe",
+    };
+    return icons[periodicity.toLowerCase()] ?? "pi-calendar";
+  }
+
+  public getDifficultyIcon(difficulty: TaskDifficulty): string {
+    return { easy: "pi pi-face-smile", medium: "pi pi-star", hard: "pi pi-wrench" }[difficulty];
   }
 }

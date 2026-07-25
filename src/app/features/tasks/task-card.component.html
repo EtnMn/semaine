@@ -9,7 +9,10 @@
     (click)="onEditTask()"
   >
     <div class="task-icon-badge flex h-9 w-9 shrink-0 items-center justify-center rounded-lg">
-      <i class="text-sm text-white" [class]="difficultyIcon(task().difficulty)"></i>
+      <i
+        class="text-sm text-white"
+        [class]="this.taskService.getDifficultyIcon(task().difficulty)"
+      ></i>
     </div>
     <h3
       class="min-w-0 flex-1 truncate font-semibold text-gray-900 dark:text-white"
@@ -55,14 +58,14 @@
       class="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold"
       [class]="getDifficultyBadgeClass(task().difficulty)"
     >
-      <i class="pi" [class]="getPeriodicityIcon(task().periodicity)"></i>
+      <i class="pi" [class]="this.taskService.getPeriodicityIcon(task().periodicity)"></i>
       {{ task().periodicity | titlecase }}
     </span>
     @if (task().duration) {
       <span
         class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-semibold text-gray-500 dark:bg-gray-700 dark:text-gray-400"
       >
-        <i class="pi pi-clock"></i>
+        <i class="pi pi-hourglass"></i>
         {{ task().duration }} min
       </span>
     }

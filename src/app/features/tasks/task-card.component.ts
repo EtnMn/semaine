@@ -1,6 +1,7 @@
 import { Component, inject, input, output } from "@angular/core";
 import { TitleCasePipe } from "@angular/common";
 import { Task, TaskDifficulty } from "./task.model";
+import { TasksService } from "./tasks.service";
 import { ButtonModule } from "primeng/button";
 import { MenuModule } from "primeng/menu";
 import { ConfirmDialogModule } from "primeng/confirmdialog";
@@ -18,6 +19,7 @@ export class TaskCardComponent {
   public readonly task = input.required<Task>();
   public readonly taskEdited = output<string>();
   public readonly taskDeleted = output<string>();
+  protected readonly taskService = inject(TasksService);
   private readonly confirmationService = inject(ConfirmationService);
 
   protected readonly items = [
@@ -34,12 +36,6 @@ export class TaskCardComponent {
       command: () => this.onDeleteTask(),
     },
   ];
-
-  protected difficultyIcon(difficulty: TaskDifficulty): string {
-    return { easy: "pi pi-check", medium: "pi pi-bolt", hard: "pi pi-exclamation-triangle" }[
-      difficulty
-    ];
-  }
 
   protected getDifficultyColorClass(difficulty: TaskDifficulty): string {
     switch (difficulty) {
@@ -63,17 +59,6 @@ export class TaskCardComponent {
       hard: "bg-rose-100 text-rose-700 dark:bg-rose-500/15 dark:text-rose-400",
     };
     return classes[difficulty.toLowerCase()] ?? classes["medium"];
-  }
-
-  protected getPeriodicityIcon(periodicity: string): string {
-    const icons: Record<string, string> = {
-      unique: "pi-star",
-      daily: "pi-sun",
-      weekly: "pi-calendar",
-      monthly: "pi-calendar-plus",
-      yearly: "pi-history",
-    };
-    return icons[periodicity.toLowerCase()] ?? "pi-calendar";
   }
 
   protected async onEditTask(): Promise<void> {

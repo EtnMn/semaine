@@ -1,23 +1,25 @@
 import { Component, input, output, inject } from "@angular/core";
+import { TitleCasePipe } from "@angular/common";
 import { Chore } from "./chore.model";
 import { TaskDifficulty } from "@features/tasks/task.model";
 import { ButtonModule } from "primeng/button";
 import { ConfirmDialogModule } from "primeng/confirmdialog";
 import { ConfirmationService } from "primeng/api";
+import { TasksService } from "../tasks/tasks.service";
 
 @Component({
   selector: "app-chore-card",
   templateUrl: "./chore-card.component.html",
   styleUrl: "./chore-card.component.css",
   host: { class: "contents" },
-  imports: [ButtonModule, ConfirmDialogModule],
+  imports: [ButtonModule, ConfirmDialogModule, TitleCasePipe],
   providers: [ConfirmationService],
 })
 export class ChoreCardComponent {
   public readonly chore = input.required<Chore>();
   public readonly closing = input<boolean>(false);
   public readonly closed = output<string>();
-
+  protected readonly taskService = inject(TasksService);
   private confirmationService = inject(ConfirmationService);
 
   protected getChoreColorClass(difficulty: TaskDifficulty): string {
@@ -43,18 +45,6 @@ export class ChoreCardComponent {
     };
 
     return classes[difficulty.toLowerCase()] ?? classes["medium"];
-  }
-
-  protected getPeriodicityIcon(periodicity: string): string {
-    const icons: Record<string, string> = {
-      unique: "pi-star",
-      daily: "pi-sun",
-      weekly: "pi-calendar",
-      monthly: "pi-calendar-plus",
-      yearly: "pi-history",
-    };
-
-    return icons[periodicity.toLowerCase()] ?? "pi-calendar";
   }
 
   protected onCloseChore(choreId: string): void {
