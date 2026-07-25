@@ -19,7 +19,9 @@ export class LoginComponent {
   private readonly route = inject(ActivatedRoute);
 
   protected readonly loading = signal(false);
-  protected readonly errorMessage = signal("");
+  protected readonly errorMessage = signal(
+    decodeURIComponent(this.route.snapshot.queryParamMap.get("error_description") ?? ""),
+  );
 
   protected async onSignIn(provider: "google" | "github"): Promise<void> {
     this.errorMessage.set("");
