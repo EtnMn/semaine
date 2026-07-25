@@ -26,6 +26,8 @@ describe("TasksComponent", () => {
     createTask: ReturnType<typeof vi.fn>;
     updateTask: ReturnType<typeof vi.fn>;
     deleteTask: ReturnType<typeof vi.fn>;
+    getDifficultyIcon: ReturnType<typeof vi.fn>;
+    getPeriodicityIcon: ReturnType<typeof vi.fn>;
   };
 
   beforeEach(async () => {
@@ -35,6 +37,23 @@ describe("TasksComponent", () => {
       createTask: vi.fn().mockResolvedValue(undefined),
       updateTask: vi.fn().mockResolvedValue(undefined),
       deleteTask: vi.fn().mockResolvedValue(undefined),
+      getDifficultyIcon: vi.fn((difficulty: string) => {
+        return {
+          easy: "pi pi-face-smile",
+          medium: "pi pi-star",
+          hard: "pi pi-wrench",
+        }[difficulty];
+      }),
+      getPeriodicityIcon: vi.fn((periodicity: string) => {
+        const icons: Record<string, string> = {
+          unique: "pi-bolt",
+          daily: "pi-sun",
+          weekly: "pi-calendar",
+          monthly: "pi-calendar-plus",
+          yearly: "pi-globe",
+        };
+        return icons[periodicity.toLowerCase()] ?? "pi-calendar";
+      }),
     };
 
     await TestBed.configureTestingModule({

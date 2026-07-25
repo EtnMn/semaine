@@ -5,6 +5,7 @@ import { ConfirmationService } from "primeng/api";
 
 import { Task } from "./task.model";
 import { TaskCardComponent } from "./task-card.component";
+import { TasksService } from "./tasks.service";
 
 const mockTask: Task = {
   id: "task-1",
@@ -18,10 +19,39 @@ const mockTask: Task = {
 };
 
 describe("TaskCardComponent", () => {
+  let mockTasksService: {
+    getPeriodicityIcon: ReturnType<typeof vi.fn>;
+    getDifficultyIcon: ReturnType<typeof vi.fn>;
+  };
+
   beforeEach(async () => {
+    mockTasksService = {
+      getPeriodicityIcon: vi.fn((periodicity: string) => {
+        const icons: Record<string, string> = {
+          unique: "pi-bolt",
+          daily: "pi-sun",
+          weekly: "pi-calendar",
+          monthly: "pi-calendar-plus",
+          yearly: "pi-globe",
+        };
+        return icons[periodicity.toLowerCase()] ?? "pi-calendar";
+      }),
+      getDifficultyIcon: vi.fn((difficulty: string) => {
+        return {
+          easy: "pi pi-face-smile",
+          medium: "pi pi-star",
+          hard: "pi pi-wrench",
+        }[difficulty];
+      }),
+    };
+
     await TestBed.configureTestingModule({
       imports: [TaskCardComponent],
-      providers: [provideAnimationsAsync(), ConfirmationService],
+      providers: [
+        provideAnimationsAsync(),
+        ConfirmationService,
+        { provide: TasksService, useValue: mockTasksService },
+      ],
     }).compileComponents();
   });
 
@@ -59,18 +89,12 @@ describe("TaskCardComponent", () => {
     expect(el.textContent).toContain("fitness");
   });
 
-  it("difficultyIcon should return correct icon for each difficulty", () => {
+  it("should call taskService.getDifficultyIcon on render", () => {
     const fixture = TestBed.createComponent(TaskCardComponent);
     fixture.componentRef.setInput("task", mockTask);
     fixture.detectChanges();
 
-    const component = fixture.componentInstance as unknown as {
-      difficultyIcon: (d: string) => string;
-    };
-
-    expect(component.difficultyIcon("easy")).toBe("pi pi-check");
-    expect(component.difficultyIcon("medium")).toBe("pi pi-bolt");
-    expect(component.difficultyIcon("hard")).toBe("pi pi-exclamation-triangle");
+    expect(mockTasksService.getDifficultyIcon).toHaveBeenCalledWith("medium");
   });
 
   it("getDifficultyColorClass should return correct class for each difficulty", () => {
@@ -101,21 +125,12 @@ describe("TaskCardComponent", () => {
     expect(component.getDifficultyBadgeClass("hard")).toContain("rose");
   });
 
-  it("getPeriodicityIcon should return correct icon", () => {
+  it("should call taskService.getPeriodicityIcon on render", () => {
     const fixture = TestBed.createComponent(TaskCardComponent);
     fixture.componentRef.setInput("task", mockTask);
     fixture.detectChanges();
 
-    const component = fixture.componentInstance as unknown as {
-      getPeriodicityIcon: (p: string) => string;
-    };
-
-    expect(component.getPeriodicityIcon("daily")).toBe("pi-sun");
-    expect(component.getPeriodicityIcon("weekly")).toBe("pi-calendar");
-    expect(component.getPeriodicityIcon("monthly")).toBe("pi-calendar-plus");
-    expect(component.getPeriodicityIcon("yearly")).toBe("pi-history");
-    expect(component.getPeriodicityIcon("unique")).toBe("pi-star");
-    expect(component.getPeriodicityIcon("unknown")).toBe("pi-calendar");
+    expect(mockTasksService.getPeriodicityIcon).toHaveBeenCalledWith("weekly");
   });
 
   it("should emit taskEdited with task id on edit", async () => {

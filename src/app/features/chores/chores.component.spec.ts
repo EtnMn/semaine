@@ -7,10 +7,12 @@ import { signal } from "@angular/core";
 import { Chore } from "./chore.model";
 import { ChoresComponent } from "./chores.component";
 import { ChoresService } from "./chores.service";
+import { TasksService } from "../tasks/tasks.service";
 
 const mockChore: Chore = {
   id: "chore-1",
   date: "2026-07-25",
+  created_at: "2026-07-25T10:00:00Z",
   task: {
     id: "task-1",
     name: "Clean kitchen",
@@ -28,10 +30,35 @@ describe("ChoresComponent", () => {
     closeChore: ReturnType<typeof vi.fn>;
   };
 
+  let mockTasksService: {
+    getDifficultyIcon: ReturnType<typeof vi.fn>;
+    getPeriodicityIcon: ReturnType<typeof vi.fn>;
+  };
+
   beforeEach(async () => {
     mockChoresService = {
       getNextChores: vi.fn().mockResolvedValue([mockChore]),
       closeChore: vi.fn().mockResolvedValue(undefined),
+    };
+
+    mockTasksService = {
+      getDifficultyIcon: vi.fn((difficulty: string) => {
+        return {
+          easy: "pi pi-face-smile",
+          medium: "pi pi-star",
+          hard: "pi pi-wrench",
+        }[difficulty];
+      }),
+      getPeriodicityIcon: vi.fn((periodicity: string) => {
+        const icons: Record<string, string> = {
+          unique: "pi-bolt",
+          daily: "pi-sun",
+          weekly: "pi-calendar",
+          monthly: "pi-calendar-plus",
+          yearly: "pi-globe",
+        };
+        return icons[periodicity.toLowerCase()] ?? "pi-calendar";
+      }),
     };
 
     await TestBed.configureTestingModule({
@@ -40,6 +67,7 @@ describe("ChoresComponent", () => {
         provideAnimationsAsync(),
         MessageService,
         { provide: ChoresService, useValue: mockChoresService },
+        { provide: TasksService, useValue: mockTasksService },
       ],
     }).compileComponents();
   });

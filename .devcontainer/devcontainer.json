@@ -9,6 +9,7 @@
   "features": {
     "ghcr.io/devcontainers-extra/features/angular-cli:2": {},
     "ghcr.io/devcontainers-extra/features/pnpm:2": {},
+    // TODO: EM: Fix then reuse supabase cli feature.
     "ghcr.io/devcontainers-extra/features/gh-release:1": {
       "repo": "supabase/cli",
       "binaryNames": "supabase",

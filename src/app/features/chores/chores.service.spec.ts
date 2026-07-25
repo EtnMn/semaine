@@ -9,6 +9,7 @@ import { ChoresService } from "./chores.service";
 const mockChore: Chore = {
   id: "chore-1",
   date: "2026-07-25",
+  created_at: "2026-07-25T10:00:00Z",
   task: {
     id: "task-1",
     name: "Clean kitchen",
@@ -66,7 +67,7 @@ describe("ChoresService", () => {
 
       expect(mockClient.from).toHaveBeenCalledWith("chores");
       expect(queryBuilder.select).toHaveBeenCalledWith(
-        "id, date, task:tasks(name, description, periodicity, difficulty, duration, tags)",
+        "id, date, created_at, task:tasks(name, description, periodicity, difficulty, duration, tags)",
       );
       expect(result).toEqual([mockChore]);
     });

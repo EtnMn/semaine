@@ -5,10 +5,12 @@ import { ConfirmationService } from "primeng/api";
 
 import { Chore } from "./chore.model";
 import { ChoreCardComponent } from "./chore-card.component";
+import { TasksService } from "../tasks/tasks.service";
 
 const mockChore: Chore = {
   id: "chore-1",
   date: "2026-07-25",
+  created_at: "2026-07-25T10:00:00Z",
   task: {
     id: "task-1",
     name: "Clean kitchen",
@@ -21,10 +23,39 @@ const mockChore: Chore = {
 };
 
 describe("ChoreCardComponent", () => {
+  let mockTasksService: {
+    getPeriodicityIcon: ReturnType<typeof vi.fn>;
+    getDifficultyIcon: ReturnType<typeof vi.fn>;
+  };
+
   beforeEach(async () => {
+    mockTasksService = {
+      getPeriodicityIcon: vi.fn((periodicity: string) => {
+        const icons: Record<string, string> = {
+          unique: "pi-bolt",
+          daily: "pi-sun",
+          weekly: "pi-calendar",
+          monthly: "pi-calendar-plus",
+          yearly: "pi-globe",
+        };
+        return icons[periodicity.toLowerCase()] ?? "pi-calendar";
+      }),
+      getDifficultyIcon: vi.fn((difficulty: string) => {
+        return {
+          easy: "pi pi-face-smile",
+          medium: "pi pi-star",
+          hard: "pi pi-wrench",
+        }[difficulty];
+      }),
+    };
+
     await TestBed.configureTestingModule({
       imports: [ChoreCardComponent],
-      providers: [provideAnimationsAsync(), ConfirmationService],
+      providers: [
+        provideAnimationsAsync(),
+        ConfirmationService,
+        { provide: TasksService, useValue: mockTasksService },
+      ],
     }).compileComponents();
   });
 
@@ -80,21 +111,12 @@ describe("ChoreCardComponent", () => {
     expect(component.getDifficultyBadgeClass("hard")).toContain("rose");
   });
 
-  it("getPeriodicityIcon should return correct icon", () => {
+  it("should call taskService.getPeriodicityIcon on render", () => {
     const fixture = TestBed.createComponent(ChoreCardComponent);
     fixture.componentRef.setInput("chore", mockChore);
     fixture.detectChanges();
 
-    const component = fixture.componentInstance as unknown as {
-      getPeriodicityIcon: (p: string) => string;
-    };
-
-    expect(component.getPeriodicityIcon("daily")).toBe("pi-sun");
-    expect(component.getPeriodicityIcon("weekly")).toBe("pi-calendar");
-    expect(component.getPeriodicityIcon("monthly")).toBe("pi-calendar-plus");
-    expect(component.getPeriodicityIcon("yearly")).toBe("pi-history");
-    expect(component.getPeriodicityIcon("unique")).toBe("pi-star");
-    expect(component.getPeriodicityIcon("unknown")).toBe("pi-calendar");
+    expect(mockTasksService.getPeriodicityIcon).toHaveBeenCalledWith("weekly");
   });
 
   it("should emit closed event when close is confirmed", async () => {
