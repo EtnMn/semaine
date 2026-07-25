@@ -123,16 +123,14 @@ Deno.serve(async (req) => {
       });
     }
 
-    // If started is true, create/upsert the chore after the task is created
+    // If started is true, create the chore after the task is created
     if (task.started) {
       const { error: choreError } = await supabaseAdmin
         .from("chores")
-        .upsert(
-          { task_id: task.id, date: todayDate() },
-          { onConflict: "task_id", ignoreDuplicates: true },
-        );
+        .insert({ task_id: task.id, date: todayDate() });
 
-      if (choreError) {
+      // Ignore if chore already exists (constraint violation)
+      if (choreError && choreError.code !== "23505") {
         return new Response(JSON.stringify({ error: choreError.message }), {
           status: 500,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
