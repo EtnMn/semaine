@@ -11,9 +11,11 @@ export class ChoresService {
   public async getNextChores(): Promise<Chore[]> {
     const query = this.supabaseService.client
       .from("chores")
-      .select("id, date, task:tasks(name, description, periodicity, difficulty, duration, tags)")
+      .select(
+        "id, date, created_at, task:tasks(name, description, periodicity, difficulty, duration, tags)",
+      )
       .order("date", { ascending: true })
-      .order("task_id", { ascending: true })
+      .order("created_at", { ascending: true })
       .range(0, 11);
 
     const { data: chores, error } = (await query) as {

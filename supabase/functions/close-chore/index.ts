@@ -86,7 +86,7 @@ Deno.serve(async (req) => {
     // Fetch the associated task to get periodicity
     const { data: task, error: taskError } = await supabaseAdmin
       .from("tasks")
-      .select("id, periodicity")
+      .select("id, periodicity, started")
       .eq("id", chore.task_id)
       .single();
 
@@ -101,7 +101,7 @@ Deno.serve(async (req) => {
     }
 
     // Only create next chore if task was found
-    if (!taskError && task) {
+    if (!taskError && task && task.started) {
       if (task.periodicity === "unique") {
         // Disable the task so it no longer generates chores
         const { error: updateError } = await supabaseAdmin

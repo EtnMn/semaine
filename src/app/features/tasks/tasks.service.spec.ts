@@ -9,6 +9,8 @@ import { TasksService } from "./tasks.service";
 interface MockQueryBuilder {
   select: ReturnType<typeof vi.fn>;
   eq: ReturnType<typeof vi.fn>;
+  order: ReturnType<typeof vi.fn>;
+  or: ReturnType<typeof vi.fn>;
   single: ReturnType<typeof vi.fn>;
   range: ReturnType<typeof vi.fn>;
   insert: ReturnType<typeof vi.fn>;
@@ -19,10 +21,13 @@ interface MockQueryBuilder {
 describe("TasksService", () => {
   let service: TasksService;
   let queryBuilder: MockQueryBuilder;
-  let mockClient: { from: ReturnType<typeof vi.fn> };
+  let mockClient: {
+    from: ReturnType<typeof vi.fn>;
+    functions: { invoke: ReturnType<typeof vi.fn> };
+  };
 
   const mockTask: Task = {
-    id: 1,
+    id: "test-id",
     name: "Test task",
     description: "",
     periodicity: "weekly",
@@ -36,6 +41,8 @@ describe("TasksService", () => {
     queryBuilder = {
       select: vi.fn(),
       eq: vi.fn(),
+      order: vi.fn(),
+      or: vi.fn(),
       single: vi.fn(),
       range: vi.fn(),
       insert: vi.fn(),
@@ -45,10 +52,15 @@ describe("TasksService", () => {
 
     queryBuilder.select.mockReturnValue(queryBuilder);
     queryBuilder.eq.mockReturnValue(queryBuilder);
+    queryBuilder.order.mockReturnValue(queryBuilder);
+    queryBuilder.or.mockReturnValue(queryBuilder);
     queryBuilder.update.mockReturnValue(queryBuilder);
     queryBuilder.delete.mockReturnValue(queryBuilder);
 
-    mockClient = { from: vi.fn().mockReturnValue(queryBuilder) };
+    mockClient = {
+      from: vi.fn().mockReturnValue(queryBuilder),
+      functions: { invoke: vi.fn() },
+    };
 
     TestBed.configureTestingModule({
       providers: [TasksService, { provide: SupabaseService, useValue: { client: mockClient } }],
@@ -69,7 +81,7 @@ describe("TasksService", () => {
 
       expect(mockClient.from).toHaveBeenCalledWith("tasks");
       expect(queryBuilder.select).toHaveBeenCalledWith(
-        "id, name, periodicity, difficulty, started, duration, tags",
+        "id, name, description, periodicity, difficulty, started, duration, tags",
       );
       expect(queryBuilder.eq).toHaveBeenCalledWith("id", "1");
       expect(result).toEqual(mockTask);
@@ -96,7 +108,7 @@ describe("TasksService", () => {
 
       expect(mockClient.from).toHaveBeenCalledWith("tasks");
       expect(queryBuilder.select).toHaveBeenCalledWith(
-        "id, name, periodicity, difficulty, started, duration, tags",
+        "id, name, description, periodicity, difficulty, started, duration, tags",
         { count: "exact" },
       );
       expect(queryBuilder.range).toHaveBeenCalledWith(0, 19);
@@ -131,39 +143,46 @@ describe("TasksService", () => {
   });
 
   describe("createTask", () => {
-    it("should call insert with the task data", async () => {
+    it("should invoke the save-task edge function with the task data", async () => {
       const { id: _id, ...taskWithoutId } = mockTask;
       void _id;
-      queryBuilder.insert.mockResolvedValue({ error: null });
+      mockClient.functions.invoke.mockResolvedValue({ data: mockTask, error: null });
 
       await service.createTask(taskWithoutId);
 
-      expect(mockClient.from).toHaveBeenCalledWith("tasks");
-      expect(queryBuilder.insert).toHaveBeenCalledWith(taskWithoutId);
+      expect(mockClient.functions.invoke).toHaveBeenCalledWith("save-task", {
+        body: taskWithoutId,
+      });
     });
 
-    it("should throw when supabase returns an error", async () => {
+    it("should throw when the edge function returns an error", async () => {
       const { id: _id, ...taskWithoutId } = mockTask;
       void _id;
-      queryBuilder.insert.mockResolvedValue({ error: { message: "Insert error" } });
+      mockClient.functions.invoke.mockResolvedValue({
+        data: null,
+        error: { message: "Insert error" },
+      });
 
       await expect(service.createTask(taskWithoutId)).rejects.toThrow("Insert error");
     });
   });
 
   describe("updateTask", () => {
-    it("should call update with partial task data and the task id", async () => {
-      queryBuilder.eq.mockResolvedValue({ error: null });
+    it("should invoke the save-task edge function with the id and partial task data", async () => {
+      mockClient.functions.invoke.mockResolvedValue({ data: mockTask, error: null });
 
       await service.updateTask("1", { name: "Updated" });
 
-      expect(mockClient.from).toHaveBeenCalledWith("tasks");
-      expect(queryBuilder.update).toHaveBeenCalledWith({ name: "Updated" });
-      expect(queryBuilder.eq).toHaveBeenCalledWith("id", "1");
+      expect(mockClient.functions.invoke).toHaveBeenCalledWith("save-task", {
+        body: { id: "1", name: "Updated" },
+      });
     });
 
-    it("should throw when supabase returns an error", async () => {
-      queryBuilder.eq.mockResolvedValue({ error: { message: "Update error" } });
+    it("should throw when the edge function returns an error", async () => {
+      mockClient.functions.invoke.mockResolvedValue({
+        data: null,
+        error: { message: "Update error" },
+      });
 
       await expect(service.updateTask("1", { name: "Updated" })).rejects.toThrow("Update error");
     });

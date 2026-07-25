@@ -16,6 +16,7 @@ import { MenuItem } from "primeng/api";
 import { User } from "./user.model";
 import { UsersService } from "./users.service";
 import { UserInfoComponent } from "@shared/components/user-info.component";
+import { EmptyMessageComponent } from "@shared/components/empty-message/empty-message.components";
 import { ConfirmationService, MessageService } from "primeng/api";
 import { AuthService } from "@core/services";
 
@@ -36,6 +37,7 @@ import { AuthService } from "@core/services";
     ToastModule,
     TagModule,
     MenuModule,
+    EmptyMessageComponent,
   ],
   providers: [ConfirmationService, MessageService],
   host: { class: "max-w-4xl mx-auto" },
@@ -133,6 +135,7 @@ export class UsersComponent implements OnInit {
   }
 
   protected async loadPage(page: number): Promise<void> {
+    this.loading.set(true);
     const timer = setTimeout(() => this.loading.set(true), 300);
     try {
       const { users, total } = await this.usersService.getUsersPage(page);

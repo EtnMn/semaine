@@ -1,6 +1,18 @@
-# EtnSemaine
+# Semaine
 
-Angular 21 application deployed on Azure Static Web Apps, using Supabase for authentication and database.
+A household chore management app built with Angular 21 and Supabase. Tasks define recurring schedules (daily, weekly, monthly, yearly, or one-off); chores are generated automatically and displayed as cards ready to be completed.
+
+![Task management](docs/chores.png)
+
+### Features
+
+- **Chores dashboard** — view and close upcoming chores
+- **Task management** _(admin)_ — create and schedule recurring tasks with difficulty, duration, and tags
+- **User management** _(admin)_ — invite users via email, manage roles
+- **OAuth login** — sign in with Google or GitHub
+- **Dark mode** — user-level preference
+
+**Stack:** Angular 21 · Supabase (auth + database + edge functions) · Azure Static Web Apps · Terraform
 
 ## Development
 
@@ -55,9 +67,33 @@ pnpm start --configuration=local
 
 ### Database Migrations
 
+#### Creating and Testing Migrations Locally
+
 ```bash
 supabase migration new <migration_name>   # Create a new migration
-supabase db push                          # Apply migrations locally
+supabase db push                          # Apply migrations to local database
+```
+
+#### Pushing Migrations to Remote Database
+
+To apply your local migrations to the remote Supabase database:
+
+**1. Get your database password:**
+
+- Go to [Supabase Dashboard](https://app.supabase.com) → Your Project → **Database** → **Connection Info**
+- Click "Afficher le mot de passe" (Show Password) to reveal it
+
+**2. Link your project (first time only):**
+
+```bash
+supabase link --project-ref xzohmittisigvgxjwczw
+```
+
+**3. Push migrations to remote:**
+
+```bash
+export SUPABASE_DB_PASSWORD=your_db_password
+supabase db push
 ```
 
 ### Edge Functions

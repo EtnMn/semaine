@@ -122,11 +122,12 @@ export class TasksComponent implements OnInit {
           detail: `"${data.name}" has been created.`,
         });
       }
-      this.taskFormDisplayed.set(false);
-      this.loadPage(0);
     } catch (error) {
       const message = error instanceof Error ? error.message : "An error occurred";
       this.messageService.add({ severity: "error", summary: "Error", detail: message });
+    } finally {
+      this.taskFormDisplayed.set(false);
+      this.loadPage(0);
     }
   }
 

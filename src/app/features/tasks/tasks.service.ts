@@ -58,14 +58,18 @@ export class TasksService {
   }
 
   public async createTask(task: Omit<Task, "id">): Promise<void> {
-    const { error } = await this.supabaseService.client.from("tasks").insert(task);
+    const { error } = await this.supabaseService.client.functions.invoke("save-task", {
+      body: task,
+    });
     if (error) {
       throw new Error(error.message);
     }
   }
 
   public async updateTask(id: string, updates: Partial<Omit<Task, "id">>): Promise<void> {
-    const { error } = await this.supabaseService.client.from("tasks").update(updates).eq("id", id);
+    const { error } = await this.supabaseService.client.functions.invoke("save-task", {
+      body: { id, ...updates },
+    });
     if (error) {
       throw new Error(error.message);
     }
