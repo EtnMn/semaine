@@ -6,11 +6,12 @@ import { DataViewModule } from "primeng/dataview";
 import { Chore } from "./chore.model";
 import { ButtonModule } from "primeng/button";
 import { ChoreCardComponent } from "./chore-card.component";
+import { EmptyMessageComponent } from "@shared/components/empty-message/empty-message.components";
 
 @Component({
   selector: "app-chores",
   templateUrl: "./chores.component.html",
-  imports: [ToastModule, DataViewModule, ButtonModule, ChoreCardComponent],
+  imports: [ToastModule, DataViewModule, ButtonModule, ChoreCardComponent, EmptyMessageComponent],
   providers: [MessageService],
 })
 export class ChoresComponent implements OnInit {

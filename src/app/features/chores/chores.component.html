@@ -6,12 +6,12 @@
   [dt]="{ contentBackground: 'transparent', headerBackground: 'transparent' }"
   [style]="{ '--p-paginator-background': 'transparent' }"
 >
-  <ng-template #emptymessage>
-    <div class="flex flex-col items-center justify-center py-12">
-      <i class="pi pi-inbox mb-4 text-4xl text-gray-400 dark:text-gray-500"></i>
-      <p class="text-gray-600 dark:text-gray-400">No chores scheduled.</p>
-    </div>
-  </ng-template>
+  @if (!loading()) {
+    <ng-template #emptymessage>
+      <app-empty-message title="No chores yet" caption="Create your first task to get started.">
+      </app-empty-message>
+    </ng-template>
+  }
 
   <ng-template #list let-chores>
     <div class="flex flex-wrap justify-center gap-6 lg:justify-start">
