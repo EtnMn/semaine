@@ -1,17 +1,34 @@
 import { Component, computed, inject, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
-import { ButtonModule } from "primeng/button";
-import { MenubarModule } from "primeng/menubar";
-import { AvatarModule } from "primeng/avatar";
-import { MenuModule } from "primeng/menu";
-import { MenuItem } from "primeng/api";
+import { NgIcon, provideIcons } from "@ng-icons/core";
+import {
+  lucideList,
+  lucideLogOut,
+  lucideMoon,
+  lucideSun,
+  lucideUser,
+  lucideUsers,
+} from "@ng-icons/lucide";
+import { HlmAvatarImports } from "@spartan-ng/helm/avatar";
+import { HlmButtonImports } from "@spartan-ng/helm/button";
+import { HlmDropdownMenuImports } from "@spartan-ng/helm/dropdown-menu";
 
 import { AuthService, DarkModeService } from "@core/services";
 import { UserInfoComponent } from "@shared/components/user-info.component";
 
 @Component({
   selector: "app-header",
-  imports: [RouterLink, ButtonModule, MenubarModule, AvatarModule, MenuModule, UserInfoComponent],
+  imports: [
+    RouterLink,
+    NgIcon,
+    HlmButtonImports,
+    HlmAvatarImports,
+    HlmDropdownMenuImports,
+    UserInfoComponent,
+  ],
+  viewProviders: [
+    provideIcons({ lucideList, lucideLogOut, lucideMoon, lucideSun, lucideUser, lucideUsers }),
+  ],
   templateUrl: "./header.html",
 })
 export class Header {
@@ -20,37 +37,9 @@ export class Header {
 
   protected readonly title = signal("semaine");
 
-  protected readonly items = computed<MenuItem[]>(() => [
-    {
-      separator: true,
-    },
-    {
-      label: "Manage users",
-      icon: "pi pi-users",
-      routerLink: "/admin/users",
-      visible: this.authService.isAdministrator(),
-      linkClass: "text-sm",
-    },
-    {
-      label: "Manage tasks",
-      icon: "pi pi-list",
-      routerLink: "/admin/tasks",
-      visible: this.authService.isAdministrator(),
-      linkClass: "text-sm",
-    },
-    {
-      separator: true,
-      visible: this.authService.isAdministrator(),
-    },
-    {
-      label: "Sign out",
-      icon: "pi pi-sign-out",
-      linkClass: "text-sm",
-      command: () => {
-        this.authService.signOut();
-      },
-    },
-  ]);
+  protected onSignOut(): void {
+    this.authService.signOut();
+  }
 
   protected readonly userName = computed(() => {
     const user = this.authService.currentUser();

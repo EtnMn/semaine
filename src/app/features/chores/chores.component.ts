@@ -1,22 +1,18 @@
 import { Component, inject, OnInit, signal } from "@angular/core";
 import { ChoresService } from "./chores.service";
-import { MessageService } from "primeng/api";
-import { ToastModule } from "primeng/toast";
-import { DataViewModule } from "primeng/dataview";
+import { toast } from "@spartan-ng/brain/sonner";
+import { HlmSkeletonImports } from "@spartan-ng/helm/skeleton";
 import { Chore } from "./chore.model";
-import { ButtonModule } from "primeng/button";
 import { ChoreCardComponent } from "./chore-card.component";
 import { EmptyMessageComponent } from "@shared/components/empty-message/empty-message.components";
 
 @Component({
   selector: "app-chores",
   templateUrl: "./chores.component.html",
-  imports: [ToastModule, DataViewModule, ButtonModule, ChoreCardComponent, EmptyMessageComponent],
-  providers: [MessageService],
+  imports: [HlmSkeletonImports, ChoreCardComponent, EmptyMessageComponent],
 })
 export class ChoresComponent implements OnInit {
   private readonly choresService = inject(ChoresService);
-  private readonly messageService = inject(MessageService);
 
   protected readonly loading = signal(false);
   protected readonly chores = signal<Chore[]>([]);
@@ -34,10 +30,8 @@ export class ChoresComponent implements OnInit {
       newChores = newChores.slice(0, 12 - this.chores().length);
       this.chores.set(this.chores().concat(newChores));
     } catch (error) {
-      this.messageService.add({
-        severity: "error",
-        summary: "Failed to load chores.",
-        detail: error instanceof Error ? error.message : String(error),
+      toast.error("Failed to load chores.", {
+        description: error instanceof Error ? error.message : String(error),
       });
     } finally {
       this.loading.set(false);
@@ -53,18 +47,12 @@ export class ChoresComponent implements OnInit {
         this.chores.update((list) => list.filter((c) => c.id !== choreId));
         this.closingChoreIds.update((ids) => ids.filter((id) => id !== choreId));
         this.loadChores();
-        this.messageService.add({
-          severity: "success",
-          summary: "Chore closed",
-          detail: `"${choreName}" is done!`,
-        });
+        toast.success("Chore closed", { description: `"${choreName}" is done!` });
       }, 750);
     } catch (error) {
       this.closingChoreIds.update((ids) => ids.filter((id) => id !== choreId));
-      this.messageService.add({
-        severity: "error",
-        summary: "Failed to close chore.",
-        detail: error instanceof Error ? error.message : String(error),
+      toast.error("Failed to close chore.", {
+        description: error instanceof Error ? error.message : String(error),
       });
     }
   }

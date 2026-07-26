@@ -10,15 +10,16 @@ import {
   untracked,
 } from "@angular/core";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
-import { AutoCompleteModule } from "primeng/autocomplete";
-import { ButtonModule } from "primeng/button";
-import { DialogModule } from "primeng/dialog";
-import { InputNumberModule } from "primeng/inputnumber";
-import { InputTextModule } from "primeng/inputtext";
-import { MessageModule } from "primeng/message";
-import { SelectModule } from "primeng/select";
-import { TextareaModule } from "primeng/textarea";
-import { ToggleSwitchModule } from "primeng/toggleswitch";
+import { NgIcon, provideIcons } from "@ng-icons/core";
+import { lucideLoaderCircle, lucideX } from "@ng-icons/lucide";
+import { HlmButton } from "@spartan-ng/helm/button";
+import { HlmDialogImports } from "@spartan-ng/helm/dialog";
+import { HlmFieldImports } from "@spartan-ng/helm/field";
+import { HlmInput } from "@spartan-ng/helm/input";
+import { HlmInputGroupImports } from "@spartan-ng/helm/input-group";
+import { HlmSelectImports } from "@spartan-ng/helm/select";
+import { HlmSwitch } from "@spartan-ng/helm/switch";
+import { HlmTextarea } from "@spartan-ng/helm/textarea";
 
 import {
   Task,
@@ -33,16 +34,17 @@ import {
   templateUrl: "./task-form-dialog.component.html",
   imports: [
     ReactiveFormsModule,
-    DialogModule,
-    ButtonModule,
-    InputTextModule,
-    TextareaModule,
-    SelectModule,
-    AutoCompleteModule,
-    ToggleSwitchModule,
-    InputNumberModule,
-    MessageModule,
+    NgIcon,
+    HlmButton,
+    HlmDialogImports,
+    HlmFieldImports,
+    HlmInput,
+    HlmTextarea,
+    HlmSwitch,
+    HlmSelectImports,
+    HlmInputGroupImports,
   ],
+  providers: [provideIcons({ lucideLoaderCircle, lucideX })],
 })
 export class TaskFormDialogComponent {
   private readonly fb = inject(FormBuilder);
@@ -111,6 +113,13 @@ export class TaskFormDialogComponent {
     this.loading.set(false);
   }
 
+  protected onDialogStateChanged(state: "open" | "closed"): void {
+    this.displayed.set(state === "open");
+    if (state === "closed") {
+      this.onHide();
+    }
+  }
+
   protected onSubmit(): void {
     this.loading.set(true);
     this.form.markAllAsTouched();
@@ -119,5 +128,26 @@ export class TaskFormDialogComponent {
       return;
     }
     this.taskSaved.emit(this.form.getRawValue() as Omit<Task, "id">);
+  }
+
+  protected onAddTag(input: HTMLInputElement): void {
+    const value = input.value.trim();
+    input.value = "";
+    if (!value) {
+      return;
+    }
+
+    const tagsControl = this.form.controls.tags;
+    const tags = tagsControl.value ?? [];
+    if (tags.includes(value)) {
+      return;
+    }
+
+    tagsControl.setValue([...tags, value]);
+  }
+
+  protected removeTag(tag: string): void {
+    const tagsControl = this.form.controls.tags;
+    tagsControl.setValue((tagsControl.value ?? []).filter((t) => t !== tag));
   }
 }

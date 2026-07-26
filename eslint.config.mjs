@@ -7,6 +7,13 @@ import prettier from "eslint-plugin-prettier/recommended";
 
 export default tseslint.config(
   {
+    // Spartan/ui generated components (copied in, not authored by this project) follow their
+    // own selector/style conventions and shouldn't be linted against app rules.
+    // `.angular/cache` holds generated build artifacts (e.g. vite-optimized deps) and must
+    // never be linted either.
+    ignores: ["libs/ui/**", ".angular/**"],
+  },
+  {
     files: ["**/*.ts"],
     extends: [
       eslint.configs.recommended,

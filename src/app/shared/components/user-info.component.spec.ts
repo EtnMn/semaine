@@ -36,7 +36,7 @@ describe("UserInfoComponent", () => {
     fixture.detectChanges();
 
     const el = fixture.nativeElement as HTMLElement;
-    const avatar = el.querySelector("p-avatar");
+    const avatar = el.querySelector("hlm-avatar");
     expect(avatar).toBeTruthy();
   });
 
@@ -46,7 +46,7 @@ describe("UserInfoComponent", () => {
     fixture.detectChanges();
 
     const el = fixture.nativeElement as HTMLElement;
-    const skeletons = el.querySelectorAll("p-skeleton");
+    const skeletons = el.querySelectorAll("[hlmSkeleton]");
     expect(skeletons.length).toBeGreaterThan(0);
   });
 

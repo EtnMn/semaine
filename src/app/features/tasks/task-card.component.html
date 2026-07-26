@@ -9,10 +9,10 @@
     (click)="onEditTask()"
   >
     <div class="task-icon-badge flex h-9 w-9 shrink-0 items-center justify-center rounded-lg">
-      <i
+      <ng-icon
         class="text-sm text-white"
-        [class]="this.taskService.getDifficultyIcon(task().difficulty)"
-      ></i>
+        [name]="this.taskService.getDifficultyIcon(task().difficulty)"
+      />
     </div>
     <h3
       class="min-w-0 flex-1 truncate font-semibold text-gray-900 dark:text-white"
@@ -20,16 +20,50 @@
     >
       {{ task().name }}
     </h3>
-    <p-menu #menu [model]="items" [popup]="true" appendTo="body" />
-    <p-button
-      variant="outlined"
-      severity="secondary"
-      (click)="menu.toggle($event); $event.stopPropagation()"
-      icon="pi pi-ellipsis-h"
-      class="p-button-rounded p-button-sm"
-    />
+    <button
+      hlmBtn
+      variant="outline"
+      size="icon"
+      [hlmDropdownMenuTrigger]="taskMenu"
+      (click)="$event.stopPropagation()"
+    >
+      <ng-icon name="lucideEllipsis" />
+    </button>
+    <ng-template #taskMenu>
+      <hlm-dropdown-menu>
+        <button hlmDropdownMenuItem class="text-sm" (triggered)="onEditTask()">
+          <ng-icon name="lucidePencil" />
+          Edit
+        </button>
+        <button
+          hlmDropdownMenuItem
+          variant="destructive"
+          class="text-sm"
+          (triggered)="onDeleteTask()"
+        >
+          <ng-icon name="lucideTrash2" />
+          Delete
+        </button>
+      </hlm-dropdown-menu>
+    </ng-template>
   </div>
-  <p-confirmdialog />
+  <hlm-alert-dialog
+    [state]="confirmingDelete() ? 'open' : 'closed'"
+    (stateChanged)="onConfirmDialogStateChanged($event)"
+  >
+    <hlm-alert-dialog-content *hlmAlertDialogPortal="let ctx">
+      <hlm-alert-dialog-header>
+        <h2 hlmAlertDialogTitle>Delete task{{ task().name }}</h2>
+        <p hlmAlertDialogDescription>Do you want to delete this record?</p>
+      </hlm-alert-dialog-header>
+      <hlm-alert-dialog-footer>
+        <button hlmAlertDialogCancel>Cancel</button>
+        <button hlmAlertDialogAction variant="destructive" (click)="onConfirmDeleteTask()">
+          Delete
+        </button>
+      </hlm-alert-dialog-footer>
+    </hlm-alert-dialog-content>
+  </hlm-alert-dialog>
 
   <div class="flex flex-1 cursor-pointer flex-col px-4 py-3" (click)="onEditTask()">
     <p
@@ -58,14 +92,14 @@
       class="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold"
       [class]="getDifficultyBadgeClass(task().difficulty)"
     >
-      <i class="pi" [class]="this.taskService.getPeriodicityIcon(task().periodicity)"></i>
+      <ng-icon [name]="this.taskService.getPeriodicityIcon(task().periodicity)" />
       {{ task().periodicity | titlecase }}
     </span>
     @if (task().duration) {
       <span
         class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-semibold text-gray-500 dark:bg-gray-700 dark:text-gray-400"
       >
-        <i class="pi pi-hourglass"></i>
+        <ng-icon name="lucideHourglass" />
         {{ task().duration }} min
       </span>
     }

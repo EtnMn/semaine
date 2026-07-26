@@ -84,16 +84,16 @@ export class TasksService {
 
   public getPeriodicityIcon(periodicity: string): string {
     const icons: Record<string, string> = {
-      unique: "pi-bolt",
-      daily: "pi-sun",
-      weekly: "pi-calendar",
-      monthly: "pi-calendar-plus",
-      yearly: "pi-globe",
+      unique: "lucideZap",
+      daily: "lucideSun",
+      weekly: "lucideCalendar",
+      monthly: "lucideCalendarPlus",
+      yearly: "lucideGlobe",
     };
-    return icons[periodicity.toLowerCase()] ?? "pi-calendar";
+    return icons[periodicity.toLowerCase()] ?? "lucideCalendar";
   }
 
   public getDifficultyIcon(difficulty: TaskDifficulty): string {
-    return { easy: "pi pi-face-smile", medium: "pi pi-star", hard: "pi pi-wrench" }[difficulty];
+    return { easy: "lucideSmile", medium: "lucideStar", hard: "lucideWrench" }[difficulty];
   }
 }

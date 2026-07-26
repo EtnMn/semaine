@@ -1,10 +1,22 @@
-import { Component, input, output, inject } from "@angular/core";
+import { Component, input, output, inject, signal } from "@angular/core";
 import { TitleCasePipe } from "@angular/common";
+import { NgIcon, provideIcons } from "@ng-icons/core";
+import {
+  lucideCalendar,
+  lucideCalendarPlus,
+  lucideGlobe,
+  lucideHourglass,
+  lucideSmile,
+  lucideStar,
+  lucideSun,
+  lucideThumbsUp,
+  lucideWrench,
+  lucideZap,
+} from "@ng-icons/lucide";
 import { Chore } from "./chore.model";
 import { TaskDifficulty } from "@features/tasks/task.model";
-import { ButtonModule } from "primeng/button";
-import { ConfirmDialogModule } from "primeng/confirmdialog";
-import { ConfirmationService } from "primeng/api";
+import { HlmAlertDialogImports } from "@spartan-ng/helm/alert-dialog";
+import { HlmButton } from "@spartan-ng/helm/button";
 import { TasksService } from "../tasks/tasks.service";
 
 @Component({
@@ -12,15 +24,29 @@ import { TasksService } from "../tasks/tasks.service";
   templateUrl: "./chore-card.component.html",
   styleUrl: "./chore-card.component.css",
   host: { class: "contents" },
-  imports: [ButtonModule, ConfirmDialogModule, TitleCasePipe],
-  providers: [ConfirmationService],
+  imports: [NgIcon, HlmButton, HlmAlertDialogImports, TitleCasePipe],
+  providers: [
+    provideIcons({
+      lucideThumbsUp,
+      lucideHourglass,
+      lucideZap,
+      lucideSun,
+      lucideCalendar,
+      lucideCalendarPlus,
+      lucideGlobe,
+      lucideSmile,
+      lucideStar,
+      lucideWrench,
+    }),
+  ],
 })
 export class ChoreCardComponent {
   public readonly chore = input.required<Chore>();
   public readonly closing = input<boolean>(false);
   public readonly closed = output<string>();
   protected readonly taskService = inject(TasksService);
-  private confirmationService = inject(ConfirmationService);
+
+  protected readonly confirmingClose = signal(false);
 
   protected getChoreColorClass(difficulty: TaskDifficulty): string {
     switch (difficulty) {
@@ -47,25 +73,16 @@ export class ChoreCardComponent {
     return classes[difficulty.toLowerCase()] ?? classes["medium"];
   }
 
-  protected onCloseChore(choreId: string): void {
-    this.confirmationService.confirm({
-      message: "Complete this chore?",
-      header: `${this.chore().task.name}`,
-      icon: "pi pi-info-circle",
-      rejectLabel: "Cancel",
-      rejectButtonProps: {
-        label: "Cancel",
-        severity: "secondary",
-        outlined: true,
-      },
-      acceptButtonProps: {
-        label: "Done",
-        severity: "success",
-      },
+  protected onCloseChore(): void {
+    this.confirmingClose.set(true);
+  }
 
-      accept: () => {
-        this.closed.emit(choreId);
-      },
-    });
+  protected onConfirmDialogStateChanged(state: "open" | "closed"): void {
+    this.confirmingClose.set(state === "open");
+  }
+
+  protected onConfirmCloseChore(choreId: string): void {
+    this.confirmingClose.set(false);
+    this.closed.emit(choreId);
   }
 }

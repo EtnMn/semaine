@@ -1,9 +1,9 @@
 import { Component, inject, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
-import { ButtonModule } from "primeng/button";
-import { InputTextModule } from "primeng/inputtext";
-import { MessageModule } from "primeng/message";
+import { NgIcon, provideIcons } from "@ng-icons/core";
+import { lucideCircleAlert } from "@ng-icons/lucide";
+import { HlmAlertImports } from "@spartan-ng/helm/alert";
 
 import { AuthService } from "@core/services";
 
@@ -12,7 +12,8 @@ import { SocialLoginButtonComponent } from "./social-login-button.component";
 @Component({
   selector: "app-login",
   templateUrl: "./login.component.html",
-  imports: [FormsModule, ButtonModule, InputTextModule, MessageModule, SocialLoginButtonComponent],
+  imports: [FormsModule, NgIcon, HlmAlertImports, SocialLoginButtonComponent],
+  providers: [provideIcons({ lucideCircleAlert })],
 })
 export class LoginComponent {
   protected readonly authService = inject(AuthService);

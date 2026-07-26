@@ -1,5 +1,8 @@
 import { Component, computed, input, output } from "@angular/core";
 import { NgClass } from "@angular/common";
+import { NgIcon, provideIcons } from "@ng-icons/core";
+import { lucideArrowRight } from "@ng-icons/lucide";
+import { simpleGithub, simpleGoogle } from "@ng-icons/simple-icons";
 
 @Component({
   selector: "app-social-login-button",
@@ -15,21 +18,27 @@ import { NgClass } from "@angular/common";
         class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
         [ngClass]="iconClasses()"
       >
-        <i [class]="'pi pi-' + icon()"></i>
+        <ng-icon [name]="brandIcon()" />
       </span>
       <span class="flex-1 text-left">Continue with {{ label() }}</span>
-      <i
-        class="pi pi-arrow-right text-xs opacity-30 transition-opacity duration-150 group-hover:opacity-70"
-      ></i>
+      <ng-icon
+        name="lucideArrowRight"
+        class="text-xs opacity-30 transition-opacity duration-150 group-hover:opacity-70"
+      />
     </button>
   `,
-  imports: [NgClass],
+  imports: [NgClass, NgIcon],
+  providers: [provideIcons({ lucideArrowRight, simpleGithub, simpleGoogle })],
 })
 export class SocialLoginButtonComponent {
   public readonly icon = input.required<string>();
   public readonly label = input.required<string>();
   public readonly disabled = input(false);
   public readonly clicked = output<void>();
+
+  protected readonly brandIcon = computed(() =>
+    this.icon() === "github" ? "simpleGithub" : "simpleGoogle",
+  );
 
   protected readonly buttonClasses = computed(() =>
     this.icon() === "github"

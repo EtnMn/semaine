@@ -1,106 +1,133 @@
-<p-dialog
-  [header]="dialogTitle()"
-  [modal]="true"
-  [(visible)]="displayed"
-  [draggable]="false"
-  [closable]="!loading()"
-  [dismissableMask]="true"
-  (onHide)="onHide()"
->
-  <div [formGroup]="form" class="flex flex-col gap-4 py-2">
-    <div class="flex flex-col gap-1">
-      <div class="flex flex-col gap-1">
-        <label for="task-name" class="font-medium">Name <span class="text-red-500">*</span></label>
+<hlm-dialog [state]="displayed() ? 'open' : 'closed'" (stateChanged)="onDialogStateChanged($event)">
+  <hlm-dialog-content *hlmDialogPortal="let ctx" class="sm:max-w-md">
+    <hlm-dialog-header>
+      <h3 hlmDialogTitle>{{ dialogTitle() }}</h3>
+    </hlm-dialog-header>
+
+    <div [formGroup]="form" class="flex flex-col gap-4 py-2">
+      <div hlmField>
+        <label hlmFieldLabel for="task-name">Name <span class="text-destructive">*</span></label>
         <input
           id="task-name"
-          pInputText
+          hlmInput
           formControlName="name"
           placeholder="Task name"
           class="w-full"
-          [invalid]="form.controls.name.invalid && form.controls.name.touched"
         />
-        @if (form.controls.name.invalid && form.controls.name.touched) {
-          <p-message severity="error" size="small" variant="simple"> Name is required. </p-message>
-        }
+        <hlm-field-error>Name is required.</hlm-field-error>
       </div>
-    </div>
 
-    <div class="flex flex-col gap-1">
-      <label for="task-description" class="font-medium">Description</label>
-      <textarea
-        id="task-description"
-        pTextarea
-        formControlName="description"
-        placeholder="Task description"
-        rows="3"
-        class="w-full resize-none"
-      ></textarea>
-    </div>
+      <div hlmField>
+        <label hlmFieldLabel for="task-description">Description</label>
+        <textarea
+          id="task-description"
+          hlmTextarea
+          formControlName="description"
+          placeholder="Task description"
+          rows="3"
+          class="w-full resize-none"
+        ></textarea>
+      </div>
 
-    <div class="grid grid-cols-2 gap-4">
-      <div class="flex flex-col gap-1">
-        <label class="font-medium">Periodicity</label>
-        <p-select
-          formControlName="periodicity"
-          [options]="periodicityOptions"
-          optionLabel="label"
-          optionValue="value"
-          appendTo="body"
-        />
+      <div class="grid grid-cols-2 gap-4">
+        <div hlmField>
+          <label hlmFieldLabel>Periodicity</label>
+          <hlm-select formControlName="periodicity">
+            <hlm-select-trigger class="w-full">
+              <hlm-select-value />
+            </hlm-select-trigger>
+            <hlm-select-content *hlmSelectPortal>
+              @for (option of periodicityOptions; track option.value) {
+                <hlm-select-item [value]="option.value">{{ option.label }}</hlm-select-item>
+              }
+            </hlm-select-content>
+          </hlm-select>
+        </div>
+        <div hlmField>
+          <label hlmFieldLabel>Difficulty</label>
+          <hlm-select formControlName="difficulty">
+            <hlm-select-trigger class="w-full">
+              <hlm-select-value />
+            </hlm-select-trigger>
+            <hlm-select-content *hlmSelectPortal>
+              @for (option of difficultyOptions; track option.value) {
+                <hlm-select-item [value]="option.value">{{ option.label }}</hlm-select-item>
+              }
+            </hlm-select-content>
+          </hlm-select>
+        </div>
       </div>
-      <div class="flex flex-col gap-1">
-        <label class="font-medium">Difficulty</label>
-        <p-select
-          formControlName="difficulty"
-          [options]="difficultyOptions"
-          optionLabel="label"
-          optionValue="value"
-          appendTo="body"
-        />
-      </div>
-    </div>
 
-    <div class="grid grid-cols-2 gap-4">
-      <div class="flex flex-col gap-1">
-        <label class="font-medium">Duration <span class="text-red-500">*</span></label>
-        <p-inputnumber formControlName="duration" [min]="0" placeholder="Minutes" suffix=" min" />
-        @if (form.controls.duration.invalid && form.controls.duration.touched) {
-          <p-message severity="error" size="small" variant="simple">
-            Duration is required.
-          </p-message>
-        }
+      <div class="grid grid-cols-2 gap-4">
+        <div hlmField>
+          <label hlmFieldLabel for="task-duration"
+            >Duration <span class="text-destructive">*</span></label
+          >
+          <div hlmInputGroup>
+            <input
+              id="task-duration"
+              hlmInputGroupInput
+              type="number"
+              formControlName="duration"
+              min="0"
+              placeholder="Minutes"
+            />
+            <hlm-input-group-addon align="inline-end">
+              <hlm-input-group-text>min</hlm-input-group-text>
+            </hlm-input-group-addon>
+          </div>
+          <hlm-field-error>Duration is required.</hlm-field-error>
+        </div>
+        <div hlmField orientation="horizontal" class="items-end">
+          <label class="flex items-center" hlmLabel>
+            <hlm-switch class="mr-2" formControlName="started" />
+            {{ form.controls.started.value ? "Started" : "Inactive" }}
+          </label>
+        </div>
       </div>
-      <div class="flex flex-col gap-1">
-        <label class="font-medium">Started</label>
-        <div class="flex items-center gap-2 pt-1">
-          <p-toggleswitch formControlName="started" />
-          <span class="text-sm text-gray-500 dark:text-gray-400">
-            {{ form.controls.started.value ? "Active" : "Inactive" }}
-          </span>
+
+      <div hlmField>
+        <label hlmFieldLabel for="task-tags">Tags</label>
+        <div
+          id="task-tags"
+          class="border-input focus-within:border-ring focus-within:ring-ring/50 flex min-h-8 flex-wrap items-center gap-1 rounded-lg border bg-transparent px-2 py-1 focus-within:ring-3"
+        >
+          @for (tag of form.controls.tags.value; track tag) {
+            <span
+              class="bg-secondary text-secondary-foreground inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs"
+            >
+              {{ tag }}
+              <button
+                type="button"
+                class="hover:text-destructive"
+                aria-label="Remove tag"
+                (click)="removeTag(tag)"
+              >
+                <ng-icon name="lucideX" size="12" />
+              </button>
+            </span>
+          }
+          <input
+            #tagInput
+            type="text"
+            class="text-foreground placeholder:text-muted-foreground min-w-24 flex-1 border-0 bg-transparent py-0.5 text-sm outline-none"
+            placeholder="Type and press Enter..."
+            (keydown.enter)="onAddTag(tagInput); $event.preventDefault()"
+          />
         </div>
       </div>
     </div>
 
-    <div class="flex flex-col gap-1">
-      <label class="font-medium">Tags</label>
-      <p-autocomplete
-        formControlName="tags"
-        [multiple]="true"
-        [typeahead]="false"
-        [forceSelection]="false"
-        placeholder="Type and press Enter..."
-      />
-    </div>
-  </div>
-
-  <ng-template #footer>
-    <p-button
-      label="Cancel"
-      severity="secondary"
-      variant="outlined"
-      [disabled]="loading()"
-      (onClick)="displayed.set(false)"
-    />
-    <p-button label="Save" [loading]="loading()" [disabled]="loading()" (onClick)="onSubmit()" />
-  </ng-template>
-</p-dialog>
+    <hlm-dialog-footer>
+      <button hlmBtn variant="outline" [disabled]="loading()" (click)="displayed.set(false)">
+        Cancel
+      </button>
+      <button hlmBtn [disabled]="loading()" (click)="onSubmit()">
+        @if (loading()) {
+          <ng-icon name="lucideLoaderCircle" class="animate-spin" />
+        }
+        Save
+      </button>
+    </hlm-dialog-footer>
+  </hlm-dialog-content>
+</hlm-dialog>

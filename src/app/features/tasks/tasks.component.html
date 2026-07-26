@@ -9,11 +9,9 @@
     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Organise and track your tasks</p>
   </div>
   @if (total() > 0) {
-    <p-button (onClick)="onCreateTask()">Create Task</p-button>
+    <button hlmBtn (click)="onCreateTask()">Create Task</button>
   }
 </div>
-
-<p-toast />
 
 <app-task-form-dialog
   [task]="editingTask()"
@@ -21,60 +19,69 @@
   (taskSaved)="onSaveTask($event)"
 />
 
-<p-confirmdialog />
-
-<p-dataview
-  #dv
-  [value]="tasks()"
-  [rows]="pageSize"
-  [paginator]="true"
-  [totalRecords]="total()"
-  [lazy]="true"
-  [loading]="loading()"
-  [alwaysShowPaginator]="false"
-  [dt]="{ contentBackground: 'transparent', headerBackground: 'transparent' }"
-  [style]="{ '--p-paginator-background': 'transparent' }"
-  (onPage)="loadPage($event.first)"
->
-  @if (!loading()) {
-    <ng-template #emptymessage>
-      <app-empty-message title="No tasks yet" caption="Create your first task to get started.">
-        <p-button footer (onClick)="onCreateTask()">Create Task</p-button>
-      </app-empty-message>
-    </ng-template>
-  }
-
-  <ng-template #header>
-    <div class="-mx-4 flex items-center gap-4">
-      <p-iconfield>
-        <p-inputicon class="pi pi-search" />
-        <input
-          pSize="small"
-          type="text"
-          pInputText
-          placeholder="Search"
-          (input)="onSearch($event.target.value)"
-        />
-      </p-iconfield>
-      <div class="ml-auto flex items-center gap-2">
-        <span class="text-sm text-gray-600 dark:text-gray-400">Started</span>
-        <p-toggleswitch
-          [(ngModel)]="showOnlyStarted"
-          (onChange)="this.loadPage(0)"
-        ></p-toggleswitch>
-      </div>
+<div class="mb-4 flex items-center gap-4">
+  <div hlmInputGroup class="max-w-xs bg-white">
+    <div hlmInputGroupAddon>
+      <ng-icon name="lucideSearch" />
     </div>
-  </ng-template>
+    <input
+      hlmInputGroupInput
+      type="text"
+      placeholder="Search"
+      (input)="onSearch($event.target.value)"
+    />
+  </div>
+  <div class="ml-auto flex items-center gap-2">
+    <span class="text-sm text-gray-600 dark:text-gray-400">Started</span>
+    <hlm-switch [(ngModel)]="showOnlyStarted" (ngModelChange)="loadPage(1)" />
+  </div>
+</div>
 
-  <ng-template #list let-tasks>
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      @for (task of tasks; track task.id) {
-        <app-task-card
-          [task]="task"
-          (taskEdited)="onEditTask($event)"
-          (taskDeleted)="onDeleteTask($event)"
-        />
+@if (loading()) {
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    @for (_ of [1, 2, 3, 4, 5, 6]; track $index) {
+      <div hlmSkeleton class="h-40 rounded-xl"></div>
+    }
+  </div>
+} @else if (total() === 0) {
+  <app-empty-message title="No tasks yet" caption="Create your first task to get started.">
+    <button hlmBtn footer (click)="onCreateTask()">Create Task</button>
+  </app-empty-message>
+} @else {
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    @for (task of tasks(); track task.id) {
+      <app-task-card
+        [task]="task"
+        (taskEdited)="onEditTask($event)"
+        (taskDeleted)="onDeleteTask($event)"
+      />
+    }
+  </div>
+
+  @if (totalPages().length > 1) {
+    <ul hlmPaginationContent class="mt-2 flex justify-center">
+      @if (currentPage() > 1) {
+        <li hlmPaginationItem>
+          <button hlmPaginationLink (click)="loadPage(currentPage() - 1)">
+            <hlm-pagination-previous iconOnly="true" />
+          </button>
+        </li>
       }
-    </div>
-  </ng-template>
-</p-dataview>
+      @for (page of totalPages(); track page) {
+        <li hlmPaginationItem>
+          <button hlmPaginationLink [isActive]="currentPage() === page" (click)="loadPage(page)">
+            {{ page }}
+          </button>
+        </li>
+      }
+
+      @if (currentPage() < total() / pageSize()) {
+        <li hlmPaginationItem>
+          <button hlmPaginationLink (click)="loadPage(currentPage() + 1)">
+            <hlm-pagination-next iconOnly="true" />
+          </button>
+        </li>
+      }
+    </ul>
+  }
+}
