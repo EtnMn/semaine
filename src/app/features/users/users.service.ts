@@ -12,6 +12,14 @@ export class UsersService {
     page: number,
     pageSize = 20,
   ): Promise<{ users: User[]; total: number }> {
+    if (page < 0) {
+      throw new Error("Page number must be greater than or equal to 0");
+    }
+
+    if (pageSize <= 0) {
+      throw new Error("Page size must be greater than 0");
+    }
+
     const [pageResult, countResult] = await Promise.all([
       this.supabaseService.client.rpc("get_users_page", {
         p_limit: pageSize,
