@@ -12,7 +12,7 @@ import { SocialLoginButtonComponent } from "./social-login-button.component";
 @Component({
   selector: "app-login",
   templateUrl: "./login.component.html",
-  imports: [FormsModule, NgIcon, ...HlmAlertImports, SocialLoginButtonComponent],
+  imports: [FormsModule, NgIcon, HlmAlertImports, SocialLoginButtonComponent],
   providers: [provideIcons({ lucideCircleAlert })],
 })
 export class LoginComponent {

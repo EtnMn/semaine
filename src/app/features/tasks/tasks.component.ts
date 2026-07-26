@@ -1,11 +1,11 @@
-import { Component, inject, OnInit, signal } from "@angular/core";
+import { Component, computed, inject, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { NgIcon, provideIcons } from "@ng-icons/core";
 import { lucideSearch } from "@ng-icons/lucide";
 import { toast } from "@spartan-ng/brain/sonner";
 import { HlmButton } from "@spartan-ng/helm/button";
 import { HlmInputGroupImports } from "@spartan-ng/helm/input-group";
-import { HlmNumberedPagination } from "@spartan-ng/helm/pagination";
+import { HlmPaginationImports } from "@spartan-ng/helm/pagination";
 import { HlmSkeletonImports } from "@spartan-ng/helm/skeleton";
 import { HlmSwitch } from "@spartan-ng/helm/switch";
 
@@ -22,9 +22,9 @@ import { EmptyMessageComponent } from "@shared/components/empty-message/empty-me
     FormsModule,
     NgIcon,
     HlmButton,
-    ...HlmInputGroupImports,
+    HlmInputGroupImports,
     HlmSwitch,
-    HlmNumberedPagination,
+    HlmPaginationImports,
     HlmSkeletonImports,
     TaskCardComponent,
     TaskFormDialogComponent,
@@ -46,6 +46,10 @@ export class TasksComponent implements OnInit {
   protected readonly pageSize = signal(9);
 
   private searchDebounce: ReturnType<typeof setTimeout> | undefined;
+
+  protected readonly totalPages = computed(() =>
+    Array.from({ length: Math.ceil(this.total() / this.pageSize()) }, (_, i) => i + 1),
+  );
 
   public ngOnInit(): void {
     this.loadPage(1);

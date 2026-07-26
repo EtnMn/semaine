@@ -13,12 +13,9 @@ import { HlmSkeletonImports } from "@spartan-ng/helm/skeleton";
     <div class="flex items-center gap-4">
       @if (loading()) {
         <div hlmSkeleton class="size-8 shrink-0 rounded-full"></div>
-      } @else if (avatarUrl()) {
-        <hlm-avatar class="shrink-0">
-          <img [src]="avatarUrl()!" hlmAvatarImage alt="" />
-        </hlm-avatar>
       } @else {
         <hlm-avatar class="shrink-0">
+          <img [src]="avatarUrl()!" hlmAvatarImage alt="" />
           <span hlmAvatarFallback>
             <ng-icon name="lucideUser" />
           </span>

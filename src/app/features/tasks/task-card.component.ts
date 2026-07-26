@@ -26,7 +26,7 @@ import { HlmDropdownMenuImports } from "@spartan-ng/helm/dropdown-menu";
   templateUrl: "./task-card.component.html",
   styleUrl: "./task-card.component.css",
   host: { class: "block h-full" },
-  imports: [NgIcon, HlmButton, ...HlmDropdownMenuImports, ...HlmAlertDialogImports, TitleCasePipe],
+  imports: [NgIcon, HlmButton, HlmDropdownMenuImports, HlmAlertDialogImports, TitleCasePipe],
   providers: [
     provideIcons({
       lucideEllipsis,

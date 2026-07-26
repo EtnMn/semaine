@@ -24,7 +24,7 @@ import { TasksService } from "../tasks/tasks.service";
   templateUrl: "./chore-card.component.html",
   styleUrl: "./chore-card.component.css",
   host: { class: "contents" },
-  imports: [NgIcon, HlmButton, ...HlmAlertDialogImports, TitleCasePipe],
+  imports: [NgIcon, HlmButton, HlmAlertDialogImports, TitleCasePipe],
   providers: [
     provideIcons({
       lucideThumbsUp,

@@ -202,6 +202,8 @@ describe("Header", () => {
     await fixture.whenStable();
 
     const menuPanel = document.querySelector("hlm-dropdown-menu");
-    expect(menuPanel?.querySelector(".text-sm")?.textContent).toBe("test@example.com");
+    const userInfo = menuPanel?.querySelector("app-user-info");
+    const emailSpan = userInfo?.querySelector(".break-words:last-of-type");
+    expect(emailSpan?.textContent?.trim()).toBe("test@example.com");
   });
 });

@@ -58,12 +58,30 @@
     }
   </div>
 
-  <hlm-numbered-pagination
-    [currentPage]="currentPage()"
-    (currentPageChange)="loadPage($event)"
-    [itemsPerPage]="pageSize()"
-    (itemsPerPageChange)="onPageSizeChange($event)"
-    [totalItems]="total()"
-    [pageSizes]="[9, 18, 36]"
-  />
+  @if (totalPages().length > 1) {
+    <ul hlmPaginationContent class="mt-2 flex justify-center">
+      @if (currentPage() > 1) {
+        <li hlmPaginationItem>
+          <button hlmPaginationLink (click)="loadPage(currentPage() - 1)">
+            <hlm-pagination-previous iconOnly="true" />
+          </button>
+        </li>
+      }
+      @for (page of totalPages(); track page) {
+        <li hlmPaginationItem>
+          <button hlmPaginationLink [isActive]="currentPage() === page" (click)="loadPage(page)">
+            {{ page }}
+          </button>
+        </li>
+      }
+
+      @if (currentPage() < total() / pageSize()) {
+        <li hlmPaginationItem>
+          <button hlmPaginationLink (click)="loadPage(currentPage() + 1)">
+            <hlm-pagination-next iconOnly="true" />
+          </button>
+        </li>
+      }
+    </ul>
+  }
 }

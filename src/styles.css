@@ -8,6 +8,17 @@
 @import "@angular/cdk/overlay-prebuilt.css";
 @import "@spartan-ng/brain/hlm-tailwind-preset.css";
 
+@layer components {
+  [hlmBtn]:not([variant]),
+  [hlmBtn][variant="default"] {
+    color: white !important;
+  }
+
+  [hlmBtn] {
+    cursor: pointer;
+  }
+}
+
 :root {
   color-scheme: light;
 
@@ -23,7 +34,7 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
   /* Brand color: lime (matches Tailwind's generated lime palette) */
-  --primary: var(--color-lime-600);
+  --primary: var(--color-lime-500);
   --primary-foreground: var(--color-lime-950);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
@@ -55,7 +66,7 @@
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
   /* Brand color: lime (matches Tailwind's generated lime palette) */
-  --primary: var(--color-lime-400);
+  --primary: var(--color-lime-600);
   --primary-foreground: var(--color-lime-950);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);

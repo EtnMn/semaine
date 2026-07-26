@@ -1,16 +1,16 @@
-import { Component, inject, OnInit, signal } from "@angular/core";
+import { Component, computed, inject, OnInit, signal } from "@angular/core";
 import { FormsModule, NgForm } from "@angular/forms";
 import { NgIcon, provideIcons } from "@ng-icons/core";
 import { lucideEllipsisVertical, lucideLoaderCircle } from "@ng-icons/lucide";
 import { toast } from "@spartan-ng/brain/sonner";
 import { HlmAlertDialogImports } from "@spartan-ng/helm/alert-dialog";
 import { HlmBadge } from "@spartan-ng/helm/badge";
-import { HlmButton } from "@spartan-ng/helm/button";
+import { HlmButtonImports } from "@spartan-ng/helm/button";
 import { HlmDialogImports } from "@spartan-ng/helm/dialog";
 import { HlmDropdownMenuImports } from "@spartan-ng/helm/dropdown-menu";
 import { HlmInput } from "@spartan-ng/helm/input";
 import { HlmLabel } from "@spartan-ng/helm/label";
-import { HlmNumberedPagination } from "@spartan-ng/helm/pagination";
+import { HlmPaginationImports } from "@spartan-ng/helm/pagination";
 import { HlmSeparatorImports } from "@spartan-ng/helm/separator";
 
 import { User } from "./user.model";
@@ -25,20 +25,19 @@ import { AuthService } from "@core/services";
   imports: [
     UserInfoComponent,
     NgIcon,
-    ...HlmDialogImports,
-    ...HlmAlertDialogImports,
-    ...HlmDropdownMenuImports,
-    ...HlmSeparatorImports,
-    HlmButton,
+    HlmDialogImports,
+    HlmAlertDialogImports,
+    HlmDropdownMenuImports,
+    HlmSeparatorImports,
+    HlmButtonImports,
     HlmInput,
     HlmLabel,
     HlmBadge,
-    HlmNumberedPagination,
+    HlmPaginationImports,
     FormsModule,
     EmptyMessageComponent,
   ],
   providers: [provideIcons({ lucideLoaderCircle, lucideEllipsisVertical })],
-  host: { class: "max-w-4xl mx-auto" },
 })
 export class UsersComponent implements OnInit {
   private readonly usersService = inject(UsersService);
@@ -57,6 +56,10 @@ export class UsersComponent implements OnInit {
   protected readonly deleteUserTarget = signal<User | null>(null);
 
   protected email = "";
+
+  protected readonly totalPages = computed(() =>
+    Array.from({ length: Math.ceil(this.total() / this.pageSize()) }, (_, i) => i + 1),
+  );
 
   public ngOnInit(): void {
     this.loadPage(1);

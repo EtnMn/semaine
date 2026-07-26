@@ -6,7 +6,7 @@ import { Header } from "@core/layout/header/header";
 
 @Component({
   selector: "app-root",
-  imports: [RouterOutlet, Footer, Header, ...HlmToasterImports],
+  imports: [RouterOutlet, Footer, Header, HlmToasterImports],
   templateUrl: "./app.html",
 })
 export class App {}

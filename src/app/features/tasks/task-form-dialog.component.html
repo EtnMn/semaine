@@ -72,18 +72,17 @@
               min="0"
               placeholder="Minutes"
             />
-            <span hlmInputGroupText>min</span>
+            <hlm-input-group-addon align="inline-end">
+              <hlm-input-group-text>min</hlm-input-group-text>
+            </hlm-input-group-addon>
           </div>
           <hlm-field-error>Duration is required.</hlm-field-error>
         </div>
-        <div hlmField orientation="horizontal">
-          <label hlmFieldLabel>Started</label>
-          <div class="flex items-center gap-2">
-            <hlm-switch formControlName="started" />
-            <span class="text-muted-foreground text-sm">
-              {{ form.controls.started.value ? "Active" : "Inactive" }}
-            </span>
-          </div>
+        <div hlmField orientation="horizontal" class="items-end">
+          <label class="flex items-center" hlmLabel>
+            <hlm-switch class="mr-2" formControlName="started" />
+            {{ form.controls.started.value ? "Started" : "Inactive" }}
+          </label>
         </div>
       </div>
 
