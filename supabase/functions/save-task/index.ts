@@ -1,6 +1,7 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { corsHeaders } from "jsr:@supabase/supabase-js/cors";
 import { errorResponse, serverErrorResponse } from "../error-response.ts";
+import { parseRequestBody } from "../validation.ts";
 
 const TASK_PERIODICITIES = ["unique", "daily", "weekly", "monthly", "yearly"];
 const TASK_DIFFICULTIES = ["easy", "medium", "hard"];
@@ -12,6 +13,14 @@ function todayDate(): string {
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
+  }
+
+  if (req.method !== "POST") {
+    return errorResponse(405, "Method not allowed", corsHeaders);
+  }
+
+  if (req.headers.get("Content-Type") !== "application/json") {
+    return errorResponse(400, "Content-Type must be application/json", corsHeaders);
   }
 
   try {
@@ -49,31 +58,41 @@ Deno.serve(async (req) => {
     }
 
     // Parse and validate request body
-    const body = await req.json();
-    const id: string | undefined = body?.id || undefined;
-    const name: string = body?.name ?? "";
-    const description: string = body?.description ?? "";
-    const periodicity: string = body?.periodicity ?? "";
-    const difficulty: string = body?.difficulty ?? "";
-    const duration: number = body?.duration;
-    const tags: string[] = Array.isArray(body?.tags) ? body.tags : [];
-    const started = !!body?.started;
-
-    if (!name.trim()) {
-      return errorResponse(400, "Task name is required", corsHeaders);
+    const body = await parseRequestBody(req);
+    if (body instanceof Response) {
+      return body;
     }
 
-    if (!TASK_PERIODICITIES.includes(periodicity)) {
-      return errorResponse(400, "Invalid periodicity", corsHeaders);
+    if (!!body.id && (typeof body.id !== "string" || body.id.length !== 36)) {
+      return errorResponse(400, "Invalid task id", corsHeaders);
     }
 
-    if (!TASK_DIFFICULTIES.includes(difficulty)) {
+    if (typeof body.name !== "string" || !body.name.trim() || body.name.length > 255) {
+      return errorResponse(400, "Invalid or missing task name", corsHeaders);
+    }
+
+    if (typeof body.description !== "string" || body.description.length > 1000) {
+      return errorResponse(400, "Invalid task description", corsHeaders);
+    }
+
+    if (typeof body.periodicity !== "string" || !TASK_PERIODICITIES.includes(body.periodicity)) {
+      return errorResponse(400, "Invalid or missing periodicity", corsHeaders);
+    }
+
+    if (typeof body.difficulty !== "string" || !TASK_DIFFICULTIES.includes(body.difficulty)) {
       return errorResponse(400, "Invalid difficulty", corsHeaders);
     }
 
-    if (typeof duration !== "number" || duration < 0) {
-      return errorResponse(400, "Invalid duration", corsHeaders);
+    if (typeof body.duration !== "number") {
+      return errorResponse(400, "Invalid task duration", corsHeaders);
     }
+
+    if (Array.isArray(body?.tags) && body.tags.length > 10) {
+      return errorResponse(400, "Too many tags", corsHeaders);
+    }
+
+    const tags: string[] = Array.isArray(body?.tags) ? body.tags : [];
+    const started = !!body?.started;
 
     // Admin client with service_role key — bypasses RLS for tasks and chores writes
     const supabaseAdmin = createClient(
@@ -81,13 +100,21 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
-    const taskPayload = { name, description, periodicity, difficulty, duration, tags, started };
+    const taskPayload = {
+      name: body.name,
+      description: body.description,
+      periodicity: body.periodicity,
+      difficulty: body.difficulty,
+      duration: body.duration,
+      tags,
+      started,
+    };
 
-    const { data: task, error: taskError } = id
+    const { data: task, error: taskError } = body.id
       ? await supabaseAdmin
           .from("tasks")
           .update(taskPayload)
-          .eq("id", id)
+          .eq("id", body.id)
           .select("id, name, description, periodicity, difficulty, started, duration, tags")
           .single()
       : await supabaseAdmin
@@ -117,7 +144,7 @@ Deno.serve(async (req) => {
     }
 
     // If started is false, delete associated chores
-    if (!task.started && id) {
+    if (!task.started && body.id) {
       const { error: choreError } = await supabaseAdmin
         .from("chores")
         .delete()

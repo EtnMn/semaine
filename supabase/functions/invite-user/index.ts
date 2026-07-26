@@ -1,10 +1,19 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { corsHeaders } from "jsr:@supabase/supabase-js/cors";
 import { errorResponse, serverErrorResponse } from "../error-response.ts";
+import { parseRequestBody } from "../validation.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
+  }
+
+  if (req.method !== "POST") {
+    return errorResponse(405, "Method not allowed", corsHeaders);
+  }
+
+  if (req.headers.get("Content-Type") !== "application/json") {
+    return errorResponse(400, "Content-Type must be application/json", corsHeaders);
   }
 
   try {
@@ -41,11 +50,21 @@ Deno.serve(async (req) => {
     }
 
     // Parse and validate request body
-    const body = await req.json();
-    const email: string = body?.email ?? "";
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return errorResponse(400, "Invalid email address", corsHeaders);
+    const body = await parseRequestBody(req);
+    if (body instanceof Response) {
+      return body;
     }
+
+    if (
+      typeof body.email !== "string" ||
+      !body.email.trim() ||
+      body.email.length > 255 ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)
+    ) {
+      return errorResponse(400, "Invalid or missing email address", corsHeaders);
+    }
+
+    const email: string = body?.email ?? "";
 
     // Admin client with service_role key — never exposed to the browser
     const supabaseAdmin = createClient(

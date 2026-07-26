@@ -1,6 +1,7 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { corsHeaders } from "jsr:@supabase/supabase-js/cors";
 import { errorResponse, serverErrorResponse } from "../error-response.ts";
+import { parseRequestBody } from "../validation.ts";
 
 function computeNextDate(from: Date, periodicity: string): string {
   const next = new Date(from);
@@ -26,6 +27,14 @@ Deno.serve(async (req) => {
     return new Response("ok", { headers: corsHeaders });
   }
 
+  if (req.method !== "POST") {
+    return errorResponse(405, "Method not allowed", corsHeaders);
+  }
+
+  if (req.headers.get("Content-Type") !== "application/json") {
+    return errorResponse(400, "Content-Type must be application/json", corsHeaders);
+  }
+
   try {
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
@@ -49,10 +58,13 @@ Deno.serve(async (req) => {
     }
 
     // Parse and validate request body
-    const body = await req.json();
-    const choreId: string = body?.chore_id ?? "";
-    if (!choreId) {
-      return errorResponse(400, "Missing chore id", corsHeaders);
+    const body = await parseRequestBody(req);
+    if (body instanceof Response) {
+      return body;
+    }
+
+    if (typeof body.chore_id !== "string" || !body.chore_id.trim() || body.chore_id.length !== 36) {
+      return errorResponse(400, "Invalid or missing chore id", corsHeaders);
     }
 
     // Admin client with service_role key to bypass RLS
@@ -65,7 +77,7 @@ Deno.serve(async (req) => {
     const { data: chore, error: choreError } = await supabaseAdmin
       .from("chores")
       .select("id, task_id, date")
-      .eq("id", choreId)
+      .eq("id", body.chore_id)
       .single();
 
     if (choreError || !chore) {
@@ -80,7 +92,10 @@ Deno.serve(async (req) => {
       .single();
 
     // Delete the chore regardless of whether task exists
-    const { error: deleteError } = await supabaseAdmin.from("chores").delete().eq("id", choreId);
+    const { error: deleteError } = await supabaseAdmin
+      .from("chores")
+      .delete()
+      .eq("id", body.chore_id);
 
     if (deleteError) {
       return serverErrorResponse(corsHeaders, deleteError, "close-chore: delete chore");
