@@ -1,8 +1,8 @@
 import { TestBed } from "@angular/core/testing";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { signal, WritableSignal } from "@angular/core";
-import { ConfirmationService, MessageService } from "primeng/api";
 import { provideAnimationsAsync } from "@angular/platform-browser/animations/async";
+import { provideRouter } from "@angular/router";
 import { AuthService } from "@core/services";
 import { UsersService } from "./users.service";
 import { UsersComponent } from "./users.component";
@@ -36,8 +36,7 @@ describe("UsersComponent", () => {
       imports: [UsersComponent],
       providers: [
         provideAnimationsAsync(),
-        ConfirmationService,
-        MessageService,
+        provideRouter([]),
         { provide: UsersService, useValue: mockUsersService },
         {
           provide: AuthService,
@@ -62,7 +61,7 @@ describe("UsersComponent", () => {
     fixture.detectChanges();
     await fixture.whenStable();
 
-    expect(mockUsersService.getUsersPage).toHaveBeenCalledWith(0);
+    expect(mockUsersService.getUsersPage).toHaveBeenCalledWith(0, 20);
   });
 
   it("should display users after loading", async () => {
@@ -134,40 +133,16 @@ describe("UsersComponent", () => {
     expect(mockUsersService.inviteUser).not.toHaveBeenCalled();
   });
 
-  it("should call updateUserRole when toggling role", async () => {
-    const fixture = TestBed.createComponent(UsersComponent);
-    fixture.detectChanges();
-    await fixture.whenStable();
-
-    const component = fixture.componentInstance as unknown as {
-      menuItems: () => { label?: string; command: () => void }[];
-      openUserMenu: (menu: { toggle: () => void }, user: User, event: MouseEvent) => void;
-    };
-
-    const mockMenu = { toggle: vi.fn() };
-    component.openUserMenu(mockMenu, mockUsers[1], new MouseEvent("click"));
-    fixture.detectChanges();
-
-    const items = component.menuItems();
-    expect(items).toHaveLength(1);
-    expect(items[0].label).toBe("Set to administrator");
-  });
-
   it("should update user role to admin", async () => {
     const fixture = TestBed.createComponent(UsersComponent);
     fixture.detectChanges();
     await fixture.whenStable();
 
     const component = fixture.componentInstance as unknown as {
-      openUserMenu: (menu: { toggle: () => void }, user: User, event: MouseEvent) => void;
-      menuItems: () => { label?: string; command: () => void }[];
+      toggleRole: (user: User) => Promise<void>;
     };
 
-    const mockMenu = { toggle: vi.fn() };
-    component.openUserMenu(mockMenu, mockUsers[1], new MouseEvent("click"));
-    fixture.detectChanges();
-
-    await component.menuItems()[0].command();
+    await component.toggleRole(mockUsers[1]);
     await fixture.whenStable();
 
     expect(mockUsersService.updateUserRole).toHaveBeenCalledWith("2", "admin");
@@ -196,6 +171,6 @@ describe("UsersComponent", () => {
 
     await fixture.whenStable();
 
-    expect(mockUsersService.getUsersPage).toHaveBeenCalledWith(0);
+    expect(mockUsersService.getUsersPage).toHaveBeenCalledWith(0, 20);
   });
 });

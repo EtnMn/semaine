@@ -1,7 +1,6 @@
 import { TestBed } from "@angular/core/testing";
 import { provideAnimationsAsync } from "@angular/platform-browser/animations/async";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ConfirmationService } from "primeng/api";
 
 import { Chore } from "./chore.model";
 import { ChoreCardComponent } from "./chore-card.component";
@@ -32,30 +31,26 @@ describe("ChoreCardComponent", () => {
     mockTasksService = {
       getPeriodicityIcon: vi.fn((periodicity: string) => {
         const icons: Record<string, string> = {
-          unique: "pi-bolt",
-          daily: "pi-sun",
-          weekly: "pi-calendar",
-          monthly: "pi-calendar-plus",
-          yearly: "pi-globe",
+          unique: "lucideZap",
+          daily: "lucideSun",
+          weekly: "lucideCalendar",
+          monthly: "lucideCalendarPlus",
+          yearly: "lucideGlobe",
         };
-        return icons[periodicity.toLowerCase()] ?? "pi-calendar";
+        return icons[periodicity.toLowerCase()] ?? "lucideCalendar";
       }),
       getDifficultyIcon: vi.fn((difficulty: string) => {
         return {
-          easy: "pi pi-face-smile",
-          medium: "pi pi-star",
-          hard: "pi pi-wrench",
+          easy: "lucideSmile",
+          medium: "lucideStar",
+          hard: "lucideWrench",
         }[difficulty];
       }),
     };
 
     await TestBed.configureTestingModule({
       imports: [ChoreCardComponent],
-      providers: [
-        provideAnimationsAsync(),
-        ConfirmationService,
-        { provide: TasksService, useValue: mockTasksService },
-      ],
+      providers: [provideAnimationsAsync(), { provide: TasksService, useValue: mockTasksService }],
     }).compileComponents();
   });
 
@@ -119,7 +114,7 @@ describe("ChoreCardComponent", () => {
     expect(mockTasksService.getPeriodicityIcon).toHaveBeenCalledWith("weekly");
   });
 
-  it("should emit closed event when close is confirmed", async () => {
+  it("should emit closed event when close is confirmed", () => {
     const fixture = TestBed.createComponent(ChoreCardComponent);
     fixture.componentRef.setInput("chore", mockChore);
     fixture.detectChanges();
@@ -128,17 +123,10 @@ describe("ChoreCardComponent", () => {
     fixture.componentInstance.closed.subscribe(closed);
 
     const component = fixture.componentInstance as unknown as {
-      onCloseChore: (id: string) => void;
+      onConfirmCloseChore: (id: string) => void;
     };
 
-    // Access the component's own ConfirmationService instance
-    const confirmationService = fixture.debugElement.injector.get(ConfirmationService);
-    vi.spyOn(confirmationService, "confirm").mockImplementation((config) => {
-      config.accept?.();
-      return confirmationService;
-    });
-
-    component.onCloseChore("chore-1");
+    component.onConfirmCloseChore("chore-1");
 
     expect(closed).toHaveBeenCalledWith("chore-1");
   });

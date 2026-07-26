@@ -26,9 +26,10 @@
       </div>
 
       @if (errorMessage()) {
-        <div class="mt-5">
-          <p-message severity="error" icon="pi pi-times-circle">{{ errorMessage() }}</p-message>
-        </div>
+        <hlm-alert variant="destructive" class="mt-5">
+          <ng-icon name="lucideCircleAlert" />
+          <div hlmAlertDescription>{{ errorMessage() }}</div>
+        </hlm-alert>
       }
     </div>
   </div>

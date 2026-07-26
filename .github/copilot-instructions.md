@@ -8,9 +8,9 @@ Modern Angular 21 application using standalone components, signals, and Vitest f
 
 - **Angular 21**: Standalone components (no NgModules), signals for state management
 - **Component Structure**: Each component has separate `.ts`, `.html`, and `.css` files (e.g., `app.ts`, `app.html`, `app.css`)
-- **UI Library**: PrimeNG 21 for components (buttons, forms, tables, dialogs, etc.)
-- **Styling**: Tailwind CSS v4 with PostCSS + PrimeNG theme (Aura Light Blue)
-- **Icons**: PrimeIcons (included with PrimeNG)
+- **UI Library**: Spartan/ui (`@spartan-ng/brain` + generated Helm components in `libs/ui/`) for components (buttons, forms, tables, dialogs, menus, etc.)
+- **Styling**: Tailwind CSS v4 with PostCSS + Spartan's Tailwind preset, custom lime-based theme tokens in `styles.css`
+- **Icons**: `@ng-icons/core` with `@ng-icons/lucide` (Lucide icon set) via `<ng-icon name="lucideX" />`
 - **Testing**: Vitest (not Karma) - tests run in terminal, no browser UI
 - **Package Manager**: pnpm (required, enforced by `packageManager` field)
 
@@ -61,14 +61,13 @@ pnpm format:check   # Check formatting without changes
 - Tab width: 2 spaces
 - Tailwind classes are auto-sorted by `prettier-plugin-tailwindcss`
 
-### PrimeNG Usage
+### Spartan/ui Usage
 
-- Import PrimeNG components in `imports` array of standalone components
-- Example: `import { ButtonModule } from "primeng/button";`
-- Use PrimeNG components for UI (buttons, forms, tables, dialogs, menus, etc.)
-- Combine PrimeNG components with Tailwind utility classes for custom styling
-- Available theme: Aura Light Blue (configured in `styles.css`)
-- PrimeIcons available with `<i class="pi pi-icon-name"></i>`
+- Import Helm components from `@spartan-ng/helm/*` in the `imports` array of standalone components (e.g., `import { HlmButton } from "@spartan-ng/helm/button";`)
+- Generated component source lives in `libs/ui/*` (excluded from ESLint via `eslint.config.mjs`) — regenerate with `ng g @spartan-ng/cli:ui <component> --defaults` (one component name per invocation)
+- Many Helm imports are collections, e.g. `HlmDropdownMenuImports`, `HlmAlertDialogImports` — spread them into the `imports` array with `...`
+- Combine Spartan/ui components with Tailwind utility classes for custom styling
+- Icons: use `<ng-icon name="lucideX" />` with `provideIcons({ lucideX })` in the component's `providers`; when an icon name is bound dynamically (`[name]="expr"`), all possible names must be pre-registered in `provideIcons`
 - Animations enabled via `provideAnimationsAsync()` in `app.config.ts`
 
 ## ESLint Configuration

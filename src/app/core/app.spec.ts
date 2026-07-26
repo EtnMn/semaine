@@ -31,7 +31,7 @@ describe("App", () => {
           provide: DarkModeService,
           useValue: {
             isDark: signal(false).asReadonly(),
-            icon: computed(() => "pi pi-moon"),
+            icon: computed(() => "lucideMoon"),
             toggle: vi.fn(),
           },
         },

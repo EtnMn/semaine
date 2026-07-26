@@ -1,7 +1,6 @@
 import { TestBed } from "@angular/core/testing";
 import { provideAnimationsAsync } from "@angular/platform-browser/animations/async";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ConfirmationService } from "primeng/api";
 
 import { Task } from "./task.model";
 import { TaskCardComponent } from "./task-card.component";
@@ -28,30 +27,26 @@ describe("TaskCardComponent", () => {
     mockTasksService = {
       getPeriodicityIcon: vi.fn((periodicity: string) => {
         const icons: Record<string, string> = {
-          unique: "pi-bolt",
-          daily: "pi-sun",
-          weekly: "pi-calendar",
-          monthly: "pi-calendar-plus",
-          yearly: "pi-globe",
+          unique: "lucideZap",
+          daily: "lucideSun",
+          weekly: "lucideCalendar",
+          monthly: "lucideCalendarPlus",
+          yearly: "lucideGlobe",
         };
-        return icons[periodicity.toLowerCase()] ?? "pi-calendar";
+        return icons[periodicity.toLowerCase()] ?? "lucideCalendar";
       }),
       getDifficultyIcon: vi.fn((difficulty: string) => {
         return {
-          easy: "pi pi-face-smile",
-          medium: "pi pi-star",
-          hard: "pi pi-wrench",
+          easy: "lucideSmile",
+          medium: "lucideStar",
+          hard: "lucideWrench",
         }[difficulty];
       }),
     };
 
     await TestBed.configureTestingModule({
       imports: [TaskCardComponent],
-      providers: [
-        provideAnimationsAsync(),
-        ConfirmationService,
-        { provide: TasksService, useValue: mockTasksService },
-      ],
+      providers: [provideAnimationsAsync(), { provide: TasksService, useValue: mockTasksService }],
     }).compileComponents();
   });
 
@@ -158,19 +153,11 @@ describe("TaskCardComponent", () => {
     const taskDeleted = vi.fn();
     fixture.componentInstance.taskDeleted.subscribe(taskDeleted);
 
-    // Access the component's own ConfirmationService instance
-    const confirmationService = fixture.debugElement.injector.get(ConfirmationService);
-    vi.spyOn(confirmationService, "confirm").mockImplementation((config) => {
-      config.accept?.();
-      return confirmationService;
-    });
-
     const component = fixture.componentInstance as unknown as {
-      onDeleteTask: () => void;
+      onConfirmDeleteTask: () => void;
     };
 
-    // Access private method via cast
-    (component as unknown as { onDeleteTask: () => void }).onDeleteTask();
+    component.onConfirmDeleteTask();
 
     expect(taskDeleted).toHaveBeenCalledWith("task-1");
   });

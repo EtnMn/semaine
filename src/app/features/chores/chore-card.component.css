@@ -103,16 +103,13 @@
   bottom: 2.5rem; /* compensates for the top-8 offset so the button bottom lands at the extra-inform top */
   left: 0.75rem; /* matches description px-3 */
   right: 0.75rem;
-}
-
-.chore-done-btn ::ng-deep .p-button {
   width: 100%;
   background: var(--chore-color-dark) !important;
   border-color: var(--chore-color-dark) !important;
   color: white !important;
 }
 
-.chore-done-btn:hover ::ng-deep .p-button {
+.chore-done-btn:hover {
   background: var(--chore-color-hover) !important;
 }
 

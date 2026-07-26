@@ -1,25 +1,33 @@
 import { Component, input } from "@angular/core";
-import { ButtonModule } from "primeng/button";
-import { AvatarModule } from "primeng/avatar";
-import { SkeletonModule } from "primeng/skeleton";
+import { NgIcon, provideIcons } from "@ng-icons/core";
+import { lucideUser } from "@ng-icons/lucide";
+import { HlmAvatarImports } from "@spartan-ng/helm/avatar";
+import { HlmSkeletonImports } from "@spartan-ng/helm/skeleton";
 
 @Component({
   selector: "app-user-info",
   host: { class: "block overflow-hidden" },
-  imports: [ButtonModule, AvatarModule, SkeletonModule],
+  imports: [NgIcon, HlmAvatarImports, HlmSkeletonImports],
+  viewProviders: [provideIcons({ lucideUser })],
   template: `
     <div class="flex items-center gap-4">
       @if (loading()) {
-        <p-skeleton shape="circle" size="2rem" class="shrink-0" />
+        <div hlmSkeleton class="size-8 shrink-0 rounded-full"></div>
       } @else if (avatarUrl()) {
-        <p-avatar [image]="avatarUrl()!" shape="circle" class="shrink-0" />
+        <hlm-avatar class="shrink-0">
+          <img [src]="avatarUrl()!" hlmAvatarImage alt="" />
+        </hlm-avatar>
       } @else {
-        <p-avatar icon="pi pi-user" severity="secondary" shape="circle" class="shrink-0" />
+        <hlm-avatar class="shrink-0">
+          <span hlmAvatarFallback>
+            <ng-icon name="lucideUser" />
+          </span>
+        </hlm-avatar>
       }
       <div class="flex min-w-0 flex-col" [class.gap-y-2]="loading()">
         @if (loading()) {
-          <p-skeleton width="8rem" class="mt-1" />
-          <p-skeleton width="10rem" />
+          <div hlmSkeleton class="mt-1 h-4 w-32"></div>
+          <div hlmSkeleton class="h-4 w-40"></div>
         } @else {
           <span class="font-bold break-words">{{ name() }}</span>
           <span class="text-sm break-words">{{ email() }}</span>

@@ -1,7 +1,8 @@
 import { TestBed } from "@angular/core/testing";
 import { provideAnimationsAsync } from "@angular/platform-browser/animations/async";
+import { provideRouter } from "@angular/router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ConfirmationService, MessageService } from "primeng/api";
+import { toast } from "@spartan-ng/brain/sonner";
 import { signal } from "@angular/core";
 
 import { Task } from "./task.model";
@@ -39,20 +40,20 @@ describe("TasksComponent", () => {
       deleteTask: vi.fn().mockResolvedValue(undefined),
       getDifficultyIcon: vi.fn((difficulty: string) => {
         return {
-          easy: "pi pi-face-smile",
-          medium: "pi pi-star",
-          hard: "pi pi-wrench",
+          easy: "lucideSmile",
+          medium: "lucideStar",
+          hard: "lucideWrench",
         }[difficulty];
       }),
       getPeriodicityIcon: vi.fn((periodicity: string) => {
         const icons: Record<string, string> = {
-          unique: "pi-bolt",
-          daily: "pi-sun",
-          weekly: "pi-calendar",
-          monthly: "pi-calendar-plus",
-          yearly: "pi-globe",
+          unique: "lucideZap",
+          daily: "lucideSun",
+          weekly: "lucideCalendar",
+          monthly: "lucideCalendarPlus",
+          yearly: "lucideGlobe",
         };
-        return icons[periodicity.toLowerCase()] ?? "pi-calendar";
+        return icons[periodicity.toLowerCase()] ?? "lucideCalendar";
       }),
     };
 
@@ -60,8 +61,7 @@ describe("TasksComponent", () => {
       imports: [TasksComponent],
       providers: [
         provideAnimationsAsync(),
-        ConfirmationService,
-        MessageService,
+        provideRouter([]),
         { provide: TasksService, useValue: mockTasksService },
       ],
     }).compileComponents();
@@ -137,15 +137,15 @@ describe("TasksComponent", () => {
   it("should show error toast when getTasksPage fails", async () => {
     mockTasksService.getTasksPage.mockRejectedValue(new Error("Load error"));
 
-    const fixture = TestBed.createComponent(TasksComponent);
-    const messageService = fixture.debugElement.injector.get(MessageService);
-    const addSpy = vi.spyOn(messageService, "add");
+    const errorSpy = vi.spyOn(toast, "error");
 
+    const fixture = TestBed.createComponent(TasksComponent);
     fixture.detectChanges();
     await fixture.whenStable();
 
-    expect(addSpy).toHaveBeenCalledWith(
-      expect.objectContaining({ severity: "error", detail: "Load error" }),
+    expect(errorSpy).toHaveBeenCalledWith(
+      "Failed to load tasks.",
+      expect.objectContaining({ description: "Load error" }),
     );
   });
 });

@@ -1,7 +1,7 @@
 import { TestBed } from "@angular/core/testing";
 import { provideAnimationsAsync } from "@angular/platform-browser/animations/async";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { MessageService } from "primeng/api";
+import { toast } from "@spartan-ng/brain/sonner";
 import { signal } from "@angular/core";
 
 import { Chore } from "./chore.model";
@@ -44,20 +44,20 @@ describe("ChoresComponent", () => {
     mockTasksService = {
       getDifficultyIcon: vi.fn((difficulty: string) => {
         return {
-          easy: "pi pi-face-smile",
-          medium: "pi pi-star",
-          hard: "pi pi-wrench",
+          easy: "lucideSmile",
+          medium: "lucideStar",
+          hard: "lucideWrench",
         }[difficulty];
       }),
       getPeriodicityIcon: vi.fn((periodicity: string) => {
         const icons: Record<string, string> = {
-          unique: "pi-bolt",
-          daily: "pi-sun",
-          weekly: "pi-calendar",
-          monthly: "pi-calendar-plus",
-          yearly: "pi-globe",
+          unique: "lucideZap",
+          daily: "lucideSun",
+          weekly: "lucideCalendar",
+          monthly: "lucideCalendarPlus",
+          yearly: "lucideGlobe",
         };
-        return icons[periodicity.toLowerCase()] ?? "pi-calendar";
+        return icons[periodicity.toLowerCase()] ?? "lucideCalendar";
       }),
     };
 
@@ -65,7 +65,6 @@ describe("ChoresComponent", () => {
       imports: [ChoresComponent],
       providers: [
         provideAnimationsAsync(),
-        MessageService,
         { provide: ChoresService, useValue: mockChoresService },
         { provide: TasksService, useValue: mockTasksService },
       ],
@@ -109,16 +108,15 @@ describe("ChoresComponent", () => {
   it("should show error message when getNextChores fails", async () => {
     mockChoresService.getNextChores.mockRejectedValue(new Error("Network error"));
 
-    const fixture = TestBed.createComponent(ChoresComponent);
-    // Get the component's own MessageService instance
-    const messageService = fixture.debugElement.injector.get(MessageService);
-    const addSpy = vi.spyOn(messageService, "add");
+    const errorSpy = vi.spyOn(toast, "error");
 
+    const fixture = TestBed.createComponent(ChoresComponent);
     fixture.detectChanges();
     await fixture.whenStable();
 
-    expect(addSpy).toHaveBeenCalledWith(
-      expect.objectContaining({ severity: "error", detail: "Network error" }),
+    expect(errorSpy).toHaveBeenCalledWith(
+      "Failed to load chores.",
+      expect.objectContaining({ description: "Network error" }),
     );
   });
 });

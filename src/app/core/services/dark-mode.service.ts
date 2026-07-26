@@ -8,7 +8,7 @@ export class DarkModeService {
 
   public readonly isDark = this.isDarkMode.asReadonly();
 
-  public readonly icon = computed(() => (this.isDarkMode() ? "pi pi-sun" : "pi pi-moon"));
+  public readonly icon = computed(() => (this.isDarkMode() ? "lucideSun" : "lucideMoon"));
 
   constructor() {
     this.initializeDarkMode();
@@ -21,7 +21,7 @@ export class DarkModeService {
   }
   public toggle(): void {
     const element = document.querySelector("html");
-    element?.classList.toggle("app-dark");
+    element?.classList.toggle("dark");
     this.isDarkMode.update((value) => !value);
   }
 }

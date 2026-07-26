@@ -9,147 +9,175 @@
     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Organise and manage your users</p>
   </div>
   @if (total() > 0) {
-    <p-button (onClick)="onInviteUser()">Invite user</p-button>
+    <button hlmBtn (click)="onInviteUser()">Invite user</button>
   }
 </div>
 
-<p-toast />
-<p-confirmdialog />
+<hlm-alert-dialog
+  [state]="deleteUserTarget() ? 'open' : 'closed'"
+  (stateChanged)="onDeleteDialogStateChanged($event)"
+>
+  <hlm-alert-dialog-content *hlmAlertDialogPortal="let ctx">
+    <hlm-alert-dialog-header>
+      <h2 hlmAlertDialogTitle>Delete user</h2>
+      <p hlmAlertDialogDescription>
+        Do you want to delete the user: {{ deleteUserTarget()?.name }}?
+      </p>
+    </hlm-alert-dialog-header>
+    <hlm-alert-dialog-footer>
+      <button hlmAlertDialogCancel>Cancel</button>
+      <button hlmAlertDialogAction variant="destructive" (click)="onConfirmDeleteUser()">
+        Delete
+      </button>
+    </hlm-alert-dialog-footer>
+  </hlm-alert-dialog-content>
+</hlm-alert-dialog>
 
 <form #inviteForm="ngForm" (ngSubmit)="onConfirmInvite(inviteForm)">
-  <p-dialog
-    header="Invite user"
-    [modal]="true"
-    [(visible)]="inviteDialogVisible"
-    [style]="{ width: '400px' }"
-    (onHide)="inviteForm.resetForm()"
+  <hlm-dialog
+    [state]="inviteDialogVisible() ? 'open' : 'closed'"
+    (stateChanged)="onInviteDialogStateChanged($event, inviteForm)"
   >
-    <div class="flex flex-col gap-2 py-2">
-      <label for="email" class="font-medium">Email address</label>
-      <input
-        id="email"
-        #emailInput="ngModel"
-        type="email"
-        name="email"
-        pInputText
-        [(ngModel)]="email"
-        placeholder="user@example.com"
-        class="w-full"
-        autocomplete="off"
-        data-bwignore="true"
-        data-1p-ignore="true"
-        data-lpignore="true"
-        required
-        email
-        [invalid]="
-          !emailInput.valid && (emailInput.touched || inviteForm.submitted) && !inviteLoading()
-        "
-        [disabled]="inviteLoading()"
-      />
-      <p-message severity="error" size="small" variant="simple">
-        @if (emailInput.invalid && (emailInput.touched || inviteForm.submitted)) {
-          @if (emailInput.hasError("required")) {
-            Email is Required.
-          }
-          @if (emailInput.hasError("email")) {
-            Please enter a valid email.
-          }
-        } @else {
-          &nbsp;
-        }
-      </p-message>
-    </div>
-    <ng-template #footer>
-      <p-button
-        label="Cancel"
-        severity="secondary"
-        variant="outlined"
-        [disabled]="inviteLoading()"
-        (onClick)="inviteDialogVisible.set(false)"
-      />
-      <p-button
-        label="Invite"
-        [loading]="inviteLoading()"
-        [disabled]="!emailInput.valid || inviteLoading()"
-        type="submit"
-      />
-    </ng-template>
-  </p-dialog>
-</form>
-<p-menu #userMenu [model]="menuItems()" [popup]="true" />
-<p-dataview
-  #dv
-  [value]="users()"
-  [rows]="20"
-  [paginator]="true"
-  [totalRecords]="total()"
-  [lazy]="true"
-  [loading]="loading()"
-  [alwaysShowPaginator]="false"
-  [style]="{ '--p-paginator-background': 'transparent' }"
-  (onPage)="loadPage($event.first)"
->
-  @if (!loading()) {
-    <ng-template #emptymessage>
-      <app-empty-message title="No users yet" caption="Invite your first user to get started.">
-        <p-button footer (onClick)="onInviteUser()">Invite user</p-button>
-      </app-empty-message>
-    </ng-template>
-  }
+    <hlm-dialog-content *hlmDialogPortal="let ctx" class="sm:max-w-sm">
+      <hlm-dialog-header>
+        <h3 hlmDialogTitle>Invite user</h3>
+      </hlm-dialog-header>
 
-  <ng-template #list let-users>
-    <div class="flex flex-col gap-4 py-8">
-      @if (loading()) {
-        @for (_ of [1, 2, 3]; track $index; let last = $last) {
-          <div class="flex px-4">
-            <app-user-info [loading]="loading()" />
-          </div>
-          @if (!last) {
-            <p-divider />
+      <div class="flex flex-col gap-2 py-2">
+        <label hlmLabel for="email">Email address</label>
+        <input
+          id="email"
+          #emailInput="ngModel"
+          type="email"
+          name="email"
+          hlmInput
+          [(ngModel)]="email"
+          placeholder="user@example.com"
+          class="w-full"
+          autocomplete="off"
+          data-bwignore="true"
+          data-1p-ignore="true"
+          data-lpignore="true"
+          required
+          email
+          [forceInvalid]="
+            !emailInput.valid && (emailInput.touched || inviteForm.submitted) && !inviteLoading()
+          "
+          [disabled]="inviteLoading()"
+        />
+        <p class="text-destructive text-xs">
+          @if (emailInput.invalid && (emailInput.touched || inviteForm.submitted)) {
+            @if (emailInput.hasError("required")) {
+              Email is Required.
+            }
+            @if (emailInput.hasError("email")) {
+              Please enter a valid email.
+            }
+          } @else {
+            &nbsp;
           }
-        }
-      } @else {
-        @for (user of users; track user.id; let last = $last) {
-          <div class="flex gap-2 px-4">
-            <div
-              class="align-items-start flex min-w-0 flex-1 flex-col justify-between gap-2 sm:flex-row"
-            >
-              <app-user-info
-                [name]="user.name"
-                [email]="user.email"
-                [avatarUrl]="user.avatar_url"
-              />
-              @if (user.role === "admin") {
-                <p-tag
-                  value="Administrator"
-                  class="!justify-end !bg-transparent !text-xs !text-gray-500 sm:!justify-center"
-                />
-              }
-            </div>
-            <div class="flex items-center gap-2">
-              <p-button
-                label="Delete"
-                size="small"
-                variant="outlined"
-                severity="danger"
-                [disabled]="user.id === me()?.id"
-                (onClick)="onDeleteUser(user)"
-              />
-              <p-button
-                icon="pi pi-ellipsis-v"
-                severity="secondary"
-                size="small"
-                [disabled]="user.id === me()?.id"
-                variant="outlined"
-                (click)="openUserMenu(userMenu, user, $event)"
-              />
-            </div>
-          </div>
-          @if (!last) {
-            <p-divider />
+        </p>
+      </div>
+
+      <hlm-dialog-footer>
+        <button
+          hlmBtn
+          type="button"
+          variant="outline"
+          [disabled]="inviteLoading()"
+          (click)="inviteDialogVisible.set(false)"
+        >
+          Cancel
+        </button>
+        <button hlmBtn type="submit" [disabled]="!emailInput.valid || inviteLoading()">
+          @if (inviteLoading()) {
+            <ng-icon name="lucideLoaderCircle" class="animate-spin" />
           }
-        }
+          Invite
+        </button>
+      </hlm-dialog-footer>
+    </hlm-dialog-content>
+  </hlm-dialog>
+</form>
+
+@if (loading()) {
+  <div class="flex flex-col gap-4 py-8">
+    @for (_ of [1, 2, 3]; track $index; let last = $last) {
+      <div class="flex px-4">
+        <app-user-info [loading]="loading()" />
+      </div>
+      @if (!last) {
+        <hlm-separator />
       }
-    </div>
-  </ng-template>
-</p-dataview>
+    }
+  </div>
+} @else if (total() === 0) {
+  <app-empty-message title="No users yet" caption="Invite your first user to get started.">
+    <button hlmBtn footer (click)="onInviteUser()">Invite user</button>
+  </app-empty-message>
+} @else {
+  <div class="flex flex-col gap-4 py-8">
+    @for (user of users(); track user.id; let last = $last) {
+      <div class="flex gap-2 px-4">
+        <div
+          class="align-items-start flex min-w-0 flex-1 flex-col justify-between gap-2 sm:flex-row"
+        >
+          <app-user-info
+            [name]="user.name ?? undefined"
+            [email]="user.email"
+            [avatarUrl]="user.avatar_url"
+          />
+          @if (user.role === "admin") {
+            <span
+              hlmBadge
+              variant="outline"
+              class="!justify-end !bg-transparent !text-xs !text-gray-500 sm:!justify-center"
+            >
+              Administrator
+            </span>
+          }
+        </div>
+        <div class="flex items-center gap-2">
+          <button
+            hlmBtn
+            variant="outline"
+            size="sm"
+            class="text-destructive"
+            [disabled]="user.id === me()?.id"
+            (click)="onDeleteUser(user)"
+          >
+            Delete
+          </button>
+          <button
+            hlmBtn
+            variant="outline"
+            size="icon"
+            [disabled]="user.id === me()?.id"
+            [hlmDropdownMenuTrigger]="roleMenu"
+          >
+            <ng-icon name="lucideEllipsisVertical" />
+          </button>
+          <ng-template #roleMenu>
+            <hlm-dropdown-menu>
+              <button hlmDropdownMenuItem class="text-sm" (triggered)="toggleRole(user)">
+                {{ user.role === "admin" ? "Set to user" : "Set to administrator" }}
+              </button>
+            </hlm-dropdown-menu>
+          </ng-template>
+        </div>
+      </div>
+      @if (!last) {
+        <hlm-separator />
+      }
+    }
+  </div>
+
+  <hlm-numbered-pagination
+    class="mt-4"
+    [currentPage]="currentPage()"
+    (currentPageChange)="loadPage($event)"
+    [itemsPerPage]="pageSize()"
+    (itemsPerPageChange)="onPageSizeChange($event)"
+    [totalItems]="total()"
+  />
+}

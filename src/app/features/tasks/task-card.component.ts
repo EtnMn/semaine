@@ -1,41 +1,56 @@
-import { Component, inject, input, output } from "@angular/core";
+import { Component, inject, input, output, signal } from "@angular/core";
 import { TitleCasePipe } from "@angular/common";
+import { NgIcon, provideIcons } from "@ng-icons/core";
+import {
+  lucideCalendar,
+  lucideCalendarPlus,
+  lucideEllipsis,
+  lucideGlobe,
+  lucideHourglass,
+  lucidePencil,
+  lucideSmile,
+  lucideStar,
+  lucideSun,
+  lucideTrash2,
+  lucideWrench,
+  lucideZap,
+} from "@ng-icons/lucide";
 import { Task, TaskDifficulty } from "./task.model";
 import { TasksService } from "./tasks.service";
-import { ButtonModule } from "primeng/button";
-import { MenuModule } from "primeng/menu";
-import { ConfirmDialogModule } from "primeng/confirmdialog";
-import { ConfirmationService } from "primeng/api";
+import { HlmAlertDialogImports } from "@spartan-ng/helm/alert-dialog";
+import { HlmButton } from "@spartan-ng/helm/button";
+import { HlmDropdownMenuImports } from "@spartan-ng/helm/dropdown-menu";
 
 @Component({
   selector: "app-task-card",
   templateUrl: "./task-card.component.html",
   styleUrl: "./task-card.component.css",
   host: { class: "block h-full" },
-  imports: [ButtonModule, MenuModule, ConfirmDialogModule, TitleCasePipe],
-  providers: [ConfirmationService],
+  imports: [NgIcon, HlmButton, ...HlmDropdownMenuImports, ...HlmAlertDialogImports, TitleCasePipe],
+  providers: [
+    provideIcons({
+      lucideEllipsis,
+      lucidePencil,
+      lucideTrash2,
+      lucideHourglass,
+      lucideZap,
+      lucideSun,
+      lucideCalendar,
+      lucideCalendarPlus,
+      lucideGlobe,
+      lucideSmile,
+      lucideStar,
+      lucideWrench,
+    }),
+  ],
 })
 export class TaskCardComponent {
   public readonly task = input.required<Task>();
   public readonly taskEdited = output<string>();
   public readonly taskDeleted = output<string>();
   protected readonly taskService = inject(TasksService);
-  private readonly confirmationService = inject(ConfirmationService);
 
-  protected readonly items = [
-    {
-      label: "Edit",
-      icon: "pi pi-pencil",
-      command: () => this.onEditTask(),
-    },
-    {
-      label: "Delete",
-      icon: "pi pi-trash",
-      labelClass: "text-red-600 dark:text-red-400",
-      iconClass: "!text-red-600 dark:!text-red-400",
-      command: () => this.onDeleteTask(),
-    },
-  ];
+  protected readonly confirmingDelete = signal(false);
 
   protected getDifficultyColorClass(difficulty: TaskDifficulty): string {
     switch (difficulty) {
@@ -65,25 +80,16 @@ export class TaskCardComponent {
     this.taskEdited.emit(this.task().id);
   }
 
-  private onDeleteTask(): void {
-    this.confirmationService.confirm({
-      message: "Do you want to delete this record?",
-      header: `Delete task${this.task().name}`,
-      icon: "pi pi-info-circle",
-      rejectLabel: "Cancel",
-      rejectButtonProps: {
-        label: "Cancel",
-        severity: "secondary",
-        outlined: true,
-      },
-      acceptButtonProps: {
-        label: "Delete",
-        severity: "danger",
-      },
+  protected onDeleteTask(): void {
+    this.confirmingDelete.set(true);
+  }
 
-      accept: () => {
-        this.taskDeleted.emit(this.task().id);
-      },
-    });
+  protected onConfirmDialogStateChanged(state: "open" | "closed"): void {
+    this.confirmingDelete.set(state === "open");
+  }
+
+  protected onConfirmDeleteTask(): void {
+    this.confirmingDelete.set(false);
+    this.taskDeleted.emit(this.task().id);
   }
 }

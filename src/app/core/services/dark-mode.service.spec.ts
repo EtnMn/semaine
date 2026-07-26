@@ -32,7 +32,7 @@ describe("DarkModeService", () => {
 
   it("should initialize with light mode by default", () => {
     expect(service.isDark()).toBe(false);
-    expect(service.icon()).toBe("pi pi-moon");
+    expect(service.icon()).toBe("lucideMoon");
   });
 
   it("should toggle dark mode", () => {
@@ -45,19 +45,19 @@ describe("DarkModeService", () => {
     // Check HTML element class if it exists
     const htmlElement = document.querySelector("html");
     if (htmlElement) {
-      expect(htmlElement.classList.contains("app-dark")).toBe(!initialState);
+      expect(htmlElement.classList.contains("dark")).toBe(!initialState);
     }
   });
 
   it("should update icon when toggling", () => {
-    expect(service.icon()).toBe("pi pi-moon");
+    expect(service.icon()).toBe("lucideMoon");
 
     service.toggle();
 
-    expect(service.icon()).toBe("pi pi-sun");
+    expect(service.icon()).toBe("lucideSun");
 
     service.toggle();
 
-    expect(service.icon()).toBe("pi pi-moon");
+    expect(service.icon()).toBe("lucideMoon");
   });
 });
