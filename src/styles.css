@@ -8,14 +8,6 @@
 @import "@angular/cdk/overlay-prebuilt.css";
 @import "@spartan-ng/brain/hlm-tailwind-preset.css";
 
-/* Dark mode: shared `.dark` class toggled by DarkModeService, used by Spartan. */
-@custom-variant dark (&:where(.dark, .dark *));
-
-/* Reset */
-#page > *:not(router-outlet) {
-  display: block;
-}
-
 :root {
   color-scheme: light;
 

@@ -116,7 +116,7 @@
     <button hlmBtn footer (click)="onInviteUser()">Invite user</button>
   </app-empty-message>
 } @else {
-  <div class="flex flex-col gap-4 py-8">
+  <div class="flex flex-col gap-4 bg-white py-8 dark:bg-gray-900">
     @for (user of users(); track user.id; let last = $last) {
       <div class="flex gap-2 px-4">
         <div

@@ -54,19 +54,6 @@
   --chore-color-hover: #f43f5e;
 }
 
-/* Accent top stripe */
-.chore-block::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  z-index: 4;
-  border-radius: 0.75rem 0.75rem 0 0;
-  background: var(--chore-color);
-}
-
 /* Hover effect */
 .chore-block:hover {
   filter: drop-shadow(0 12px 24px rgb(0 0 0 / 0.25));
@@ -103,7 +90,6 @@
   bottom: 2.5rem; /* compensates for the top-8 offset so the button bottom lands at the extra-inform top */
   left: 0.75rem; /* matches description px-3 */
   right: 0.75rem;
-  width: 100%;
   background: var(--chore-color-dark) !important;
   border-color: var(--chore-color-dark) !important;
   color: white !important;
@@ -148,7 +134,6 @@
 .chore-block:focus .chore-genre,
 .chore-block:focus-within .chore-genre {
   top: 0;
-  padding-top: 0.75em;
   transition-delay: 0.5s, 0.588s;
 }
 

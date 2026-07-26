@@ -19,8 +19,8 @@
   (taskSaved)="onSaveTask($event)"
 />
 
-<div class="-mx-4 mb-4 flex items-center gap-4">
-  <div hlmInputGroup class="max-w-xs">
+<div class="mb-4 flex items-center gap-4">
+  <div hlmInputGroup class="max-w-xs bg-white">
     <div hlmInputGroupAddon>
       <ng-icon name="lucideSearch" />
     </div>
@@ -59,7 +59,6 @@
   </div>
 
   <hlm-numbered-pagination
-    class="mt-4"
     [currentPage]="currentPage()"
     (currentPageChange)="loadPage($event)"
     [itemsPerPage]="pageSize()"

@@ -9,9 +9,12 @@
   >
     <!-- Genre / tag bar -->
     <div
-      class="chore-genre items-ce absolute -top-8 z-[4] flex h-8 w-full gap-1.5 overflow-hidden px-4 pt-4 text-xs font-semibold text-white/90"
+      class="chore-genre absolute -top-7 z-[4] flex h-8 w-full items-center gap-1.5 px-4 font-semibold text-white/90"
     >
-      <ng-icon [name]="this.taskService.getDifficultyIcon(chore().task.difficulty)" />
+      <ng-icon
+        [name]="this.taskService.getDifficultyIcon(chore().task.difficulty)"
+        class="text-lg"
+      />
       {{ chore().task.tags[0] }}
     </div>
 
@@ -21,11 +24,11 @@
     >
       <div class="chore-main-inform-inner absolute bottom-[0.875em] z-10 w-full px-3">
         <div
-          class="mb-2 inline-flex items-center gap-1 rounded-full py-0.5 text-[0.85em] font-semibold"
+          class="mb-2 inline-flex items-center gap-1 rounded-full p-1 font-semibold"
           [class]="getDifficultyBadgeClass(chore().task.difficulty)"
         >
           <span class="flex items-center gap-1 px-1">
-            <ng-icon name="lucideHourglass" size="0.9em" />
+            <ng-icon name="lucideHourglass" />
             {{ chore().task.duration }} min
           </span>
         </div>
