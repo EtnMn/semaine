@@ -8,9 +8,9 @@ CREATE OR REPLACE FUNCTION public.get_auth_role()
 RETURNS public.app_role
 LANGUAGE sql
 SECURITY DEFINER
-SET search_path = 'public'
+SET search_path = ''
 AS $$
-  SELECT role FROM public.profiles WHERE id = auth.uid()
+  SELECT role FROM public.profiles p WHERE p.id = auth.uid()
 $$;
 
 -- =============================================================================
@@ -24,7 +24,7 @@ CREATE POLICY "profiles_select_own_or_admin"
   FOR SELECT
   TO authenticated
   USING (
-    id = auth.uid() OR
+    public.profiles.id = auth.uid() OR
     public.get_auth_role() = 'admin'
   );
 
