@@ -26,7 +26,6 @@ jobs:
       working_directory: "infra"
       terraform_version: "1.14.3"
       enable_auto_commit: true
-    secrets: inherit
 
   security:
     name: Security Analysis (tfsec)
@@ -36,7 +35,6 @@ jobs:
     with:
       working_directory: "infra"
       tfsec_soft_fail: false
-    secrets: inherit
 
   lint:
     name: Lint (tflint)
@@ -46,7 +44,6 @@ jobs:
     with:
       working_directory: "infra"
       tflint_version: "latest"
-    secrets: inherit
 
   migrate:
     name: Migrate Supabase

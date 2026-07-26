@@ -1,5 +1,7 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { corsHeaders } from "jsr:@supabase/supabase-js/cors";
+import { errorResponse, serverErrorResponse } from "../error-response.ts";
+import { parseRequestBody } from "../validation.ts";
 
 function computeNextDate(from: Date, periodicity: string): string {
   const next = new Date(from);
@@ -25,13 +27,18 @@ Deno.serve(async (req) => {
     return new Response("ok", { headers: corsHeaders });
   }
 
+  if (req.method !== "POST") {
+    return errorResponse(405, "Method not allowed", corsHeaders);
+  }
+
+  if (req.headers.get("Content-Type") !== "application/json") {
+    return errorResponse(400, "Content-Type must be application/json", corsHeaders);
+  }
+
   try {
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
-      return new Response(JSON.stringify({ error: "Missing Authorization header" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return errorResponse(401, "Missing Authorization header", corsHeaders);
     }
 
     // Verify the caller is authenticated (any authenticated user can close a chore)
@@ -47,20 +54,17 @@ Deno.serve(async (req) => {
     } = await supabaseUser.auth.getUser();
 
     if (userError || !user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return errorResponse(401, "Unauthorized", corsHeaders);
     }
 
     // Parse and validate request body
-    const body = await req.json();
-    const choreId: string = body?.chore_id ?? "";
-    if (!choreId) {
-      return new Response(JSON.stringify({ error: "Missing chore id" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    const body = await parseRequestBody(req);
+    if (body instanceof Response) {
+      return body;
+    }
+
+    if (typeof body.chore_id !== "string" || !body.chore_id.trim() || body.chore_id.length !== 36) {
+      return errorResponse(400, "Invalid or missing chore id", corsHeaders);
     }
 
     // Admin client with service_role key to bypass RLS
@@ -73,14 +77,11 @@ Deno.serve(async (req) => {
     const { data: chore, error: choreError } = await supabaseAdmin
       .from("chores")
       .select("id, task_id, date")
-      .eq("id", choreId)
+      .eq("id", body.chore_id)
       .single();
 
     if (choreError || !chore) {
-      return new Response(JSON.stringify({ error: "Chore not found" }), {
-        status: 404,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return errorResponse(404, "Chore not found", corsHeaders);
     }
 
     // Fetch the associated task to get periodicity
@@ -91,13 +92,13 @@ Deno.serve(async (req) => {
       .single();
 
     // Delete the chore regardless of whether task exists
-    const { error: deleteError } = await supabaseAdmin.from("chores").delete().eq("id", choreId);
+    const { error: deleteError } = await supabaseAdmin
+      .from("chores")
+      .delete()
+      .eq("id", body.chore_id);
 
     if (deleteError) {
-      return new Response(JSON.stringify({ error: deleteError.message }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return serverErrorResponse(corsHeaders, deleteError, "close-chore: delete chore");
     }
 
     // Only create next chore if task was found
@@ -110,10 +111,7 @@ Deno.serve(async (req) => {
           .eq("id", task.id);
 
         if (updateError) {
-          return new Response(JSON.stringify({ error: updateError.message }), {
-            status: 500,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
+          return serverErrorResponse(corsHeaders, updateError, "close-chore: disable task");
         }
       } else {
         // Insert the next occurrence based on the max of chore date and today's date
@@ -125,10 +123,7 @@ Deno.serve(async (req) => {
           .insert({ task_id: task.id, date: nextDate });
 
         if (insertError) {
-          return new Response(JSON.stringify({ error: insertError.message }), {
-            status: 500,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
+          return serverErrorResponse(corsHeaders, insertError, "close-chore: insert next chore");
         }
       }
     }
@@ -138,9 +133,6 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
-    return new Response(JSON.stringify({ error: String(err) }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return serverErrorResponse(corsHeaders, err, "close-chore: unhandled");
   }
 });
