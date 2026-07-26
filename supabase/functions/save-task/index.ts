@@ -1,5 +1,6 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { corsHeaders } from "jsr:@supabase/supabase-js/cors";
+import { errorResponse, serverErrorResponse } from "../error-response.ts";
 
 const TASK_PERIODICITIES = ["unique", "daily", "weekly", "monthly", "yearly"];
 const TASK_DIFFICULTIES = ["easy", "medium", "hard"];
@@ -16,10 +17,7 @@ Deno.serve(async (req) => {
   try {
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
-      return new Response(JSON.stringify({ error: "Missing Authorization header" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return errorResponse(401, "Missing Authorization header", corsHeaders);
     }
 
     // Client scoped to the calling user (anon key + user JWT) — used to verify identity and role
@@ -35,10 +33,7 @@ Deno.serve(async (req) => {
     } = await supabaseUser.auth.getUser();
 
     if (userError || !user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return errorResponse(401, "Unauthorized", corsHeaders);
     }
 
     // Verify the caller has admin role (tasks insert/update is no longer gated by RLS,
@@ -50,10 +45,7 @@ Deno.serve(async (req) => {
       .single();
 
     if (profileError || profile?.role !== "admin") {
-      return new Response(JSON.stringify({ error: "Forbidden: admin role required" }), {
-        status: 403,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return errorResponse(403, "Forbidden: admin role required", corsHeaders);
     }
 
     // Parse and validate request body
@@ -68,31 +60,19 @@ Deno.serve(async (req) => {
     const started = !!body?.started;
 
     if (!name.trim()) {
-      return new Response(JSON.stringify({ error: "Task name is required" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return errorResponse(400, "Task name is required", corsHeaders);
     }
 
     if (!TASK_PERIODICITIES.includes(periodicity)) {
-      return new Response(JSON.stringify({ error: "Invalid periodicity" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return errorResponse(400, "Invalid periodicity", corsHeaders);
     }
 
     if (!TASK_DIFFICULTIES.includes(difficulty)) {
-      return new Response(JSON.stringify({ error: "Invalid difficulty" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return errorResponse(400, "Invalid difficulty", corsHeaders);
     }
 
     if (typeof duration !== "number" || duration < 0) {
-      return new Response(JSON.stringify({ error: "Invalid duration" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return errorResponse(400, "Invalid duration", corsHeaders);
     }
 
     // Admin client with service_role key — bypasses RLS for tasks and chores writes
@@ -116,11 +96,12 @@ Deno.serve(async (req) => {
           .select("id, name, description, periodicity, difficulty, started, duration, tags")
           .single();
 
-    if (taskError || !task) {
-      return new Response(JSON.stringify({ error: taskError?.message ?? "Task not found" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    if (taskError) {
+      return serverErrorResponse(corsHeaders, taskError, "save-task: upsert task");
+    }
+
+    if (!task) {
+      return errorResponse(404, "Task not found", corsHeaders);
     }
 
     // If started is true, create the chore after the task is created
@@ -131,10 +112,7 @@ Deno.serve(async (req) => {
 
       // Ignore if chore already exists (constraint violation)
       if (choreError && choreError.code !== "23505") {
-        return new Response(JSON.stringify({ error: choreError.message }), {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return serverErrorResponse(corsHeaders, choreError, "save-task: insert chore");
       }
     }
 
@@ -146,10 +124,7 @@ Deno.serve(async (req) => {
         .eq("task_id", task.id);
 
       if (choreError) {
-        return new Response(JSON.stringify({ error: choreError.message }), {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return serverErrorResponse(corsHeaders, choreError, "save-task: delete chores");
       }
     }
 
@@ -158,10 +133,6 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Internal server error";
-    return new Response(JSON.stringify({ error: message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return serverErrorResponse(corsHeaders, err, "save-task: unhandled");
   }
 });

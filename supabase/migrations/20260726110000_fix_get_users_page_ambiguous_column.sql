@@ -8,11 +8,6 @@
 -- public.get_auth_role() helper (already used by the profiles RLS
 -- policies), which qualifies the column explicitly and avoids RLS
 -- recursion.
---
--- Also fixes SQLSTATE 42804 "structure of query does not match function
--- result type": auth.users.email is character varying(255), which does not
--- match the declared "email text" output column, so it must be cast
--- explicitly (u.email::text).
 
 CREATE OR REPLACE FUNCTION public.get_users_page(p_limit int, p_offset int)
 RETURNS TABLE (
